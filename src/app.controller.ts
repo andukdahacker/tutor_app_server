@@ -8,5 +8,5 @@ export class AppController {
   @Get('/hello')
   getHello(): string {
     return this.appService.getHello();
-  } 
+  }
 }
