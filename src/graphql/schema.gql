@@ -6,7 +6,7 @@ type User {
   id: String!
   username: String!
   email: String!
-  createAt: DateTime!
+  createdAt: DateTime!
   updatedAt: DateTime
 }
 
@@ -15,17 +15,28 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
+type LoginResponse {
+  access_token: String!
+  user: User!
+}
+
 type Query {
   findUserById(id: String!): User!
+  findUserByEmail(email: String!): User!
 }
 
 type Mutation {
   signUp(signUpInput: SignUpInput!): User!
+  login(loginInput: LoginInput!): LoginResponse!
 }
 
 input SignUpInput {
   username: String
   email: String
   password: String
-  passwordRepeat: String!
+}
+
+input LoginInput {
+  email: String!
+  password: String!
 }

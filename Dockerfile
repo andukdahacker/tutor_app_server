@@ -19,8 +19,7 @@ RUN npm ci
 # Bundle app source
 COPY . .
 
-# Use the node user from the image (instead of the root user)
-USER node
+RUN npx prisma generate
 
 ###################
 # BUILD FOR PRODUCTION
