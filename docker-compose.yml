@@ -33,7 +33,7 @@ services:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_DB=${POSTGRES_DB}
 
-  redis: 
+  redis:
     image: redis
     container_name: redis
     ports:
