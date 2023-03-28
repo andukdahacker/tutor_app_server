@@ -21,6 +21,8 @@ COPY . .
 
 RUN npx prisma generate
 
+RUN npx prisma db push
+
 ###################
 # BUILD FOR PRODUCTION
 ###################
