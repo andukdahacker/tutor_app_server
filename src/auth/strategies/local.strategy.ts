@@ -19,7 +19,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
     }
 
     const { password, ...result } = user;
-
+    console.log('validate at strategy', result);
     return result;
   }
 }

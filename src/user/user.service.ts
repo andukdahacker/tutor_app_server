@@ -23,8 +23,8 @@ export class UserService {
     });
   }
 
-  async findOneByid(id: string) {
-    return await this.prisma.user.findUnique({
+  async findOneById(id: string) {
+    return await this.prisma.user.findUniqueOrThrow({
       where: {
         id,
       },

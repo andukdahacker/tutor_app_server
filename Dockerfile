@@ -52,7 +52,7 @@ ENV NODE_ENV production
 # This ensures that the node_modules directory is as optimized as possible.
 RUN npm ci --only=production && npm cache clean --force
 
-USER node
+RUN npx prisma db push
 
 EXPOSE 4000
 

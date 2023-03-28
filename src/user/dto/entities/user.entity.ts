@@ -1,4 +1,4 @@
-import { Field, ObjectType } from '@nestjs/graphql';
+import { Field, GraphQLTimestamp, ObjectType } from '@nestjs/graphql';
 
 @ObjectType()
 export class User {
@@ -11,9 +11,9 @@ export class User {
   @Field(() => String)
   email: string;
 
-  @Field()
+  @Field(() => GraphQLTimestamp)
   createdAt: Date;
 
-  @Field({ nullable: true })
+  @Field(() => GraphQLTimestamp, { nullable: true })
   updatedAt?: Date;
 }

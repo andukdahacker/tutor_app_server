@@ -6,18 +6,21 @@ type User {
   id: String!
   username: String!
   email: String!
-  createdAt: DateTime!
-  updatedAt: DateTime
+  createdAt: Timestamp!
+  updatedAt: Timestamp
 }
 
 """
-A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+`Date` type as integer. Type represents date and time as number of milliseconds from start of UNIX epoch.
 """
-scalar DateTime
+scalar Timestamp
 
 type LoginResponse {
-  access_token: String!
-  user: User!
+  user: User
+}
+
+type LogoutResponse {
+  user: User
 }
 
 type Query {
@@ -26,17 +29,18 @@ type Query {
 }
 
 type Mutation {
-  signUp(signUpInput: SignUpInput!): User!
   login(loginInput: LoginInput!): LoginResponse!
+  signUp(signUpInput: SignUpInput!): User!
+  logout: LogoutResponse!
+}
+
+input LoginInput {
+  email: String!
+  password: String!
 }
 
 input SignUpInput {
   username: String
   email: String
   password: String
-}
-
-input LoginInput {
-  email: String!
-  password: String!
 }
