@@ -15,6 +15,7 @@ model User {
   username   String   @db.VarChar
   email      String   @unique @db.VarChar
   password   String   @db.VarChar
+  refreshToken String?
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 }

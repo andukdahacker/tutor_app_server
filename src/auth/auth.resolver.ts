@@ -2,6 +2,8 @@ import { HttpException, HttpStatus, UseGuards } from '@nestjs/common';
 import { Args, Context, Mutation, Resolver } from '@nestjs/graphql';
 
 import * as argon2 from 'argon2';
+import { Response } from 'express';
+import { Public } from 'src/shared/decorators/public.decorator';
 import { GqlLocalAuthGuard } from 'src/shared/guards/local-auth.guard';
 import { User } from 'src/user/dto/entities/user.entity';
 import { SignUpInput } from 'src/user/dto/inputs/signup.input';
@@ -18,12 +20,22 @@ export class AuthResolver {
   ) {}
 
   @Mutation(() => LoginResponse)
+  @Public()
   @UseGuards(GqlLocalAuthGuard)
-  login(@Args('loginInput') _: LoginInput, @Context() context) {
-    return this.authService.login(context.user);
+  async login(@Args('loginInput') _: LoginInput, @Context() context) {
+    const result = await this.authService.login(context.user);
+    (context.res as Response).cookie('tutor_app_rt', result.refreshToken, {
+      httpOnly: true,
+      sameSite: 'lax',
+      secure: false,
+      maxAge: 1000 * 60 * 60 * 24 * 14,
+    });
+
+    return result;
   }
 
   @Mutation(() => User)
+  @Public()
   async signUp(@Args('signUpInput') signUpInput: SignUpInput) {
     const user = await this.userService.findOneByEmail(signUpInput.email);
     if (user)
