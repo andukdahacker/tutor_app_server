@@ -16,11 +16,8 @@ type User {
 scalar Timestamp
 
 type LoginResponse {
-  user: User
-}
-
-type LogoutResponse {
-  user: User
+  access_token: String!
+  user: User!
 }
 
 type Query {
@@ -31,7 +28,6 @@ type Query {
 type Mutation {
   login(loginInput: LoginInput!): LoginResponse!
   signUp(signUpInput: SignUpInput!): User!
-  logout: LogoutResponse!
 }
 
 input LoginInput {
