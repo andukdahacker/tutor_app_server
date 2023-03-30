@@ -1,50 +1,49 @@
-import { HttpException, HttpStatus, UseGuards } from '@nestjs/common';
+import { UseGuards } from '@nestjs/common';
 import { Args, Context, Mutation, Resolver } from '@nestjs/graphql';
 
-import * as argon2 from 'argon2';
-import { Response } from 'express';
 import { Public } from 'src/shared/decorators/public.decorator';
-import { GqlLocalAuthGuard } from 'src/shared/guards/local-auth.guard';
+import { LocalAuthGuard } from 'src/shared/guards/local-auth.guard';
+import { RefreshTokenGuard } from 'src/shared/guards/refresh-token.guard';
 import { User } from 'src/user/dto/entities/user.entity';
 import { SignUpInput } from 'src/user/dto/inputs/signup.input';
-import { UserService } from 'src/user/user.service';
 import { AuthService } from './auth.service';
 import { LoginInput } from './dto/inputs/login.input';
-import { LoginResponse } from './dto/response/login.response';
 
 @Resolver()
 export class AuthResolver {
-  constructor(
-    private readonly authService: AuthService,
-    private readonly userService: UserService,
-  ) {}
+  constructor(private readonly authService: AuthService) {}
 
-  @Mutation(() => LoginResponse)
+  @Mutation(() => User)
+  @UseGuards(LocalAuthGuard)
   @Public()
-  @UseGuards(GqlLocalAuthGuard)
   async login(@Args('loginInput') _: LoginInput, @Context() context) {
-    const result = await this.authService.login(context.user);
-    (context.res as Response).cookie('tutor_app_rt', result.refreshToken, {
-      httpOnly: true,
-      sameSite: 'lax',
-      secure: false,
-      maxAge: 1000 * 60 * 60 * 24 * 14,
-    });
+    const result = await this.authService.login(context.req.user);
 
-    return result;
+    this.authService.setAuthCookie(
+      result.accessToken,
+      result.refreshToken,
+      context,
+    );
+
+    return result.user;
   }
 
   @Mutation(() => User)
   @Public()
   async signUp(@Args('signUpInput') signUpInput: SignUpInput) {
-    const user = await this.userService.findOneByEmail(signUpInput.email);
-    if (user)
-      throw new HttpException('user existed', HttpStatus.NOT_ACCEPTABLE);
-    const hashedPassword = await argon2.hash(signUpInput.password);
-    return await this.userService.createOne({
-      username: signUpInput.username,
-      password: hashedPassword,
-      email: signUpInput.email,
-    });
+    return await this.authService.signUp(signUpInput);
+  }
+
+  @Mutation(() => User)
+  @Public()
+  @UseGuards(RefreshTokenGuard)
+  async refreshAccessToken(@Context() context) {
+    const accessToken = this.authService.createAccessToken(
+      context.req.user.username,
+      context.req.user.id,
+    );
+    context.req.res.setHeader('Set-Cookie', [accessToken]);
+
+    return context.req.user;
   }
 }

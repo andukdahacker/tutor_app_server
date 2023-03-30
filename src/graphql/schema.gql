@@ -15,19 +15,15 @@ type User {
 """
 scalar Timestamp
 
-type LoginResponse {
-  access_token: String!
-  user: User!
-}
-
 type Query {
   findUserById(id: String!): User!
   findUserByEmail(email: String!): User!
 }
 
 type Mutation {
-  login(loginInput: LoginInput!): LoginResponse!
+  login(loginInput: LoginInput!): User!
   signUp(signUpInput: SignUpInput!): User!
+  refreshAccessToken: User!
 }
 
 input LoginInput {

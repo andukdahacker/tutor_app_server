@@ -41,4 +41,12 @@ export class UserService {
       },
     });
   }
+
+  async findOneByRefreshToken(refreshToken: string) {
+    return await this.prisma.user.findUnique({
+      where: {
+        refreshToken,
+      },
+    });
+  }
 }

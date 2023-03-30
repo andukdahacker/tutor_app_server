@@ -4,13 +4,15 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import { GraphQLModule } from '@nestjs/graphql';
+import { JwtService } from '@nestjs/jwt';
 import { join } from 'path';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
+import { AuthService } from './auth/auth.service';
 import { PrismaModule } from './prisma/prisma.module';
 import { PrismaService } from './prisma/prisma.service';
-import { AccessTokenAuthGuard } from './shared/guards/access-token-auth.guard';
+import { JwtAuthGuard } from './shared/guards/jwt-auth.guard';
 import { UserModule } from './user/user.module';
 
 @Module({
@@ -19,7 +21,6 @@ import { UserModule } from './user/user.module';
       driver: ApolloDriver,
       playground: false,
       autoSchemaFile: join(process.cwd(), 'src/graphql/schema.gql'),
-      context: ({ req, res }) => ({ req, res }),
       plugins: [
         ApolloServerPluginLandingPageLocalDefault({ includeCookies: true }),
       ],
@@ -33,7 +34,9 @@ import { UserModule } from './user/user.module';
   providers: [
     AppService,
     PrismaService,
-    { provide: APP_GUARD, useClass: AccessTokenAuthGuard },
+    { provide: APP_GUARD, useClass: JwtAuthGuard },
+    AuthService,
+    JwtService,
   ],
 })
 export class AppModule {}
