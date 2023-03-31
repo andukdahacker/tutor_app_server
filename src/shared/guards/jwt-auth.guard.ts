@@ -31,16 +31,15 @@ export class JwtAuthGuard implements CanActivate {
 
     if (!accessToken) throw new UnauthorizedException('No access token');
 
-    const result = await this.authService.verifyAccessToken(accessToken);
+    const result = this.authService.verifyAccessToken(accessToken);
+
+    console.log(result);
+
+    req.user = result;
 
     if (!result) throw new UnauthorizedException('Invalid access token');
 
     return true;
-  }
-
-  getRequest(context: ExecutionContext) {
-    const ctx = GqlExecutionContext.create(context);
-    return ctx.getContext().req;
   }
 
   private extractTokenFromHeader(request: Request): string | undefined {

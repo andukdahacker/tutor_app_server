@@ -15,15 +15,38 @@ type User {
 """
 scalar Timestamp
 
+type UserResponse {
+  user: User
+  message: String!
+}
+
+type LoginResponse {
+  access_token: String!
+  user: User!
+}
+
+type LogoutResponse {
+  message: String!
+}
+
+type RefreshAccessTokenResponse {
+  access_token: String!
+}
+
+type SignUpResponse {
+  user: User!
+}
+
 type Query {
   findUserById(id: String!): User!
-  findUserByEmail(email: String!): User!
+  findUserByEmail(email: String!): UserResponse!
 }
 
 type Mutation {
-  login(loginInput: LoginInput!): User!
-  signUp(signUpInput: SignUpInput!): User!
-  refreshAccessToken: User!
+  login(loginInput: LoginInput!): LoginResponse!
+  signUp(signUpInput: SignUpInput!): SignUpResponse!
+  refreshAccessToken: RefreshAccessTokenResponse!
+  logout: LogoutResponse!
 }
 
 input LoginInput {

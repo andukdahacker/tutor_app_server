@@ -42,6 +42,17 @@ export class UserService {
     });
   }
 
+  async removeUserRefreshToken(id: string) {
+    return await this.prisma.user.update({
+      where: {
+        id,
+      },
+      data: {
+        refreshToken: null,
+      },
+    });
+  }
+
   async findOneByRefreshToken(refreshToken: string) {
     return await this.prisma.user.findUnique({
       where: {

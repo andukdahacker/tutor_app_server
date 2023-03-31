@@ -1,8 +1,9 @@
 import { Args, Query, Resolver } from '@nestjs/graphql';
 import { User } from './dto/entities/user.entity';
+import { UserResponse } from './dto/response/user.response';
 import { UserService } from './user.service';
 
-@Resolver(() => User)
+@Resolver()
 export class UserResolver {
   constructor(private readonly userService: UserService) {}
 
@@ -11,8 +12,18 @@ export class UserResolver {
     return await this.userService.findOneById(id);
   }
 
-  @Query(() => User)
-  async findUserByEmail(@Args('email', { type: () => String }) email: string) {
-    return await this.userService.findOneByEmail(email);
+  @Query(() => UserResponse)
+  async findUserByEmail(
+    @Args('email', { type: () => String }) email: string,
+  ): Promise<UserResponse> {
+    const user = await this.userService.findOneByEmail(email);
+    if (!user)
+      return {
+        message: 'user is not found',
+      };
+    return {
+      user,
+      message: 'success',
+    };
   }
 }

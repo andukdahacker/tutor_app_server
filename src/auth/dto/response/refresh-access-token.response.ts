@@ -1,7 +1,7 @@
 import { Field, ObjectType } from '@nestjs/graphql';
 
 @ObjectType()
-export class LogoutResponse {
+export class RefreshAccessTokenResponse {
   @Field(() => String)
-  message: string;
+  access_token: string;
 }

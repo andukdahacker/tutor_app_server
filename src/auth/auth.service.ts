@@ -13,7 +13,10 @@ import { User } from 'src/user/dto/entities/user.entity';
 
 import { SignUpInput } from 'src/user/dto/inputs/signup.input';
 
+import { Response } from 'express';
 import { UserService } from 'src/user/user.service';
+import { ITokenPayload } from './types/ITokenPayload';
+import { JwtSignInput } from './types/jwtSignInput';
 
 @Injectable()
 export class AuthService {
@@ -65,17 +68,11 @@ export class AuthService {
     return { accessToken, refreshToken, user: updatedUser };
   }
 
-  getCookieWithJwtAccessToken(token: string) {
-    return `Authentication=${token}; HttpOnly; Path=/; Max-Age=${this.configService.get(
-      'JWT_ACCESS_TOKEN_EXPIRATION_TIME',
-    )}`;
-  }
-
-  getCookieWithJwtRefreshToken(token: string) {
-    return `Refresh=${token}; HttpOnly; Path=/; Max-Age=${this.configService.get(
-      'JWT_REFRESH_TOKEN_EXPIRATION_TIME',
-    )}`;
-  }
+  // getCookieWithJwtRefreshToken(token: string) {
+  //   return `Refresh=${token}; HttpOnly; Path=/; Max-Age=${this.configService.get(
+  //     'JWT_REFRESH_TOKEN_EXPIRATION_TIME',
+  //   )}`;
+  // }
 
   async validateRefreshToken(refreshToken: string) {
     const user = await this.userService.findOneByRefreshToken(refreshToken);
@@ -84,8 +81,8 @@ export class AuthService {
     return user;
   }
 
-  async verifyAccessToken(access_token: string) {
-    const result = await this.jwtService.verifyAsync(access_token, {
+  verifyAccessToken(access_token: string) {
+    const result = this.jwtService.verify<ITokenPayload>(access_token, {
       secret: this.configService.get('ACCESS_TOKEN_SECRET'),
     });
 
@@ -95,39 +92,40 @@ export class AuthService {
   }
 
   async createAccessToken(username: string, id: string) {
-    return await this.jwtService.signAsync(
-      {
-        username: username,
-        sub: id,
-      },
-      {
-        secret: this.configService.get('ACCESS_TOKEN_SECRET'),
-        expiresIn: this.configService.get('JWT_ACCESS_TOKEN_EXPIRATION_TIME'),
-      },
-    );
+    const tokenPayload: JwtSignInput = {
+      username,
+      userId: id,
+    };
+    return await this.jwtService.signAsync(tokenPayload, {
+      secret: this.configService.get('ACCESS_TOKEN_SECRET'),
+      expiresIn: this.configService.get('JWT_ACCESS_TOKEN_EXPIRATION_TIME'),
+    });
   }
 
   async createRefreshToken(username: string, id: string) {
-    return await this.jwtService.signAsync(
-      {
-        username: username,
-        sub: id,
-      },
-      {
-        secret: this.configService.get('REFRESH_TOKEN_SECRET'),
-        expiresIn: this.configService.get('JWT_REFRESH_TOKEN_EXPIRATION_TIME'),
-      },
-    );
+    const tokenPayload: JwtSignInput = {
+      username,
+      userId: id,
+    };
+    return await this.jwtService.signAsync(tokenPayload, {
+      secret: this.configService.get('REFRESH_TOKEN_SECRET'),
+      expiresIn: this.configService.get('JWT_REFRESH_TOKEN_EXPIRATION_TIME'),
+    });
   }
 
-  setAuthCookie(accessToken: string, refreshToken: string, context: any) {
-    const accessTokenCookie = this.getCookieWithJwtAccessToken(accessToken);
+  async logout(userId: string, context: any) {
+    await this.userService.removeUserRefreshToken(userId);
 
-    const refreshTokenCookie = this.getCookieWithJwtRefreshToken(refreshToken);
+    this.resetAuthCookies(context);
+  }
 
-    context.req.res.setHeader('Set-Cookie', [
-      accessTokenCookie,
-      refreshTokenCookie,
-    ]);
+  setAuthCookies(refreshToken: string, context: any) {
+    (context.req.res as Response).cookie('Refresh', refreshToken, {
+      httpOnly: true,
+    });
+  }
+
+  resetAuthCookies(context: any) {
+    (context.req.res as Response).clearCookie('Refresh');
   }
 }

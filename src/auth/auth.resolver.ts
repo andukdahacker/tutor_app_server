@@ -1,49 +1,77 @@
 import { UseGuards } from '@nestjs/common';
 import { Args, Context, Mutation, Resolver } from '@nestjs/graphql';
 
+import { CurrentUser } from 'src/shared/decorators/current-user.decorator';
 import { Public } from 'src/shared/decorators/public.decorator';
 import { LocalAuthGuard } from 'src/shared/guards/local-auth.guard';
 import { RefreshTokenGuard } from 'src/shared/guards/refresh-token.guard';
-import { User } from 'src/user/dto/entities/user.entity';
 import { SignUpInput } from 'src/user/dto/inputs/signup.input';
 import { AuthService } from './auth.service';
 import { LoginInput } from './dto/inputs/login.input';
+import { LoginResponse } from './dto/response/login.response';
+import { LogoutResponse } from './dto/response/logout.response';
+import { RefreshAccessTokenResponse } from './dto/response/refresh-access-token.response';
+import { SignUpResponse } from './dto/response/signup.response';
+import { ITokenPayload } from './types/ITokenPayload';
 
 @Resolver()
 export class AuthResolver {
   constructor(private readonly authService: AuthService) {}
 
-  @Mutation(() => User)
+  @Mutation(() => LoginResponse)
   @UseGuards(LocalAuthGuard)
   @Public()
-  async login(@Args('loginInput') _: LoginInput, @Context() context) {
+  async login(
+    @Args('loginInput') _: LoginInput,
+    @Context() context,
+  ): Promise<LoginResponse> {
     const result = await this.authService.login(context.req.user);
 
-    this.authService.setAuthCookie(
-      result.accessToken,
-      result.refreshToken,
+    this.authService.setAuthCookies(result.refreshToken, context);
+
+    return {
+      user: result.user,
+      access_token: result.accessToken,
+    };
+  }
+
+  @Mutation(() => SignUpResponse)
+  @Public()
+  async signUp(
+    @Args('signUpInput') signUpInput: SignUpInput,
+  ): Promise<SignUpResponse> {
+    const user = await this.authService.signUp(signUpInput);
+
+    return {
+      user,
+    };
+  }
+
+  @Mutation(() => RefreshAccessTokenResponse)
+  @Public()
+  @UseGuards(RefreshTokenGuard)
+  async refreshAccessToken(
+    @CurrentUser() user,
+  ): Promise<RefreshAccessTokenResponse> {
+    const accessToken = await this.authService.createAccessToken(
+      user.username,
+      user.userId,
+    );
+
+    return {
+      access_token: accessToken,
+    };
+  }
+
+  @Mutation(() => LogoutResponse)
+  async logout(@Context() context): Promise<LogoutResponse> {
+    await this.authService.logout(
+      (context.req.user as ITokenPayload).userId,
       context,
     );
 
-    return result.user;
-  }
-
-  @Mutation(() => User)
-  @Public()
-  async signUp(@Args('signUpInput') signUpInput: SignUpInput) {
-    return await this.authService.signUp(signUpInput);
-  }
-
-  @Mutation(() => User)
-  @Public()
-  @UseGuards(RefreshTokenGuard)
-  async refreshAccessToken(@Context() context) {
-    const accessToken = this.authService.createAccessToken(
-      context.req.user.username,
-      context.req.user.id,
-    );
-    context.req.res.setHeader('Set-Cookie', [accessToken]);
-
-    return context.req.user;
+    return {
+      message: 'Logged out successfully',
+    };
   }
 }
