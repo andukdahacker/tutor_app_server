@@ -1,6 +1,4 @@
 import {
-  HttpException,
-  HttpStatus,
   Injectable,
   InternalServerErrorException,
   UnauthorizedException,
@@ -9,12 +7,13 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 
 import * as argon2 from 'argon2';
-import { User } from 'src/user/dto/entities/user.entity';
 
 import { SignUpInput } from 'src/user/dto/inputs/signup.input';
 
 import { Response } from 'express';
+import { GraphQLError } from 'graphql';
 import { UserService } from 'src/user/user.service';
+import { LoginInput } from './dto/inputs/login.input';
 import { ITokenPayload } from './types/ITokenPayload';
 import { JwtSignInput } from './types/jwtSignInput';
 
@@ -42,7 +41,11 @@ export class AuthService {
   async signUp(signUpInput: SignUpInput) {
     const user = await this.userService.findOneByEmail(signUpInput.email);
     if (user)
-      throw new HttpException('user existed', HttpStatus.NOT_ACCEPTABLE);
+      throw new GraphQLError('User already exists', {
+        extensions: {
+          code: 203,
+        },
+      });
     const hashedPassword = await argon2.hash(signUpInput.password);
 
     const newUser = await this.userService.createOne({
@@ -56,7 +59,8 @@ export class AuthService {
     return newUser;
   }
 
-  async login(user: User) {
+  async login(loginInput: LoginInput) {
+    const user = await this.validateUser(loginInput.email, loginInput.password);
     const refreshToken = await this.createRefreshToken(user.username, user.id);
     const accessToken = await this.createAccessToken(user.username, user.id);
 
@@ -67,12 +71,6 @@ export class AuthService {
 
     return { accessToken, refreshToken, user: updatedUser };
   }
-
-  // getCookieWithJwtRefreshToken(token: string) {
-  //   return `Refresh=${token}; HttpOnly; Path=/; Max-Age=${this.configService.get(
-  //     'JWT_REFRESH_TOKEN_EXPIRATION_TIME',
-  //   )}`;
-  // }
 
   async validateRefreshToken(refreshToken: string) {
     const user = await this.userService.findOneByRefreshToken(refreshToken);
@@ -86,7 +84,7 @@ export class AuthService {
       secret: this.configService.get('ACCESS_TOKEN_SECRET'),
     });
 
-    if (!result) throw new UnauthorizedException();
+    if (!result) throw new UnauthorizedException('Invalid access token');
 
     return result;
   }

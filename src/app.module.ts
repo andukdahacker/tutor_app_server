@@ -2,7 +2,7 @@ import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { APP_GUARD } from '@nestjs/core';
+import { APP_FILTER, APP_GUARD } from '@nestjs/core';
 import { GraphQLModule } from '@nestjs/graphql';
 import { JwtService } from '@nestjs/jwt';
 import { join } from 'path';
@@ -12,6 +12,7 @@ import { AuthModule } from './auth/auth.module';
 import { AuthService } from './auth/auth.service';
 import { PrismaModule } from './prisma/prisma.module';
 import { PrismaService } from './prisma/prisma.service';
+import { HttpExceptionFilter } from './shared/filters/gql-exception.filter';
 import { JwtAuthGuard } from './shared/guards/jwt-auth.guard';
 import { UserModule } from './user/user.module';
 
@@ -24,6 +25,10 @@ import { UserModule } from './user/user.module';
       plugins: [
         ApolloServerPluginLandingPageLocalDefault({ includeCookies: true }),
       ],
+      formatError: (error) => {
+        console.log(error);
+        return error;
+      },
     }),
     PrismaModule,
     UserModule,
@@ -35,6 +40,7 @@ import { UserModule } from './user/user.module';
     AppService,
     PrismaService,
     { provide: APP_GUARD, useClass: JwtAuthGuard },
+    { provide: APP_FILTER, useClass: HttpExceptionFilter },
     AuthService,
     JwtService,
   ],

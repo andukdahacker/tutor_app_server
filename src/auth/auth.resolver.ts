@@ -3,7 +3,6 @@ import { Args, Context, Mutation, Resolver } from '@nestjs/graphql';
 
 import { CurrentUser } from 'src/shared/decorators/current-user.decorator';
 import { Public } from 'src/shared/decorators/public.decorator';
-import { LocalAuthGuard } from 'src/shared/guards/local-auth.guard';
 import { RefreshTokenGuard } from 'src/shared/guards/refresh-token.guard';
 import { SignUpInput } from 'src/user/dto/inputs/signup.input';
 import { AuthService } from './auth.service';
@@ -19,13 +18,12 @@ export class AuthResolver {
   constructor(private readonly authService: AuthService) {}
 
   @Mutation(() => LoginResponse)
-  @UseGuards(LocalAuthGuard)
   @Public()
   async login(
-    @Args('loginInput') _: LoginInput,
+    @Args('loginInput') loginInput: LoginInput,
     @Context() context,
   ): Promise<LoginResponse> {
-    const result = await this.authService.login(context.req.user);
+    const result = await this.authService.login(loginInput);
 
     this.authService.setAuthCookies(result.refreshToken, context);
 

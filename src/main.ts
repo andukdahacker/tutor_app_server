@@ -11,6 +11,8 @@ async function bootstrap() {
       transform: true,
     }),
   );
+
+  app.enableCors();
   app.use(cookieParser());
   await app.listen(4000);
 }
