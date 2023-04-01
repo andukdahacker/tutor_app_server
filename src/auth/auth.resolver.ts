@@ -51,7 +51,7 @@ export class AuthResolver {
   async refreshAccessToken(
     @CurrentUser() user,
   ): Promise<RefreshAccessTokenResponse> {
-    const accessToken = await this.authService.createAccessToken(
+    const accessToken = this.authService.createAccessToken(
       user.username,
       user.userId,
     );
@@ -64,7 +64,7 @@ export class AuthResolver {
   @Mutation(() => LogoutResponse)
   async logout(@Context() context): Promise<LogoutResponse> {
     await this.authService.logout(
-      (context.req.user as ITokenPayload).userId,
+      (context.req.user as ITokenPayload).sub,
       context,
     );
 

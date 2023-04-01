@@ -1,5 +1,5 @@
 export interface ITokenPayload {
-  username: string;
   userId: string;
+  sub: string;
   exp: number;
 }

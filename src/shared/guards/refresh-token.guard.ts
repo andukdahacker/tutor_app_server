@@ -1,4 +1,9 @@
-import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
+import {
+  CanActivate,
+  ExecutionContext,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { GqlExecutionContext } from '@nestjs/graphql';
 import { Request } from 'express';
 import { AuthService } from 'src/auth/auth.service';
@@ -13,6 +18,8 @@ export class RefreshTokenGuard implements CanActivate {
     const req = ctx.req;
 
     const refreshToken = this.extractTokenFromCookie(req);
+
+    if (!refreshToken) throw new UnauthorizedException('No refresh token');
 
     const user = await this.authService.validateRefreshToken(refreshToken);
 

@@ -14,8 +14,6 @@ import { Response } from 'express';
 import { GraphQLError } from 'graphql';
 import { UserService } from 'src/user/user.service';
 import { LoginInput } from './dto/inputs/login.input';
-import { ITokenPayload } from './types/ITokenPayload';
-import { JwtSignInput } from './types/jwtSignInput';
 
 @Injectable()
 export class AuthService {
@@ -80,7 +78,7 @@ export class AuthService {
   }
 
   verifyAccessToken(access_token: string) {
-    const result = this.jwtService.verify<ITokenPayload>(access_token, {
+    const result = this.jwtService.verify(access_token, {
       secret: this.configService.get('ACCESS_TOKEN_SECRET'),
     });
 
@@ -89,25 +87,25 @@ export class AuthService {
     return result;
   }
 
-  async createAccessToken(username: string, id: string) {
-    const tokenPayload: JwtSignInput = {
+  createAccessToken(username: string, id: string) {
+    const tokenPayload = {
       username,
-      userId: id,
+      sub: id,
     };
-    return await this.jwtService.signAsync(tokenPayload, {
+    return this.jwtService.sign(tokenPayload, {
       secret: this.configService.get('ACCESS_TOKEN_SECRET'),
-      expiresIn: this.configService.get('JWT_ACCESS_TOKEN_EXPIRATION_TIME'),
+      expiresIn: this.configService.get('ACCESS_TOKEN_EXPIRATION_TIME'),
     });
   }
 
-  async createRefreshToken(username: string, id: string) {
-    const tokenPayload: JwtSignInput = {
-      username,
-      userId: id,
+  createRefreshToken(username: string, id: string) {
+    const tokenPayload = {
+      username: username,
+      sub: id,
     };
-    return await this.jwtService.signAsync(tokenPayload, {
+    return this.jwtService.sign(tokenPayload, {
       secret: this.configService.get('REFRESH_TOKEN_SECRET'),
-      expiresIn: this.configService.get('JWT_REFRESH_TOKEN_EXPIRATION_TIME'),
+      expiresIn: this.configService.get('REFRESH_TOKEN_EXPIRATION_TIME'),
     });
   }
 
@@ -118,12 +116,21 @@ export class AuthService {
   }
 
   setAuthCookies(refreshToken: string, context: any) {
-    (context.req.res as Response).cookie('Refresh', refreshToken, {
-      httpOnly: true,
-    });
+    (context.req.res as Response).cookie(
+      this.configService.get<string>('REFRESH_TOKEN_COOKIE_NAME'),
+      refreshToken,
+      {
+        httpOnly: true,
+        maxAge: 1000 * 60 * 60 * 24 * 30,
+        secure: false,
+        sameSite: 'lax',
+      },
+    );
   }
 
   resetAuthCookies(context: any) {
-    (context.req.res as Response).clearCookie('Refresh');
+    (context.req.res as Response).clearCookie(
+      this.configService.get<string>('REFRESH_TOKEN_COOKIE_NAME'),
+    );
   }
 }
