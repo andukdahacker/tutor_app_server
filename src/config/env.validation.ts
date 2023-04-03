@@ -27,6 +27,18 @@ class EnvironmentVariables {
 
   @IsString()
   DATABASE_URL: string;
+
+  @IsString()
+  ACCESS_TOKEN_SECRET: string;
+
+  @IsString()
+  ACCESS_TOKEN_EXPIRATION_TIME: string;
+
+  @IsString()
+  REFRESH_TOKEN_SECRET: string;
+
+  @IsString()
+  REFRESH_TOKEN_EXPIRATION_TIME: string;
 }
 
 export function validate(config: Record<string, unknown>) {

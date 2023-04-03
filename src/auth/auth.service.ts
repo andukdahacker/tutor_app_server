@@ -59,8 +59,8 @@ export class AuthService {
 
   async login(loginInput: LoginInput) {
     const user = await this.validateUser(loginInput.email, loginInput.password);
-    const refreshToken = await this.createRefreshToken(user.username, user.id);
-    const accessToken = await this.createAccessToken(user.username, user.id);
+    const refreshToken = await this.createRefreshToken(user.email, user.id);
+    const accessToken = await this.createAccessToken(user.email, user.id);
 
     const updatedUser = await this.userService.upsertRefreshToken(
       user.id,
@@ -82,28 +82,30 @@ export class AuthService {
       secret: this.configService.get('ACCESS_TOKEN_SECRET'),
     });
 
+    console.log(result);
+
     if (!result) throw new UnauthorizedException('Invalid access token');
 
     return result;
   }
 
-  createAccessToken(username: string, id: string) {
-    const tokenPayload = {
-      username,
-      sub: id,
-    };
-    return this.jwtService.sign(tokenPayload, {
-      secret: this.configService.get('ACCESS_TOKEN_SECRET'),
-      expiresIn: this.configService.get('ACCESS_TOKEN_EXPIRATION_TIME'),
-    });
+  async createAccessToken(email: string, id: string) {
+    return await this.jwtService.signAsync(
+      { userId: id, sub: email },
+      {
+        secret: this.configService.get('ACCESS_TOKEN_SECRET'),
+        expiresIn: this.configService.get('ACCESS_TOKEN_EXPIRATION_TIME'),
+      },
+    );
   }
 
-  createRefreshToken(username: string, id: string) {
+  async createRefreshToken(email: string, id: string) {
     const tokenPayload = {
-      username: username,
-      sub: id,
+      userId: id,
+      sub: email,
     };
-    return this.jwtService.sign(tokenPayload, {
+
+    return await this.jwtService.signAsync(tokenPayload, {
       secret: this.configService.get('REFRESH_TOKEN_SECRET'),
       expiresIn: this.configService.get('REFRESH_TOKEN_EXPIRATION_TIME'),
     });
@@ -116,16 +118,12 @@ export class AuthService {
   }
 
   setAuthCookies(refreshToken: string, context: any) {
-    (context.req.res as Response).cookie(
-      this.configService.get<string>('REFRESH_TOKEN_COOKIE_NAME'),
-      refreshToken,
-      {
-        httpOnly: true,
-        maxAge: 1000 * 60 * 60 * 24 * 30,
-        secure: false,
-        sameSite: 'lax',
-      },
-    );
+    (context.req.res as Response).cookie('Refresh', refreshToken, {
+      httpOnly: true,
+      maxAge: 1000 * 60 * 60 * 24 * 30,
+      secure: false,
+      sameSite: 'lax',
+    });
   }
 
   resetAuthCookies(context: any) {
