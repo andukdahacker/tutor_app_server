@@ -1,6 +1,7 @@
 import { UseGuards } from '@nestjs/common';
 import { Args, Context, Mutation, Resolver } from '@nestjs/graphql';
 
+import { User } from '@prisma/client';
 import { CurrentUser } from 'src/shared/decorators/current-user.decorator';
 import { Public } from 'src/shared/decorators/public.decorator';
 import { RefreshTokenGuard } from 'src/shared/guards/refresh-token.guard';
@@ -49,7 +50,7 @@ export class AuthResolver {
   @Public()
   @UseGuards(RefreshTokenGuard)
   async refreshAccessToken(
-    @CurrentUser() user,
+    @CurrentUser() user: User,
   ): Promise<RefreshAccessTokenResponse> {
     const accessToken = await this.authService.createAccessToken(
       user.email,
