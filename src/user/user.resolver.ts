@@ -1,4 +1,4 @@
-import { Args, Query, Resolver } from '@nestjs/graphql';
+import { Args, Context, Query, Resolver } from '@nestjs/graphql';
 import { User } from './dto/entities/user.entity';
 import { UserResponse } from './dto/response/user.response';
 import { UserService } from './user.service';
@@ -25,5 +25,19 @@ export class UserResolver {
       user,
       message: 'success',
     };
+  }
+
+  @Query(() => UserResponse)
+  async me(@Context() context) {
+    const email = context.req.user.email;
+
+    const user = await this.userService.findOneByEmail(email);
+
+    if (!user)
+      return {
+        message: 'user is not found',
+      };
+
+    return user;
   }
 }

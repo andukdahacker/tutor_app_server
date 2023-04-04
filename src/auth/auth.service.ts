@@ -24,50 +24,65 @@ export class AuthService {
   ) {}
 
   async validateUser(email: string, pass: string) {
-    const user = await this.userService.findOneByEmail(email);
+    try {
+      const user = await this.userService.findOneByEmail(email);
 
-    if (!user) throw new UnauthorizedException('User is not found');
+      if (!user) throw new UnauthorizedException('User is not found');
 
-    const passwordIsValid = await argon2.verify(user.password, pass);
+      const passwordIsValid = await argon2.verify(user.password, pass);
 
-    if (!passwordIsValid)
-      throw new UnauthorizedException('Password is not correct');
+      if (!passwordIsValid)
+        throw new UnauthorizedException('Password is not correct');
 
-    return user;
+      return user;
+    } catch (error) {
+      throw new InternalServerErrorException();
+    }
   }
 
   async signUp(signUpInput: SignUpInput) {
-    const user = await this.userService.findOneByEmail(signUpInput.email);
-    if (user)
-      throw new GraphQLError('User already exists', {
-        extensions: {
-          code: 203,
-        },
+    try {
+      const user = await this.userService.findOneByEmail(signUpInput.email);
+      if (user)
+        throw new GraphQLError('User already exists', {
+          extensions: {
+            code: 203,
+          },
+        });
+      const hashedPassword = await argon2.hash(signUpInput.password);
+
+      const newUser = await this.userService.createOne({
+        username: signUpInput.username,
+        password: hashedPassword,
+        email: signUpInput.email,
       });
-    const hashedPassword = await argon2.hash(signUpInput.password);
 
-    const newUser = await this.userService.createOne({
-      username: signUpInput.username,
-      password: hashedPassword,
-      email: signUpInput.email,
-    });
+      if (!newUser) throw new InternalServerErrorException();
 
-    if (!newUser) throw new InternalServerErrorException();
-
-    return newUser;
+      return newUser;
+    } catch (error) {
+      throw new InternalServerErrorException();
+    }
   }
 
   async login(loginInput: LoginInput) {
-    const user = await this.validateUser(loginInput.email, loginInput.password);
-    const refreshToken = await this.createRefreshToken(user.email, user.id);
-    const accessToken = await this.createAccessToken(user.email, user.id);
+    try {
+      const user = await this.validateUser(
+        loginInput.email,
+        loginInput.password,
+      );
+      const refreshToken = await this.createRefreshToken(user.email, user.id);
+      const accessToken = await this.createAccessToken(user.email, user.id);
 
-    const updatedUser = await this.userService.upsertRefreshToken(
-      user.id,
-      refreshToken,
-    );
+      const updatedUser = await this.userService.upsertRefreshToken(
+        user.id,
+        refreshToken,
+      );
 
-    return { accessToken, refreshToken, user: updatedUser };
+      return { accessToken, refreshToken, user: updatedUser };
+    } catch (error) {
+      throw new InternalServerErrorException();
+    }
   }
 
   async validateRefreshToken(refreshToken: string) {
@@ -78,37 +93,47 @@ export class AuthService {
   }
 
   verifyAccessToken(access_token: string) {
-    const result = this.jwtService.verify(access_token, {
-      secret: this.configService.get('ACCESS_TOKEN_SECRET'),
-    });
+    try {
+      const result = this.jwtService.verify(access_token, {
+        secret: this.configService.get('ACCESS_TOKEN_SECRET'),
+      });
 
-    console.log(result);
+      if (!result) throw new UnauthorizedException('Invalid access token');
 
-    if (!result) throw new UnauthorizedException('Invalid access token');
-
-    return result;
+      return result;
+    } catch (error) {
+      throw new InternalServerErrorException();
+    }
   }
 
   async createAccessToken(email: string, id: string) {
-    return await this.jwtService.signAsync(
-      { userId: id, sub: email },
-      {
-        secret: this.configService.get('ACCESS_TOKEN_SECRET'),
-        expiresIn: this.configService.get('ACCESS_TOKEN_EXPIRATION_TIME'),
-      },
-    );
+    try {
+      return await this.jwtService.signAsync(
+        { userId: id, sub: email },
+        {
+          secret: this.configService.get('ACCESS_TOKEN_SECRET'),
+          expiresIn: this.configService.get('ACCESS_TOKEN_EXPIRATION_TIME'),
+        },
+      );
+    } catch (error) {
+      throw new InternalServerErrorException();
+    }
   }
 
   async createRefreshToken(email: string, id: string) {
-    const tokenPayload = {
-      userId: id,
-      sub: email,
-    };
+    try {
+      const tokenPayload = {
+        userId: id,
+        sub: email,
+      };
 
-    return await this.jwtService.signAsync(tokenPayload, {
-      secret: this.configService.get('REFRESH_TOKEN_SECRET'),
-      expiresIn: this.configService.get('REFRESH_TOKEN_EXPIRATION_TIME'),
-    });
+      return await this.jwtService.signAsync(tokenPayload, {
+        secret: this.configService.get('REFRESH_TOKEN_SECRET'),
+        expiresIn: this.configService.get('REFRESH_TOKEN_EXPIRATION_TIME'),
+      });
+    } catch (error) {
+      throw new InternalServerErrorException();
+    }
   }
 
   async logout(userId: string, context: any) {
