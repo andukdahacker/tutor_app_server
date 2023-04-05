@@ -6,29 +6,21 @@ import { CreateUserInput } from './dto/inputs/create-user.input';
 export class UserService {
   constructor(private readonly prisma: PrismaService) {}
   async createOne({ username, password, email }: CreateUserInput) {
-    try {
-      return await this.prisma.user.create({
-        data: {
-          username,
-          email,
-          password,
-        },
-      });
-    } catch (error) {
-      throw new InternalServerErrorException();
-    }
+    return await this.prisma.user.create({
+      data: {
+        username,
+        email,
+        password,
+      },
+    });
   }
 
   async findOneByEmail(email: string) {
-    try {
-      return await this.prisma.user.findUnique({
-        where: {
-          email,
-        },
-      });
-    } catch (error) {
-      throw new InternalServerErrorException();
-    }
+    return await this.prisma.user.findUnique({
+      where: {
+        email,
+      },
+    });
   }
 
   async findOneById(id: string) {
@@ -44,44 +36,32 @@ export class UserService {
   }
 
   async upsertRefreshToken(id: string, refreshToken: string) {
-    try {
-      return await this.prisma.user.update({
-        where: {
-          id,
-        },
-        data: {
-          refreshToken,
-        },
-      });
-    } catch (error) {
-      throw new InternalServerErrorException();
-    }
+    return await this.prisma.user.update({
+      where: {
+        id,
+      },
+      data: {
+        refreshToken,
+      },
+    });
   }
 
   async removeUserRefreshToken(id: string) {
-    try {
-      return await this.prisma.user.update({
-        where: {
-          id,
-        },
-        data: {
-          refreshToken: null,
-        },
-      });
-    } catch (error) {
-      throw new InternalServerErrorException();
-    }
+    return await this.prisma.user.update({
+      where: {
+        id,
+      },
+      data: {
+        refreshToken: null,
+      },
+    });
   }
 
   async findOneByRefreshToken(refreshToken: string) {
-    try {
-      return await this.prisma.user.findUnique({
-        where: {
-          refreshToken,
-        },
-      });
-    } catch (error) {
-      throw new InternalServerErrorException();
-    }
+    return await this.prisma.user.findUnique({
+      where: {
+        refreshToken,
+      },
+    });
   }
 }

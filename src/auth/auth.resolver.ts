@@ -1,22 +1,27 @@
 import { UseGuards } from '@nestjs/common';
-import { Args, Context, Mutation, Resolver } from '@nestjs/graphql';
+import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
 
 import { User } from '@prisma/client';
 import { CurrentUser } from 'src/shared/decorators/current-user.decorator';
 import { Public } from 'src/shared/decorators/public.decorator';
 import { RefreshTokenGuard } from 'src/shared/guards/refresh-token.guard';
 import { SignUpInput } from 'src/user/dto/inputs/signup.input';
+import { UserService } from 'src/user/user.service';
 import { AuthService } from './auth.service';
 import { LoginInput } from './dto/inputs/login.input';
 import { LoginResponse } from './dto/response/login.response';
 import { LogoutResponse } from './dto/response/logout.response';
+import { MeResponse } from './dto/response/me.response';
 import { RefreshAccessTokenResponse } from './dto/response/refresh-access-token.response';
 import { SignUpResponse } from './dto/response/signup.response';
 import { ITokenPayload } from './types/ITokenPayload';
 
 @Resolver()
 export class AuthResolver {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly userService: UserService,
+  ) {}
 
   @Mutation(() => LoginResponse)
   @Public()
@@ -72,5 +77,16 @@ export class AuthResolver {
     return {
       message: 'Logged out successfully',
     };
+  }
+
+  @Query(() => MeResponse)
+  async me(@Context() context) {
+    const userId = context.req.user.userId;
+
+    const user = await this.userService.findOneById(userId);
+
+    if (!user) return null;
+
+    return { user };
   }
 }

@@ -29,6 +29,10 @@ type LogoutResponse {
   message: String!
 }
 
+type MeResponse {
+  user: User
+}
+
 type RefreshAccessTokenResponse {
   access_token: String!
 }
@@ -40,7 +44,7 @@ type SignUpResponse {
 type Query {
   findUserById(id: String!): User!
   findUserByEmail(email: String!): UserResponse!
-  me: UserResponse!
+  me: MeResponse!
 }
 
 type Mutation {
