@@ -12,6 +12,7 @@ import { AuthModule } from './auth/auth.module';
 import { AuthService } from './auth/auth.service';
 import { PrismaModule } from './prisma/prisma.module';
 import { PrismaService } from './prisma/prisma.service';
+import { SendGridService } from './sendgrid/sendgrid.service';
 import { JwtAuthGuard } from './shared/guards/jwt-auth.guard';
 import { UserModule } from './user/user.module';
 
@@ -40,6 +41,7 @@ import { UserModule } from './user/user.module';
     { provide: APP_GUARD, useClass: JwtAuthGuard },
     AuthService,
     JwtService,
+    SendGridService,
   ],
 })
 export class AppModule {}
