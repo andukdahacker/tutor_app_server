@@ -45,7 +45,6 @@ export class AuthResolver {
     @Args('signUpInput') signUpInput: SignUpInput,
   ): Promise<SignUpResponse> {
     const user = await this.authService.signUp(signUpInput);
-    await this.authService.sendVerificationEmail(user.email);
     return {
       user,
     };

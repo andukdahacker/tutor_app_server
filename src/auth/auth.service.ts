@@ -10,7 +10,6 @@ import * as argon2 from 'argon2';
 
 import { SignUpInput } from 'src/user/dto/inputs/signup.input';
 
-import { MailDataRequired } from '@sendgrid/mail';
 import { Response } from 'express';
 import { GraphQLError } from 'graphql';
 import { SendGridService } from 'src/sendgrid/sendgrid.service';
@@ -131,18 +130,5 @@ export class AuthService {
     (context.req.res as Response).clearCookie(
       this.configService.get<string>('REFRESH_TOKEN_COOKIE_NAME'),
     );
-  }
-
-  async sendVerificationEmail(email: string) {
-    const mail: MailDataRequired = {
-      to: email,
-      subject: 'Hello from sendgrid',
-      from: 'studbud.sparkle@gmail.com',
-      text: 'Hello',
-      html: '<h1>Hello</h1>',
-    };
-
-    const result = await this.sendGridService.send(mail);
-    console.log(result);
   }
 }
