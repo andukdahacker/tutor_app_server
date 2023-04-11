@@ -10,9 +10,12 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { AuthService } from './auth/auth.service';
+import { ChatModule } from './chat/chat.module';
+import { ConnectionModule } from './connection/connection.module';
+import { NotificationModule } from './notification/notification.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { PrismaService } from './prisma/prisma.service';
-import { SendGridService } from './sendgrid/sendgrid.service';
+import { ProfileModule } from './profile/profile.module';
 import { JwtAuthGuard } from './shared/guards/jwt-auth.guard';
 import { UserModule } from './user/user.module';
 
@@ -33,6 +36,10 @@ import { UserModule } from './user/user.module';
     UserModule,
     AuthModule,
     ConfigModule.forRoot({ isGlobal: true }),
+    ProfileModule,
+    ConnectionModule,
+    NotificationModule,
+    ChatModule,
   ],
   controllers: [AppController],
   providers: [
@@ -41,7 +48,6 @@ import { UserModule } from './user/user.module';
     { provide: APP_GUARD, useClass: JwtAuthGuard },
     AuthService,
     JwtService,
-    SendGridService,
   ],
 })
 export class AppModule {}

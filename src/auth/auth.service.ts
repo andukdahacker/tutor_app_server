@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 import {
   Injectable,
   InternalServerErrorException,
@@ -7,12 +8,10 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 
 import * as argon2 from 'argon2';
-
 import { SignUpInput } from 'src/user/dto/inputs/signup.input';
 
 import { Response } from 'express';
 import { GraphQLError } from 'graphql';
-import { SendGridService } from 'src/sendgrid/sendgrid.service';
 import { UserService } from 'src/user/user.service';
 import { LoginInput } from './dto/inputs/login.input';
 
@@ -22,7 +21,6 @@ export class AuthService {
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
-    private readonly sendGridService: SendGridService,
   ) {}
 
   async validateUser(email: string, pass: string) {

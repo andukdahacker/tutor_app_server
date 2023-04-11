@@ -1,0 +1,43 @@
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { CreateLearnerProfileInput } from './dto/inputs/create-learner-profile.input';
+import { CreateTutorProfileInput } from './dto/inputs/create-tutor-profile.input';
+
+@Injectable()
+export class ProfileService {
+  constructor(private readonly prisma: PrismaService) {}
+
+  async createLearnerProfile(input: CreateLearnerProfileInput, userId: string) {
+    try {
+      return await this.prisma.learnerProfile.create({
+        data: {
+          user: {
+            connect: {
+              id: userId,
+            },
+          },
+          bio: input.bio,
+        },
+      });
+    } catch (error) {
+      throw new InternalServerErrorException();
+    }
+  }
+
+  async createTutorProfile(input: CreateTutorProfileInput, userId: string) {
+    try {
+      return await this.prisma.tutorProfile.create({
+        data: {
+          user: {
+            connect: {
+              id: userId,
+            },
+          },
+          bio: input.bio,
+        },
+      });
+    } catch (error) {
+      throw new InternalServerErrorException();
+    }
+  }
+}

@@ -11,12 +11,118 @@ datasource db {
 }
 
 model User {
-  id         String   @id @default(cuid())
-  username   String   @db.VarChar
-  email      String   @unique @db.VarChar
-  password   String   @db.VarChar
-  refreshToken String? @unique
-  isVerified Boolean @default(false)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id                    String          @id @default(cuid())
+  username              String          @db.VarChar
+  email                 String          @unique @db.VarChar
+  password              String          @db.VarChar
+  refreshToken          String?         @unique
+  isVerified            Boolean         @default(false)
+  learnerProfile        LearnerProfile?
+  tutorProfile          TutorProfile?
+  notificationNotifier  Notification[]  @relation("notifier")
+  notificationsReceiver Notification[]  @relation("receiver")
+  createdAt             DateTime        @default(now())
+  updatedAt             DateTime        @updatedAt
+  message               ChatMessage[]
+  chatMembers           ChatMember[]
+}
+
+model LearnerProfile {
+  id                        String                      @id @default(cuid())
+  bio                       String?                     @db.VarChar(200)
+  user                      User                        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId                    String                      @unique
+  learnerToTutorConnections LearnerToTutorConnections[]
+  tutorToLearnerConnections TutorToLearnerConnections[]
+}
+
+model TutorProfile {
+  id                        String                      @id @default(cuid())
+  bio                       String?                     @db.VarChar(200)
+  user                      User                        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId                    String                      @unique
+  learnerToTutorConnections LearnerToTutorConnections[]
+  tutorToLearnerConnections TutorToLearnerConnections[]
+}
+
+model LearnerToTutorConnections {
+  learner   LearnerProfile   @relation(fields: [learnerId], references: [id], onDelete: Cascade)
+  learnerId String
+  tutor     TutorProfile     @relation(fields: [tutorId], references: [id], onDelete: Cascade)
+  tutorId   String
+  status    ConnectionStatus
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+
+  @@id([learnerId, tutorId])
+}
+
+model TutorToLearnerConnections {
+  learner   LearnerProfile   @relation(fields: [learnerId], references: [id], onDelete: Cascade)
+  learnerId String
+  tutor     TutorProfile     @relation(fields: [tutorId], references: [id], onDelete: Cascade)
+  tutorId   String
+  status    ConnectionStatus
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+
+  @@id([learnerId, tutorId])
+}
+
+enum ConnectionStatus {
+  REQUESTED
+  ACCEPTED
+  DECLINED
+}
+
+model Notification {
+  id               String           @id @default(cuid())
+  notificationType NotificationType
+  notifier         User?            @relation("notifier", fields: [notifierId], references: [id], onDelete: Cascade)
+  notifierId       String?
+  receiver         User             @relation("receiver", fields: [receiverId], references: [id], onDelete: Cascade)
+  receiverId       String
+  title            String
+  content          String
+  isRead           Boolean          @default(false)
+  createdAt        DateTime         @default(now())
+}
+
+enum NotificationType {
+  TUTOR_REQUEST
+  TUTOR_ACCEPT
+  TUTOR_DECLINE
+  LEARNER_REQUEST
+  LEARNER_ACCEPT
+  LEARNER_DECLINE
+}
+
+model ChatMessage {
+  id        String   @id @default(cuid())
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  authorId  String
+  chat      Chat     @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  chatId    String
+  content   String   @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Chat {
+  id          String        @id @default(cuid())
+  message     ChatMessage[]
+  chatMembers ChatMember[]
+}
+
+model ChatMember {
+  member    User      @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  memberId  String
+  chat      Chat      @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  chatId    String
+  isRead    Boolean   @default(true)
+  isViewed  Boolean   @default(true)
+  joined_at DateTime  @default(now())
+  left_at   DateTime?
+
+  @@id([memberId, chatId])
 }

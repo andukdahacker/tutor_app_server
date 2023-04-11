@@ -1,8 +1,5 @@
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
-
-import { PassportModule } from '@nestjs/passport';
-import { SendGridModule } from 'src/sendgrid/sendgrid.module';
 import { UserModule } from 'src/user/user.module';
 import { AuthResolver } from './auth.resolver';
 import { AuthService } from './auth.service';
@@ -11,8 +8,6 @@ import { AuthService } from './auth.service';
   providers: [AuthResolver, AuthService],
   imports: [
     UserModule,
-    PassportModule,
-    SendGridModule,
     JwtModule.register({
       signOptions: {
         expiresIn: process.env.ACCESS_TOKEN_EXPIRATION_TIME || '15s',

@@ -37,7 +37,8 @@
     "express-session": "^1.17.3",
     "graphql": "^16.6.0",
     "reflect-metadata": "^0.1.13",
-    "rxjs": "^7.2.0"
+    "rxjs": "^7.2.0",
+    "sib-api-v3-typescript": "^2.2.2"
   },
   "devDependencies": {
     "@nestjs/cli": "^9.0.0",

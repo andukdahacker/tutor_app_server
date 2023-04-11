@@ -41,6 +41,16 @@ type SignUpResponse {
   user: User!
 }
 
+type LearnerProfile {
+  id: String!
+  bio: String
+  userId: String!
+}
+
+type CreateLeanerProfileResponse {
+  leanerProfile: LearnerProfile
+}
+
 type Query {
   findUserById(id: String!): User!
   findUserByEmail(email: String!): UserResponse!
@@ -52,6 +62,7 @@ type Mutation {
   signUp(signUpInput: SignUpInput!): SignUpResponse!
   refreshAccessToken: RefreshAccessTokenResponse!
   logout: LogoutResponse!
+  createLearnerProfile(createLearnerProfileInput: CreateLearnerProfileInput!): CreateLeanerProfileResponse!
 }
 
 input LoginInput {
@@ -63,4 +74,8 @@ input SignUpInput {
   username: String
   email: String
   password: String
+}
+
+input CreateLearnerProfileInput {
+  bio: String!
 }

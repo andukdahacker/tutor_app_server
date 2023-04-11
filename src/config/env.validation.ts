@@ -39,9 +39,6 @@ class EnvironmentVariables {
 
   @IsString()
   REFRESH_TOKEN_EXPIRATION_TIME: string;
-
-  @IsString()
-  SEND_GRID_KEY: string;
 }
 
 export function validate(config: Record<string, unknown>) {
