@@ -28,51 +28,68 @@ model User {
 }
 
 model LearnerProfile {
-  id                        String                      @id @default(cuid())
-  bio                       String?                     @db.VarChar(200)
-  user                      User                        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId                    String                      @unique
-  learnerToTutorConnections LearnerToTutorConnections[]
-  tutorToLearnerConnections TutorToLearnerConnections[]
+  id            String         @id @default(cuid())
+  bio           String?        @db.VarChar(200)
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId        String         @unique
+  tutorRequests TutorRequest[]
+}
+
+model Subject {
+  id            Int            @id @default(autoincrement())
+  name          String
+  description   String?
+  category      Category       @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  categoryId    Int
+  tutorRequests TutorRequest[]
+}
+
+model Category {
+  id       Int       @id @default(autoincrement())
+  name     String
+  subjects Subject[]
+}
+
+model TutorRequest {
+  id                      String                   @id @default(cuid())
+  learner                 LearnerProfile           @relation(fields: [learner_id], references: [id], onDelete: Cascade)
+  learner_id              String
+  subject                 Subject                  @relation(fields: [subjectId], references: [id])
+  subjectId               Int
+  createdAt               DateTime                 @default(now())
+  updatedAt               DateTime                 @updatedAt
+  tutorRequestConnections TutorRequestConnection[]
+}
+
+model TutorRequestConnection {
+  tutorRequest   TutorRequest               @relation(fields: [tutorRequestId], references: [id], onDelete: Cascade)
+  tutorRequestId String
+  tutor          TutorProfile               @relation(fields: [tutorId], references: [id], onDelete: Cascade)
+  tutorId        String
+  status         ConnectionStatus
+  type           TutorRequestConnectionType
+  createdAt      DateTime                   @default(now())
+
+  @@id([tutorRequestId, tutorId])
 }
 
 model TutorProfile {
-  id                        String                      @id @default(cuid())
-  bio                       String?                     @db.VarChar(200)
-  user                      User                        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId                    String                      @unique
-  learnerToTutorConnections LearnerToTutorConnections[]
-  tutorToLearnerConnections TutorToLearnerConnections[]
-}
-
-model LearnerToTutorConnections {
-  learner   LearnerProfile   @relation(fields: [learnerId], references: [id], onDelete: Cascade)
-  learnerId String
-  tutor     TutorProfile     @relation(fields: [tutorId], references: [id], onDelete: Cascade)
-  tutorId   String
-  status    ConnectionStatus
-  createdAt DateTime         @default(now())
-  updatedAt DateTime         @updatedAt
-
-  @@id([learnerId, tutorId])
-}
-
-model TutorToLearnerConnections {
-  learner   LearnerProfile   @relation(fields: [learnerId], references: [id], onDelete: Cascade)
-  learnerId String
-  tutor     TutorProfile     @relation(fields: [tutorId], references: [id], onDelete: Cascade)
-  tutorId   String
-  status    ConnectionStatus
-  createdAt DateTime         @default(now())
-  updatedAt DateTime         @updatedAt
-
-  @@id([learnerId, tutorId])
+  id                      String                   @id @default(cuid())
+  bio                     String?                  @db.VarChar(200)
+  user                    User                     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId                  String                   @unique
+  tutorRequestConnections TutorRequestConnection[]
 }
 
 enum ConnectionStatus {
   REQUESTED
   ACCEPTED
   DECLINED
+}
+
+enum TutorRequestConnectionType {
+  TUTOR_TO_TUTOR_REQUEST
+  TUTOR_REQUEST_TO_TUTOR
 }
 
 model Notification {
@@ -82,6 +99,7 @@ model Notification {
   notifierId       String?
   receiver         User             @relation("receiver", fields: [receiverId], references: [id], onDelete: Cascade)
   receiverId       String
+  itemId           String?
   title            String
   content          String
   isRead           Boolean          @default(false)
