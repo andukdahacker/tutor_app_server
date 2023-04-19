@@ -9,11 +9,15 @@ import { SignUpInput } from 'src/user/dto/inputs/signup.input';
 import { UserService } from 'src/user/user.service';
 import { AuthService } from './auth.service';
 import { LoginInput } from './dto/inputs/login.input';
-import { LoginResponse } from './dto/response/login.response';
-import { LogoutResponse } from './dto/response/logout.response';
-import { MeResponse } from './dto/response/me.response';
-import { RefreshAccessTokenResponse } from './dto/response/refresh-access-token.response';
-import { SignUpResponse } from './dto/response/signup.response';
+
+import {
+  LoginResponse,
+  LogoutResponse,
+  MeResponse,
+  RefreshAccessTokenResponse,
+  SignUpResponse,
+} from './dto/response';
+
 import { ITokenPayload } from './types/ITokenPayload';
 
 @Resolver()
@@ -21,7 +25,7 @@ export class AuthResolver {
   constructor(
     private readonly authService: AuthService,
     private readonly userService: UserService,
-  ) { }
+  ) {}
 
   @Mutation(() => LoginResponse)
   @Public()

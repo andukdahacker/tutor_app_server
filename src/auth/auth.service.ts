@@ -7,12 +7,12 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 
 import * as argon2 from 'argon2';
-import { SignUpInput } from 'src/user/dto/inputs/signup.input';
 
 import { Response } from 'express';
 import { GraphQLError } from 'graphql';
+import { SignUpInput } from 'src/user/dto/inputs';
 import { UserService } from 'src/user/user.service';
-import { LoginInput } from './dto/inputs/login.input';
+import { LoginInput } from './dto/inputs';
 
 @Injectable()
 export class AuthService {
@@ -20,7 +20,7 @@ export class AuthService {
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
-  ) { }
+  ) {}
 
   async validateUser(email: string, pass: string) {
     const user = await this.userService.findOneByEmail(email);

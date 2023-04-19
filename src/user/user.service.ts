@@ -1,6 +1,6 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { CreateUserInput } from './dto/inputs/create-user.input';
+import { CreateUserInput } from './dto/inputs';
 
 @Injectable()
 export class UserService {

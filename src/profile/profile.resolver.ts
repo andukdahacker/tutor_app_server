@@ -1,14 +1,18 @@
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
 import { ITokenPayload } from 'src/auth/types/ITokenPayload';
 import { TokenPayload } from 'src/shared/decorators/current-user.decorator';
-import { CreateLearnerProfileInput } from './dto/inputs/create-learner-profile.input';
-import { CreateTutorProfileInput } from './dto/inputs/create-tutor-profile.input';
-import { UpdateLearnerProfileInput } from './dto/inputs/update-learner-profile-input';
-import { UpdateTutorProfileInput } from './dto/inputs/update-tutor-profile-input';
-import { CreateLeanerProfileResponse } from './dto/response/create-learner-profile.response';
-import { CreateTutorProfileResponse } from './dto/response/create-tutor-profile.response';
-import { UpdateLearnerProfileResponse } from './dto/response/update-learner-profile.response';
-import { UpdateTutorProfileResponse } from './dto/response/update-tutor-profile.response';
+import {
+  CreateLearnerProfileInput,
+  CreateTutorProfileInput,
+  UpdateLearnerProfileInput,
+  UpdateTutorProfileInput,
+} from './dto/inputs';
+import {
+  CreateLeanerProfileResponse,
+  CreateTutorProfileResponse,
+  UpdateLearnerProfileResponse,
+  UpdateTutorProfileResponse,
+} from './dto/response';
 import { ProfileService } from './profile.service';
 
 @Resolver()
