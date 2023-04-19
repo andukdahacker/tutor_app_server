@@ -39,15 +39,7 @@ model Subject {
   id            Int            @id @default(autoincrement())
   name          String
   description   String?
-  category      Category       @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-  categoryId    Int
   tutorRequests TutorRequest[]
-}
-
-model Category {
-  id       Int       @id @default(autoincrement())
-  name     String
-  subjects Subject[]
 }
 
 model TutorRequest {

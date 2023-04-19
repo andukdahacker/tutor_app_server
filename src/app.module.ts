@@ -17,6 +17,8 @@ import { PrismaModule } from './prisma/prisma.module';
 import { PrismaService } from './prisma/prisma.service';
 import { ProfileModule } from './profile/profile.module';
 import { JwtAuthGuard } from './shared/guards/jwt-auth.guard';
+import { SubjectModule } from './subject/subject.module';
+import { TutorRequestModule } from './tutor-request/tutor-request.module';
 import { UserModule } from './user/user.module';
 
 @Module({
@@ -40,6 +42,8 @@ import { UserModule } from './user/user.module';
     ConnectionModule,
     NotificationModule,
     ChatModule,
+    TutorRequestModule,
+    SubjectModule,
   ],
   controllers: [AppController],
   providers: [

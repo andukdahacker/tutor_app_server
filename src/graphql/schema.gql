@@ -51,6 +51,22 @@ type CreateLeanerProfileResponse {
   leanerProfile: LearnerProfile
 }
 
+type TutorProfile {
+  bio: String
+}
+
+type CreateTutorProfileResponse {
+  tutorProfile: TutorProfile
+}
+
+type UpdateLearnerProfileResponse {
+  learnerProfile: LearnerProfile
+}
+
+type UpdateTutorProfileResponse {
+  tutorProfile: TutorProfile
+}
+
 type Query {
   findUserById(id: String!): User!
   findUserByEmail(email: String!): UserResponse!
@@ -63,6 +79,9 @@ type Mutation {
   refreshAccessToken: RefreshAccessTokenResponse!
   logout: LogoutResponse!
   createLearnerProfile(createLearnerProfileInput: CreateLearnerProfileInput!): CreateLeanerProfileResponse!
+  updateLearnerProfile(updateLearnerProfileInput: UpdateLearnerProfileInput!): UpdateLearnerProfileResponse!
+  createTutorProfile(createTutorProfileInput: CreateTutorProfileInput!): CreateTutorProfileResponse!
+  updateTutorProfile(updateTutorProfileInput: UpdateTutorProfileInput!): UpdateTutorProfileResponse!
 }
 
 input LoginInput {
@@ -78,4 +97,16 @@ input SignUpInput {
 
 input CreateLearnerProfileInput {
   bio: String!
+}
+
+input UpdateLearnerProfileInput {
+  bio: String
+}
+
+input CreateTutorProfileInput {
+  bio: String!
+}
+
+input UpdateTutorProfileInput {
+  bio: String
 }

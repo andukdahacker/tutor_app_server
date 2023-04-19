@@ -21,7 +21,7 @@ export class AuthResolver {
   constructor(
     private readonly authService: AuthService,
     private readonly userService: UserService,
-  ) {}
+  ) { }
 
   @Mutation(() => LoginResponse)
   @Public()
