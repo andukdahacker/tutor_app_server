@@ -5,5 +5,5 @@ export class CreateTutorRequestInput {
   learnerId: string;
 
   @Field()
-  subjectId: string;
+  subjectId: number;
 }

@@ -41,6 +41,28 @@ type SignUpResponse {
   user: User!
 }
 
+type TutorRequestConnection {
+  tutorRequestId: String!
+  tutorId: String!
+  status: ConnectionStatus!
+  type: TutorRequestConnectType!
+}
+
+enum ConnectionStatus {
+  REQUESTED
+  ACCEPTED
+  DECLINED
+}
+
+enum TutorRequestConnectType {
+  TUTOR_TO_TUTOR_REQUEST
+  TUTOR_REQUEST_TO_TUTOR
+}
+
+type CreateTutorRequestConnectResponse {
+  tutorRequestConnection: TutorRequestConnection
+}
+
 type LearnerProfile {
   id: String!
   bio: String
@@ -67,6 +89,28 @@ type UpdateTutorProfileResponse {
   tutorProfile: TutorProfile
 }
 
+type Subject {
+  id: String!
+  name: String!
+  description: String
+}
+
+type CreateSubjectResponse {
+  subject: Subject
+}
+
+type TutorRequest {
+  id: String!
+  learner: LearnerProfile!
+  subject: Subject!
+  createdAt: Timestamp!
+  connection: [TutorRequestConnection!]
+}
+
+type CreateTutorRequestResponse {
+  tutorRequest: TutorRequest
+}
+
 type Query {
   findUserById(id: String!): User!
   findUserByEmail(email: String!): UserResponse!
@@ -82,6 +126,9 @@ type Mutation {
   updateLearnerProfile(updateLearnerProfileInput: UpdateLearnerProfileInput!): UpdateLearnerProfileResponse!
   createTutorProfile(createTutorProfileInput: CreateTutorProfileInput!): CreateTutorProfileResponse!
   updateTutorProfile(updateTutorProfileInput: UpdateTutorProfileInput!): UpdateTutorProfileResponse!
+  createTutorRequestConnection(createTutorRequestConnectInput: CreateTutorRequestConnectInput!): CreateTutorRequestConnectResponse!
+  createTutorRequest(createTutorRequestInput: CreateTutorRequestInput!): CreateTutorRequestResponse!
+  createSubject(createSubjectInput: CreateSubjectInput!): CreateSubjectResponse!
 }
 
 input LoginInput {
@@ -109,4 +156,20 @@ input CreateTutorProfileInput {
 
 input UpdateTutorProfileInput {
   bio: String
+}
+
+input CreateTutorRequestConnectInput {
+  tutorRequestId: String!
+  tutorId: String!
+  type: TutorRequestConnectType!
+}
+
+input CreateTutorRequestInput {
+  learnerId: String!
+  subjectId: Float!
+}
+
+input CreateSubjectInput {
+  name: String!
+  description: String
 }

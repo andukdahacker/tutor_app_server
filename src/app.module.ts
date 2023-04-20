@@ -2,7 +2,6 @@ import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { APP_GUARD } from '@nestjs/core';
 import { GraphQLModule } from '@nestjs/graphql';
 import { JwtService } from '@nestjs/jwt';
 import { join } from 'path';
@@ -16,7 +15,6 @@ import { NotificationModule } from './notification/notification.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { PrismaService } from './prisma/prisma.service';
 import { ProfileModule } from './profile/profile.module';
-import { JwtAuthGuard } from './shared/guards/jwt-auth.guard';
 import { SubjectModule } from './subject/subject.module';
 import { TutorRequestModule } from './tutor-request/tutor-request.module';
 import { UserModule } from './user/user.module';
@@ -49,7 +47,7 @@ import { UserModule } from './user/user.module';
   providers: [
     AppService,
     PrismaService,
-    { provide: APP_GUARD, useClass: JwtAuthGuard },
+    // { provide: APP_GUARD, useClass: JwtAuthGuard },
     AuthService,
     JwtService,
   ],
