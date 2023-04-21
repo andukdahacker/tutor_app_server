@@ -2,7 +2,10 @@ import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 import { ConnectionStatus } from '@prisma/client';
-import { TutorRequestConnectionWhereUniqueInput } from './dto/inputs';
+import {
+  TutorRequestConnectionWhereInput,
+  TutorRequestConnectionWhereUniqueInput,
+} from './dto/inputs';
 import { CreateTutorRequestConnectInput } from './dto/inputs/create-tutor-request-connection.input';
 
 @Injectable()
@@ -65,6 +68,19 @@ export class ConnectionService {
         },
         data: {
           status: ConnectionStatus.DECLINED,
+        },
+      });
+    } catch (error) {
+      throw new InternalServerErrorException();
+    }
+  }
+
+  async findTutorRequestConnections(input: TutorRequestConnectionWhereInput) {
+    try {
+      return await this.prisma.tutorRequestConnection.findMany({
+        where: {
+          tutorId: input.tutorId,
+          tutorRequestId: input.tutorRequestId,
         },
       });
     } catch (error) {

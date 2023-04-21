@@ -1,9 +1,6 @@
 import { registerEnumType } from '@nestjs/graphql';
+import { TutorRequestConnectionType } from '@prisma/client';
 
-export enum GqlTutorRequestConnectionType {
-  TUTOR_TO_TUTOR_REQUEST,
-  TUTOR_REQUEST_TO_TUTOR,
-}
-registerEnumType(GqlTutorRequestConnectionType, {
+registerEnumType(TutorRequestConnectionType, {
   name: 'TutorRequestConnectType',
 });

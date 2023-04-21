@@ -1,7 +1,5 @@
 import { Field, ObjectType } from '@nestjs/graphql';
 import { ConnectionStatus, TutorRequestConnectionType } from '@prisma/client';
-import { GqlConnectionStatus } from './connection-status.enum';
-import { GqlTutorRequestConnectionType } from './tutor-request-connection-type.enum';
 
 @ObjectType()
 export class TutorRequestConnection {
@@ -11,9 +9,9 @@ export class TutorRequestConnection {
   @Field()
   tutorId: string;
 
-  @Field(() => GqlConnectionStatus)
+  @Field(() => ConnectionStatus)
   status: ConnectionStatus;
 
-  @Field(() => GqlTutorRequestConnectionType)
+  @Field(() => TutorRequestConnectionType)
   type: TutorRequestConnectionType;
 }

@@ -6,4 +6,7 @@ export class CreateTutorRequestInput {
 
   @Field()
   subjectId: number;
+
+  @Field({ nullable: true })
+  description?: string;
 }

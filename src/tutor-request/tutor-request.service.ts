@@ -20,6 +20,7 @@ export class TutorRequestService {
               id: input.subjectId,
             },
           },
+          description: input.description,
         },
       });
     } catch (error) {

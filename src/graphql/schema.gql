@@ -59,7 +59,15 @@ enum TutorRequestConnectType {
   TUTOR_REQUEST_TO_TUTOR
 }
 
+type AcceptTutorRequestConnectionResponse {
+  tutorRequestConnection: TutorRequestConnection
+}
+
 type CreateTutorRequestConnectResponse {
+  tutorRequestConnection: TutorRequestConnection
+}
+
+type DeclineTutorRequestConnectinoResponse {
   tutorRequestConnection: TutorRequestConnection
 }
 
@@ -90,7 +98,7 @@ type UpdateTutorProfileResponse {
 }
 
 type Subject {
-  id: String!
+  id: Int!
   name: String!
   description: String
 }
@@ -102,9 +110,11 @@ type CreateSubjectResponse {
 type TutorRequest {
   id: String!
   learner: LearnerProfile!
+  learnerId: String!
   subject: Subject!
+  subjectId: Int!
   createdAt: Timestamp!
-  connection: [TutorRequestConnection!]
+  connections: [TutorRequestConnection!]
 }
 
 type CreateTutorRequestResponse {
@@ -127,6 +137,8 @@ type Mutation {
   createTutorProfile(createTutorProfileInput: CreateTutorProfileInput!): CreateTutorProfileResponse!
   updateTutorProfile(updateTutorProfileInput: UpdateTutorProfileInput!): UpdateTutorProfileResponse!
   createTutorRequestConnection(createTutorRequestConnectInput: CreateTutorRequestConnectInput!): CreateTutorRequestConnectResponse!
+  acceptTutorRequestConnection(tutorRequestConnectionWhereUniqueInput: TutorRequestConnectionWhereUniqueInput!): AcceptTutorRequestConnectionResponse!
+  declineTutorRequestConnection(tutorRequestConnectionWhereUniqueInput: TutorRequestConnectionWhereUniqueInput!): DeclineTutorRequestConnectinoResponse!
   createTutorRequest(createTutorRequestInput: CreateTutorRequestInput!): CreateTutorRequestResponse!
   createSubject(createSubjectInput: CreateSubjectInput!): CreateSubjectResponse!
 }
@@ -161,12 +173,18 @@ input UpdateTutorProfileInput {
 input CreateTutorRequestConnectInput {
   tutorRequestId: String!
   tutorId: String!
-  type: TutorRequestConnectType!
+  type: String!
+}
+
+input TutorRequestConnectionWhereUniqueInput {
+  tutorRequestId: String!
+  tutorId: String!
 }
 
 input CreateTutorRequestInput {
   learnerId: String!
   subjectId: Float!
+  description: String
 }
 
 input CreateSubjectInput {

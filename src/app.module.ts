@@ -28,6 +28,11 @@ import { UserModule } from './user/user.module';
       plugins: [
         ApolloServerPluginLandingPageLocalDefault({ includeCookies: true }),
       ],
+      subscriptions: {
+        'graphql-ws': {
+          path: '/graphql',
+        },
+      },
       formatError: (error) => {
         return error;
       },

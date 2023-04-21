@@ -1,4 +1,4 @@
-import { Prisma, PrismaClient } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 import * as argon2 from 'argon2';
 
 function getArgs() {
@@ -31,21 +31,31 @@ async function seed() {
 
   const convertToNumber: number = +amount;
   const prisma = new PrismaClient();
-  const seedData: Prisma.UserCreateInput[] = [];
-  const hashedPassword = await argon2.hash('super');
-  for (let i = 0; i <= convertToNumber; i++) {
-    seedData.push({
-      email: `user${i}@gmail.com`,
-      password: hashedPassword,
-      username: `user${i}`,
+  const hashedPassword = await argon2.hash('Ducdeptraino1@');
+  for (let i = 0; i < convertToNumber; i++) {
+    await prisma.user.create({
+      data: {
+        email: `user${i}@gmail.com`,
+        password: hashedPassword,
+        username: `user${i}`,
+        learnerProfile: {
+          create: {
+            bio: `Hi I'm user${i}. I am here to learn`,
+            tutorRequests: {
+              create: [{ subject: { create: { name: `subject${i}` } } }],
+            },
+          },
+        },
+        tutorProfile: {
+          create: {
+            bio: `Hi I'm user${i}. I am here to teach`,
+          },
+        },
+      },
     });
   }
-
-  await prisma.user.createMany({
-    data: seedData,
-  });
 }
 
 seed()
-  .then((_) => console.log('Seeding is done'))
+  .then(() => console.log('Seeding is done'))
   .catch((e) => console.log(e));
