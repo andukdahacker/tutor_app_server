@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { ConnectionModule } from 'src/connection/connection.module';
 import { ConnectionService } from 'src/connection/connection.service';
-import { ProfileModule } from 'src/profile/profile.module';
-import { ProfileService } from 'src/profile/profile.service';
+import { LearnerProfileModule } from 'src/learner-profile/learner-profile.module';
+import { LearnerProfileService } from 'src/learner-profile/learner-profile.service';
 import { SubjectModule } from 'src/subject/subject.module';
 import { SubjectService } from 'src/subject/subject.service';
 import { TutorRequestResolver } from './tutor-request.resolver';
@@ -12,10 +12,10 @@ import { TutorRequestService } from './tutor-request.service';
   providers: [
     TutorRequestResolver,
     TutorRequestService,
-    ProfileService,
+    LearnerProfileService,
     SubjectService,
     ConnectionService,
   ],
-  imports: [ProfileModule, SubjectModule, ConnectionModule],
+  imports: [LearnerProfileModule, SubjectModule, ConnectionModule],
 })
 export class TutorRequestModule {}

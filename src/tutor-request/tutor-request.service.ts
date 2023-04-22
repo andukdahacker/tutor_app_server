@@ -27,4 +27,18 @@ export class TutorRequestService {
       throw new InternalServerErrorException();
     }
   }
+
+  async findTutorRequestConnections(tutorRequestId: string) {
+    try {
+      return await this.prisma.tutorRequest
+        .findUnique({
+          where: {
+            id: tutorRequestId,
+          },
+        })
+        .tutorRequestConnections();
+    } catch (error) {
+      throw new InternalServerErrorException();
+    }
+  }
 }

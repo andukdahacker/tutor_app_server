@@ -3,21 +3,17 @@ import { ITokenPayload } from 'src/auth/types/ITokenPayload';
 import { TokenPayload } from 'src/shared/decorators/current-user.decorator';
 import {
   CreateLearnerProfileInput,
-  CreateTutorProfileInput,
   UpdateLearnerProfileInput,
-  UpdateTutorProfileInput,
 } from './dto/inputs';
 import {
   CreateLeanerProfileResponse,
-  CreateTutorProfileResponse,
   UpdateLearnerProfileResponse,
-  UpdateTutorProfileResponse,
 } from './dto/response';
-import { ProfileService } from './profile.service';
+import { LearnerProfileService } from './learner-profile.service';
 
 @Resolver()
-export class ProfileResolver {
-  constructor(private readonly profileService: ProfileService) {}
+export class LearnerProfileResolver {
+  constructor(private readonly profileService: LearnerProfileService) {}
   @Mutation(() => CreateLeanerProfileResponse)
   async createLearnerProfile(
     @Args('createLearnerProfileInput')
@@ -46,36 +42,6 @@ export class ProfileResolver {
 
     return {
       learnerProfile: profile,
-    };
-  }
-
-  @Mutation(() => CreateTutorProfileResponse)
-  async createTutorProfile(
-    @Args('createTutorProfileInput') input: CreateTutorProfileInput,
-    @TokenPayload() payload: ITokenPayload,
-  ): Promise<CreateTutorProfileResponse> {
-    const profile = await this.profileService.createTutorProfile(
-      input,
-      payload.userId,
-    );
-
-    return {
-      tutorProfile: profile,
-    };
-  }
-
-  @Mutation(() => UpdateTutorProfileResponse)
-  async updateTutorProfile(
-    @Args('updateTutorProfileInput') input: UpdateTutorProfileInput,
-    @TokenPayload() payload: ITokenPayload,
-  ): Promise<UpdateTutorProfileResponse> {
-    const profile = await this.profileService.updateTutorProfile(
-      input,
-      payload.userId,
-    );
-
-    return {
-      tutorProfile: profile,
     };
   }
 }

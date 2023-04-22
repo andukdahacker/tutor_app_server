@@ -24,31 +24,42 @@ function getArgs() {
 
 async function seed() {
   const args = getArgs();
-  const amount = args['amount'];
 
-  if (typeof amount === 'undefined')
-    throw new Error('must provide amount argument');
+  const learnerProfile = args['learner'];
+  const tutorProfile = args['tutor'];
 
-  const convertToNumber: number = +amount;
+  const learnerAmount: number = +learnerProfile;
+  const tutorAmount: number = +tutorProfile;
+
   const prisma = new PrismaClient();
   const hashedPassword = await argon2.hash('Ducdeptraino1@');
-  for (let i = 0; i < convertToNumber; i++) {
+  for (let i = 0; i < learnerAmount; i++) {
     await prisma.user.create({
       data: {
-        email: `user${i}@gmail.com`,
+        email: `learner${i}@gmail.com`,
         password: hashedPassword,
-        username: `user${i}`,
+        username: `learner${i}`,
         learnerProfile: {
           create: {
-            bio: `Hi I'm user${i}. I am here to learn`,
+            bio: `Hi I'm Learner${i}. I am here to learn`,
             tutorRequests: {
               create: [{ subject: { create: { name: `subject${i}` } } }],
             },
           },
         },
+      },
+    });
+  }
+
+  for (let i = 0; i < tutorAmount; i++) {
+    await prisma.user.create({
+      data: {
+        email: `tutor${i}@gmail.com`,
+        password: hashedPassword,
+        username: `tutor${i}`,
         tutorProfile: {
           create: {
-            bio: `Hi I'm user${i}. I am here to teach`,
+            bio: `Hi I'm Tutor${i}. I am here to teach`,
           },
         },
       },

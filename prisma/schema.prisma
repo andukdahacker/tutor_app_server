@@ -36,10 +36,11 @@ model LearnerProfile {
 }
 
 model Subject {
-  id            Int            @id @default(autoincrement())
-  name          String
-  description   String?
-  tutorRequests TutorRequest[]
+  id                  Int                   @id @default(autoincrement())
+  name                String
+  description         String?
+  tutorRequests       TutorRequest[]
+  tutorProfileSubject TutorProfileSubject[]
 }
 
 model TutorRequest {
@@ -72,6 +73,16 @@ model TutorProfile {
   user                    User                     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId                  String                   @unique
   tutorRequestConnections TutorRequestConnection[]
+  tutorProfileSubject     TutorProfileSubject[]
+}
+
+model TutorProfileSubject {
+  tutor     TutorProfile @relation(fields: [tutorId], references: [id], onDelete: Cascade)
+  tutorId   String
+  subject   Subject      @relation(fields: [subjectId], references: [id])
+  subjectId Int
+
+  @@id([tutorId, subjectId])
 }
 
 enum ConnectionStatus {

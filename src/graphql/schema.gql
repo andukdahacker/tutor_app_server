@@ -15,11 +15,6 @@ type User {
 """
 scalar Timestamp
 
-type UserResponse {
-  user: User
-  message: String!
-}
-
 type LoginResponse {
   access_token: String!
   user: User!
@@ -81,20 +76,8 @@ type CreateLeanerProfileResponse {
   leanerProfile: LearnerProfile
 }
 
-type TutorProfile {
-  bio: String
-}
-
-type CreateTutorProfileResponse {
-  tutorProfile: TutorProfile
-}
-
 type UpdateLearnerProfileResponse {
   learnerProfile: LearnerProfile
-}
-
-type UpdateTutorProfileResponse {
-  tutorProfile: TutorProfile
 }
 
 type Subject {
@@ -107,14 +90,25 @@ type CreateSubjectResponse {
   subject: Subject
 }
 
+type TutorProfile {
+  id: String!
+  bio: String
+  user: User!
+  tutorRequestConnections: [TutorRequestConnection]
+  tutorProfileSubject: [TutorProfileSubject]
+}
+
+type TutorProfileSubject {
+  tutor: TutorProfile!
+  subject: Subject!
+}
+
 type TutorRequest {
   id: String!
   learner: LearnerProfile!
-  learnerId: String!
   subject: Subject!
-  subjectId: Int!
   createdAt: Timestamp!
-  connections: [TutorRequestConnection!]
+  connections: [TutorRequestConnection]
 }
 
 type CreateTutorRequestResponse {
@@ -122,9 +116,8 @@ type CreateTutorRequestResponse {
 }
 
 type Query {
-  findUserById(id: String!): User!
-  findUserByEmail(email: String!): UserResponse!
   me: MeResponse!
+  findManyTutorProfiles(searchString: String!): [TutorProfile]
 }
 
 type Mutation {
@@ -134,13 +127,13 @@ type Mutation {
   logout: LogoutResponse!
   createLearnerProfile(createLearnerProfileInput: CreateLearnerProfileInput!): CreateLeanerProfileResponse!
   updateLearnerProfile(updateLearnerProfileInput: UpdateLearnerProfileInput!): UpdateLearnerProfileResponse!
-  createTutorProfile(createTutorProfileInput: CreateTutorProfileInput!): CreateTutorProfileResponse!
-  updateTutorProfile(updateTutorProfileInput: UpdateTutorProfileInput!): UpdateTutorProfileResponse!
   createTutorRequestConnection(createTutorRequestConnectInput: CreateTutorRequestConnectInput!): CreateTutorRequestConnectResponse!
   acceptTutorRequestConnection(tutorRequestConnectionWhereUniqueInput: TutorRequestConnectionWhereUniqueInput!): AcceptTutorRequestConnectionResponse!
   declineTutorRequestConnection(tutorRequestConnectionWhereUniqueInput: TutorRequestConnectionWhereUniqueInput!): DeclineTutorRequestConnectinoResponse!
   createTutorRequest(createTutorRequestInput: CreateTutorRequestInput!): CreateTutorRequestResponse!
   createSubject(createSubjectInput: CreateSubjectInput!): CreateSubjectResponse!
+  createTutorProfile(createTutorProfileInput: CreateTutorProfileInput!): TutorProfile
+  updateTutorProfile(updateTutorProfileInput: UpdateTutorProfileInput!): TutorProfile
 }
 
 input LoginInput {
@@ -159,14 +152,6 @@ input CreateLearnerProfileInput {
 }
 
 input UpdateLearnerProfileInput {
-  bio: String
-}
-
-input CreateTutorProfileInput {
-  bio: String!
-}
-
-input UpdateTutorProfileInput {
   bio: String
 }
 
@@ -190,4 +175,12 @@ input CreateTutorRequestInput {
 input CreateSubjectInput {
   name: String!
   description: String
+}
+
+input CreateTutorProfileInput {
+  bio: String!
+}
+
+input UpdateTutorProfileInput {
+  bio: String
 }

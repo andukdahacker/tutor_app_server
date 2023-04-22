@@ -6,9 +6,8 @@ import {
   Resolver,
 } from '@nestjs/graphql';
 import { TutorRequestConnection } from '@prisma/client';
-import { ConnectionService } from 'src/connection/connection.service';
-import { LearnerProfile } from 'src/profile/dto/entities';
-import { ProfileService } from 'src/profile/profile.service';
+import { LearnerProfile } from 'src/learner-profile/dto/entities';
+import { LearnerProfileService } from 'src/learner-profile/learner-profile.service';
 import { Subject } from 'src/subject/dto/entities';
 import { SubjectService } from 'src/subject/subject.service';
 import { TutorRequest } from './dto/entities';
@@ -20,9 +19,8 @@ import { TutorRequestService } from './tutor-request.service';
 export class TutorRequestResolver {
   constructor(
     private readonly tutorRequestService: TutorRequestService,
-    private readonly profileService: ProfileService,
+    private readonly profileService: LearnerProfileService,
     private readonly subjectService: SubjectService,
-    private readonly connectionService: ConnectionService,
   ) {}
 
   @Mutation(() => CreateTutorRequestResponse)
@@ -41,7 +39,7 @@ export class TutorRequestResolver {
   async learner(@Parent() tutorRequest: TutorRequest): Promise<LearnerProfile> {
     const { id } = tutorRequest;
 
-    return await this.profileService.findLearnerProfile({ id });
+    return await this.profileService.findLearnerProfile(id);
   }
 
   @ResolveField()
@@ -56,8 +54,6 @@ export class TutorRequestResolver {
     @Parent() tutorRequest: TutorRequest,
   ): Promise<TutorRequestConnection[]> {
     const { id } = tutorRequest;
-    return await this.connectionService.findTutorRequestConnections({
-      tutorRequestId: id,
-    });
+    return await this.tutorRequestService.findTutorRequestConnections(id);
   }
 }

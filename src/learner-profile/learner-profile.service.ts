@@ -1,35 +1,15 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateLearnerProfileInput } from './dto/inputs/create-learner-profile.input';
-import { CreateTutorProfileInput } from './dto/inputs/create-tutor-profile.input';
-import { ProfileWhereUniqueInput } from './dto/inputs/profile-where-unique.input';
 import { UpdateLearnerProfileInput } from './dto/inputs/update-learner-profile-input';
-import { UpdateTutorProfileInput } from './dto/inputs/update-tutor-profile-input';
 
 @Injectable()
-export class ProfileService {
+export class LearnerProfileService {
   constructor(private readonly prisma: PrismaService) {}
 
   async createLearnerProfile(input: CreateLearnerProfileInput, userId: string) {
     try {
       return await this.prisma.learnerProfile.create({
-        data: {
-          user: {
-            connect: {
-              id: userId,
-            },
-          },
-          bio: input.bio,
-        },
-      });
-    } catch (error) {
-      throw new InternalServerErrorException();
-    }
-  }
-
-  async createTutorProfile(input: CreateTutorProfileInput, userId: string) {
-    try {
-      return await this.prisma.tutorProfile.create({
         data: {
           user: {
             connect: {
@@ -59,28 +39,37 @@ export class ProfileService {
     }
   }
 
-  async updateTutorProfile(input: UpdateTutorProfileInput, userId: string) {
+  async findLearnerProfile(tutorRequestId: string) {
     try {
-      return await this.prisma.tutorProfile.update({
-        where: {
-          userId,
-        },
-        data: {
-          bio: input.bio,
-        },
-      });
+      return await this.prisma.tutorRequest
+        .findUnique({
+          where: {
+            id: tutorRequestId,
+          },
+        })
+        .learner();
     } catch (error) {
       throw new InternalServerErrorException();
     }
   }
 
-  async findLearnerProfile(input: ProfileWhereUniqueInput) {
+  async findLearnersByBatch(learnerIds: string[]) {
     try {
-      return await this.prisma.learnerProfile.findUnique({
+      const result = await this.prisma.learnerProfile.findMany({
         where: {
-          id: input.id,
+          id: {
+            in: learnerIds,
+          },
         },
       });
+
+      const mappedResult = learnerIds.map(
+        (id) =>
+          result.find((result) => result.id === id) ||
+          new InternalServerErrorException(),
+      );
+
+      return mappedResult;
     } catch (error) {
       throw new InternalServerErrorException();
     }
