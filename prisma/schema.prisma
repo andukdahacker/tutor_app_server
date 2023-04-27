@@ -45,8 +45,8 @@ model Subject {
 
 model TutorRequest {
   id                      String                   @id @default(cuid())
-  learner                 LearnerProfile           @relation(fields: [learner_id], references: [id], onDelete: Cascade)
-  learner_id              String
+  learner                 LearnerProfile           @relation(fields: [learnerId], references: [id], onDelete: Cascade)
+  learnerId               String
   subject                 Subject                  @relation(fields: [subjectId], references: [id])
   subjectId               Int
   description             String?
@@ -137,14 +137,14 @@ model Chat {
 }
 
 model ChatMember {
-  member    User      @relation(fields: [memberId], references: [id], onDelete: Cascade)
-  memberId  String
-  chat      Chat      @relation(fields: [chatId], references: [id], onDelete: Cascade)
-  chatId    String
-  isRead    Boolean   @default(true)
-  isViewed  Boolean   @default(true)
-  joined_at DateTime  @default(now())
-  left_at   DateTime?
+  member   User      @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  memberId String
+  chat     Chat      @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  chatId   String
+  isRead   Boolean   @default(true)
+  isViewed Boolean   @default(true)
+  joinedAt DateTime  @default(now())
+  leftAt   DateTime?
 
   @@id([memberId, chatId])
 }

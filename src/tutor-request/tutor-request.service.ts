@@ -41,4 +41,35 @@ export class TutorRequestService {
       throw new InternalServerErrorException();
     }
   }
+
+  async findManyTutorRequests(searchString: string) {
+    try {
+      return await this.prisma.tutorRequest.findMany({
+        where: {
+          OR: [
+            {
+              learner: {
+                user: {
+                  username: {
+                    contains: searchString,
+                    mode: 'insensitive',
+                  },
+                },
+              },
+            },
+            {
+              subject: {
+                name: {
+                  contains: searchString,
+                  mode: 'insensitive',
+                },
+              },
+            },
+          ],
+        },
+      });
+    } catch (error) {
+      throw new InternalServerErrorException();
+    }
+  }
 }

@@ -2,12 +2,14 @@ import {
   Args,
   Mutation,
   Parent,
+  Query,
   ResolveField,
   Resolver,
 } from '@nestjs/graphql';
-import { TutorRequestConnection } from '@prisma/client';
+import { TutorRequestConnection } from 'src/connection/dto/entities';
+import { IDataloader } from 'src/dataloader/types/IDataloader';
 import { LearnerProfile } from 'src/learner-profile/dto/entities';
-import { LearnerProfileService } from 'src/learner-profile/learner-profile.service';
+import { Loaders } from 'src/shared/decorators/dataloader.decorator';
 import { Subject } from 'src/subject/dto/entities';
 import { SubjectService } from 'src/subject/subject.service';
 import { TutorRequest } from './dto/entities';
@@ -19,7 +21,6 @@ import { TutorRequestService } from './tutor-request.service';
 export class TutorRequestResolver {
   constructor(
     private readonly tutorRequestService: TutorRequestService,
-    private readonly profileService: LearnerProfileService,
     private readonly subjectService: SubjectService,
   ) {}
 
@@ -35,25 +36,41 @@ export class TutorRequestResolver {
     };
   }
 
-  @ResolveField()
-  async learner(@Parent() tutorRequest: TutorRequest): Promise<LearnerProfile> {
-    const { id } = tutorRequest;
+  @Query(() => [TutorRequest], { nullable: 'itemsAndList' })
+  async findTutorRequests(@Args('searchString') input: string) {
+    const requests = await this.tutorRequestService.findManyTutorRequests(
+      input,
+    );
 
-    return await this.profileService.findLearnerProfile(id);
+    return requests;
   }
 
   @ResolveField()
-  async subject(@Parent() tutorRequest: TutorRequest): Promise<Subject> {
+  async learner(
+    @Parent() tutorRequest: TutorRequest,
+    @Loaders() loaders: IDataloader,
+  ): Promise<LearnerProfile> {
+    return loaders.leanerProfileByTutorRequestLoader.load(
+      tutorRequest.learnerId,
+    );
+  }
+
+  @ResolveField()
+  async subject(
+    @Parent() tutorRequest: TutorRequest,
+    @Loaders() loaders: IDataloader,
+  ): Promise<Subject> {
     const { subjectId } = tutorRequest;
-
-    return await this.subjectService.findSubject({ id: subjectId });
+    const subject = loaders.subjectByTutorRequestLoader.load(subjectId);
+    return subject;
   }
 
-  @ResolveField()
+  @ResolveField(() => [TutorRequestConnection], { nullable: 'itemsAndList' })
   async connections(
     @Parent() tutorRequest: TutorRequest,
+    @Loaders() loaders: IDataloader,
   ): Promise<TutorRequestConnection[]> {
     const { id } = tutorRequest;
-    return await this.tutorRequestService.findTutorRequestConnections(id);
+    return loaders.connectionsByTutorRequestLoader.load(id);
   }
 }

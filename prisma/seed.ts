@@ -25,8 +25,8 @@ function getArgs() {
 async function seed() {
   const args = getArgs();
 
-  const learnerProfile = args['learner'];
-  const tutorProfile = args['tutor'];
+  const learnerProfile = args['l'];
+  const tutorProfile = args['t'];
 
   const learnerAmount: number = +learnerProfile;
   const tutorAmount: number = +tutorProfile;

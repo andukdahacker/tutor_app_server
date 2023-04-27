@@ -7,6 +7,7 @@ import {
   Resolver,
 } from '@nestjs/graphql';
 import { ITokenPayload } from 'src/auth/types';
+import { TutorRequestConnection } from 'src/connection/dto/entities';
 import { IDataloader } from 'src/dataloader/types/IDataloader';
 import { TokenPayload } from 'src/shared/decorators/current-user.decorator';
 import { Loaders } from 'src/shared/decorators/dataloader.decorator';
@@ -65,7 +66,7 @@ export class TutorProfileResolver {
     return user;
   }
 
-  @ResolveField()
+  @ResolveField(() => [TutorRequestConnection], { nullable: 'itemsAndList' })
   async tutorRequestConnections(
     @Parent() tutorProfile: TutorProfile,
     @Loaders() loaders: IDataloader,

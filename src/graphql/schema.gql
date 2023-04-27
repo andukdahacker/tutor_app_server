@@ -117,6 +117,7 @@ type CreateTutorRequestResponse {
 
 type Query {
   me: MeResponse!
+  findTutorRequests(searchString: String!): [TutorRequest]
   findManyTutorProfiles(searchString: String!): [TutorProfile]
 }
 

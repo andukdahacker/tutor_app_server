@@ -1,7 +1,9 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { TutorProfileSubject, TutorRequestConnection } from '@prisma/client';
 import DataLoader from 'dataloader';
+import { LearnerProfile } from 'src/learner-profile/dto/entities';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { Subject } from 'src/subject/dto/entities';
 import { User } from 'src/user/dto/entities';
 import { IDataloader } from './types/IDataloader';
 
@@ -37,17 +39,23 @@ export class DataloaderService {
 
   async findTutorRequestConnectionByBatch(ids: string[]) {
     try {
-      const connections = await this.prisma.tutorRequestConnection.findMany({
-        where: {
-          tutorId: {
-            in: ids,
-          },
-        },
-      });
+      const connections = await Promise.all(
+        ids.map((id) =>
+          this.prisma.tutorProfile
+            .findUnique({
+              where: {
+                id,
+              },
+            })
+            .tutorRequestConnections(),
+        ),
+      );
 
-      const mappedResult = ids.map((id) => {
-        return connections.find((e) => e.tutorId === id);
-      });
+      const mappedResult = ids.map((id) =>
+        connections.find((connection) =>
+          connection.find((e) => e.tutorId === id),
+        ),
+      );
 
       return mappedResult;
     } catch (error) {
@@ -75,6 +83,69 @@ export class DataloaderService {
     }
   }
 
+  async batchLearnerProfileByTutorRequest(ids: string[]) {
+    try {
+      const profiles = await this.prisma.learnerProfile.findMany({
+        where: {
+          id: {
+            in: ids,
+          },
+        },
+      });
+
+      const mappedResult = ids.map((id) =>
+        profiles.find((profile) => profile.id === id),
+      );
+
+      return mappedResult;
+    } catch (error) {
+      throw new InternalServerErrorException();
+    }
+  }
+
+  async batchSubjectByTutorRequest(ids: number[]) {
+    try {
+      const subjects = await this.prisma.subject.findMany({
+        where: {
+          id: {
+            in: ids,
+          },
+        },
+      });
+
+      const mappedResult = this.mapFn(ids, subjects, 'id');
+
+      return mappedResult;
+    } catch (error) {
+      throw new InternalServerErrorException();
+    }
+  }
+
+  async batchConnectionByTutorRequest(ids: string[]) {
+    try {
+      const connections = await Promise.all(
+        ids.map((id) => {
+          return this.prisma.tutorRequest
+            .findUnique({
+              where: {
+                id,
+              },
+            })
+            .tutorRequestConnections();
+        }),
+      );
+
+      const mappedResult = ids.map((id) =>
+        connections.find((connection) =>
+          connection.find((e) => e.tutorRequestId === id),
+        ),
+      );
+
+      return mappedResult;
+    } catch (error) {
+      throw new InternalServerErrorException();
+    }
+  }
   createLoader(): IDataloader {
     const usersLoader = new DataLoader<string, User>(
       async (keys: string[]) => await this.findUsersByBatch(keys as string[]),
@@ -82,7 +153,7 @@ export class DataloaderService {
 
     const connectionsByTutorIdLoader = new DataLoader<
       string,
-      TutorRequestConnection
+      TutorRequestConnection[]
     >(
       async (keys: string[]) =>
         await this.findTutorRequestConnectionByBatch(keys as string[]),
@@ -96,10 +167,35 @@ export class DataloaderService {
         await this.batchSubjectsByTutorId(keys as string[]),
     );
 
+    const leanerProfileByTutorRequestLoader = new DataLoader<
+      string,
+      LearnerProfile
+    >(
+      async (keys: string[]) =>
+        await this.batchLearnerProfileByTutorRequest(keys as string[]),
+    );
+
+    const subjectByTutorRequestLoader = new DataLoader<number, Subject>(
+      async (keys: number[]) =>
+        await this.batchSubjectByTutorRequest(keys as number[]),
+    );
+
+    const connectionsByTutorRequestLoader = new DataLoader<
+      string,
+      TutorRequestConnection[]
+    >(async (keys: string[]) => {
+      const result = await this.batchConnectionByTutorRequest(keys as string[]);
+
+      return result;
+    });
+
     return {
       usersLoader,
       connectionsByTutorIdLoader,
       tutorProfileSubjectByTutorIdLoader,
+      leanerProfileByTutorRequestLoader,
+      subjectByTutorRequestLoader,
+      connectionsByTutorRequestLoader,
     };
   }
 }
