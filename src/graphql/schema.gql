@@ -103,6 +103,28 @@ type TutorProfileSubject {
   subject: Subject!
 }
 
+type PageInfo {
+  hasNextPage: Boolean!
+  cursor: Cursor
+  lastTake: Int!
+  totalAmount: Int!
+}
+
+union Cursor = StringCursor | IntCursor
+
+type StringCursor {
+  value: String!
+}
+
+type IntCursor {
+  value: Int!
+}
+
+type FindManyTutorProfilesResponse {
+  nodes: [TutorProfile]
+  pageInfo: PageInfo!
+}
+
 type TutorRequest {
   id: String!
   learner: LearnerProfile!
@@ -115,10 +137,27 @@ type CreateTutorRequestResponse {
   tutorRequest: TutorRequest
 }
 
+type FindTutorRequestResponse {
+  nodes: [TutorRequest]
+  pageInfo: PageInfo!
+}
+
 type Query {
   me: MeResponse!
-  findTutorRequests(searchString: String!): [TutorRequest]
-  findManyTutorProfiles(searchString: String!): [TutorProfile]
+  findManyTutorRequests(findManyTutorRequestsInput: FindManyTutorRequestsInput!): FindTutorRequestResponse!
+  findManyTutorProfiles(findManyTutorProfilesInput: FindManyTutorProfilesInput!): FindManyTutorProfilesResponse!
+}
+
+input FindManyTutorRequestsInput {
+  take: Int!
+  stringCursor: String
+  searchString: String!
+}
+
+input FindManyTutorProfilesInput {
+  take: Int!
+  stringCursor: String
+  searchString: String!
 }
 
 type Mutation {

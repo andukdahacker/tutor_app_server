@@ -12,8 +12,10 @@ import { IDataloader } from 'src/dataloader/types/IDataloader';
 import { TokenPayload } from 'src/shared/decorators/current-user.decorator';
 import { Loaders } from 'src/shared/decorators/dataloader.decorator';
 import { TutorProfile } from './dto/entities';
+import { FindManyTutorProfilesInput } from './dto/inputs';
 import { CreateTutorProfileInput } from './dto/inputs/create-tutor-profile.input';
 import { UpdateTutorProfileInput } from './dto/inputs/update-tutor-profile-input';
+import { FindManyTutorProfilesResponse } from './dto/response';
 import { TutorProfileService } from './tutor-profile.service';
 
 @Resolver(() => TutorProfile)
@@ -46,13 +48,48 @@ export class TutorProfileResolver {
     return profile;
   }
 
-  @Query(() => [TutorProfile], { nullable: 'itemsAndList' })
-  async findManyTutorProfiles(@Args('searchString') input: string) {
+  @Query(() => FindManyTutorProfilesResponse)
+  async findManyTutorProfiles(
+    @Args('findManyTutorProfilesInput') input: FindManyTutorProfilesInput,
+  ): Promise<FindManyTutorProfilesResponse> {
     const profiles = await this.tutorProfileService.findManyTutorProfiles(
       input,
     );
 
-    return profiles;
+    if (profiles.length > 0) {
+      const lastProfiles = profiles[profiles.length - 1];
+      const cursor = lastProfiles.id;
+
+      const nextQuery = await this.tutorProfileService.findManyTutorProfiles({
+        take: input.take,
+        searchString: input.searchString,
+        stringCursor: cursor,
+      });
+
+      if (nextQuery.length > 0) {
+        return {
+          nodes: profiles,
+          pageInfo: {
+            hasNextPage: true,
+            lastTake: nextQuery.length,
+            totalAmount: profiles.length,
+            cursor: {
+              value: cursor,
+            },
+          },
+        };
+      }
+    }
+
+    return {
+      nodes: profiles,
+      pageInfo: {
+        hasNextPage: false,
+        lastTake: 0,
+        totalAmount: profiles.length,
+        cursor: null,
+      },
+    };
   }
 
   @ResolveField()

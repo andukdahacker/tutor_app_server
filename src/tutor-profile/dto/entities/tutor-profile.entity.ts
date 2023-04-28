@@ -12,7 +12,7 @@ export class TutorProfile {
   bio?: string;
 
   @Field(() => User)
-  user: User;
+  user?: User;
 
   @HideField()
   userId: string;

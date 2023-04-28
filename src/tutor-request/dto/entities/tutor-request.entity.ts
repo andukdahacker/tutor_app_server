@@ -14,19 +14,19 @@ export class TutorRequest {
   id: string;
 
   @Field(() => LearnerProfile)
-  learner: LearnerProfile;
+  learner?: LearnerProfile;
 
   @HideField()
   learnerId: string;
 
   @Field(() => Subject)
-  subject: Subject;
+  subject?: Subject;
 
   @HideField()
   subjectId: number;
 
   @Field(() => GraphQLTimestamp)
-  createdAt: number;
+  createdAt: Date;
 
   @Field(() => [TutorRequestConnection], { nullable: 'itemsAndList' })
   connections?: TutorRequestConnection[];

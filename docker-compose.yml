@@ -15,7 +15,7 @@ services:
       - 4000:4000
     depends_on:
       - postgres
-      # - redis
+      - redis
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?schema=public
 
@@ -44,15 +44,15 @@ services:
   #   depends_on:
   #     - postgres
 
-  # redis:
-  #   image: redis
-  #   container_name: redis
-  #   ports:
-  #     - 6379:6379
-  #   volumes:
-  #     - redis:/data
+  redis:
+    image: redis
+    container_name: redis
+    ports:
+      - 6379:6379
+    volumes:
+      - redis:/data
 
 volumes:
   postgres:
-  # redis:
-  #   driver: local
+  redis:
+    driver: local

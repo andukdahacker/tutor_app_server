@@ -10,19 +10,18 @@ import { TutorRequestConnection } from 'src/connection/dto/entities';
 import { IDataloader } from 'src/dataloader/types/IDataloader';
 import { LearnerProfile } from 'src/learner-profile/dto/entities';
 import { Loaders } from 'src/shared/decorators/dataloader.decorator';
+
 import { Subject } from 'src/subject/dto/entities';
-import { SubjectService } from 'src/subject/subject.service';
 import { TutorRequest } from './dto/entities';
 import { CreateTutorRequestInput } from './dto/inputs';
+import { FindManyTutorRequestsInput } from './dto/inputs/find-tutor-request.input';
 import { CreateTutorRequestResponse } from './dto/response';
+import { FindTutorRequestResponse } from './dto/response/find-tutor-request.response';
 import { TutorRequestService } from './tutor-request.service';
 
 @Resolver(() => TutorRequest)
 export class TutorRequestResolver {
-  constructor(
-    private readonly tutorRequestService: TutorRequestService,
-    private readonly subjectService: SubjectService,
-  ) {}
+  constructor(private readonly tutorRequestService: TutorRequestService) {}
 
   @Mutation(() => CreateTutorRequestResponse)
   async createTutorRequest(
@@ -36,13 +35,47 @@ export class TutorRequestResolver {
     };
   }
 
-  @Query(() => [TutorRequest], { nullable: 'itemsAndList' })
-  async findTutorRequests(@Args('searchString') input: string) {
+  @Query(() => FindTutorRequestResponse)
+  async findManyTutorRequests(
+    @Args('findManyTutorRequestsInput') input: FindManyTutorRequestsInput,
+  ): Promise<FindTutorRequestResponse> {
     const requests = await this.tutorRequestService.findManyTutorRequests(
       input,
     );
 
-    return requests;
+    if (requests.length > 0) {
+      const lastRequest = requests[requests.length - 1];
+      const cursor = lastRequest.id;
+      const nextQuery = await this.tutorRequestService.findManyTutorRequests({
+        take: input.take,
+        searchString: input.searchString,
+        stringCursor: cursor,
+      });
+
+      if (nextQuery.length > 0) {
+        return {
+          nodes: requests,
+          pageInfo: {
+            hasNextPage: true,
+            lastTake: nextQuery.length,
+            totalAmount: requests.length,
+            cursor: {
+              value: cursor,
+            },
+          },
+        };
+      }
+    }
+
+    return {
+      pageInfo: {
+        hasNextPage: false,
+        lastTake: 0,
+        cursor: null,
+        totalAmount: requests.length,
+      },
+      nodes: requests,
+    };
   }
 
   @ResolveField()
