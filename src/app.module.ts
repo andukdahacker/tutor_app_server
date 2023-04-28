@@ -17,8 +17,7 @@ import { LearnerProfileModule } from './learner-profile/learner-profile.module';
 import { NotificationModule } from './notification/notification.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { PrismaService } from './prisma/prisma.service';
-
-import { PUB_SUB, redis } from './shared/redis/pubsub';
+import { PubSubModule } from './pub-sub/pub-sub.module';
 import { SubjectModule } from './subject/subject.module';
 import { TutorProfileModule } from './tutor-profile/tutor-profile.module';
 import { TutorRequestModule } from './tutor-request/tutor-request.module';
@@ -58,16 +57,13 @@ import { UserModule } from './user/user.module';
     SubjectModule,
     TutorProfileModule,
     DataloaderModule,
+    PubSubModule,
   ],
   controllers: [AppController],
   providers: [
     AppService,
     PrismaService,
     // { provide: APP_GUARD, useClass: JwtAuthGuard },
-    {
-      provide: PUB_SUB,
-      useValue: redis,
-    },
     AuthService,
     JwtService,
   ],
