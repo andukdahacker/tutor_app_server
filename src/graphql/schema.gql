@@ -80,6 +80,27 @@ type UpdateLearnerProfileResponse {
   learnerProfile: LearnerProfile
 }
 
+type Notification {
+  id: String!
+  notificationType: NotificationType!
+  notifier: User
+  receiver: User!
+  itemId: String
+  title: String!
+  content: String!
+  isRead: Boolean!
+  createdAt: Timestamp!
+}
+
+enum NotificationType {
+  TUTOR_REQUEST
+  TUTOR_ACCEPT
+  TUTOR_DECLINE
+  LEARNER_REQUEST
+  LEARNER_ACCEPT
+  LEARNER_DECLINE
+}
+
 type Subject {
   id: Int!
   name: String!
@@ -223,4 +244,8 @@ input CreateTutorProfileInput {
 
 input UpdateTutorProfileInput {
   bio: String
+}
+
+type Subscription {
+  notifications: Notification!
 }
