@@ -21,7 +21,8 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "seed": "ts-node --transpile-only prisma/seed.ts",
     "run:docker": "commands/run.sh",
-    "stop:docker": "commands/stop.sh"
+    "stop:docker": "commands/stop.sh",
+    "rebuild:docker": "commands/rebuild.sh"
   },
   "dependencies": {
     "@apollo/server": "^4.5.0",
