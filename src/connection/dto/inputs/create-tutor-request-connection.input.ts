@@ -7,6 +7,9 @@ export class CreateTutorRequestConnectInput {
   tutorRequestId: string;
 
   @Field()
+  tutorUserId: string;
+
+  @Field()
   tutorId: string;
 
   @Field()

@@ -1,4 +1,5 @@
 import {
+  Inject,
   Injectable,
   InternalServerErrorException,
   UnauthorizedException,
@@ -10,16 +11,20 @@ import * as argon2 from 'argon2';
 
 import { Response } from 'express';
 import { GraphQLError } from 'graphql';
+
+import { Redis } from 'ioredis';
+import { REDIS } from 'src/redis/redis.module';
 import { SignUpInput } from 'src/user/dto/inputs';
 import { UserService } from 'src/user/user.service';
+import { REFRESH_TOKEN_PREFIX } from './auth.constants';
 import { LoginInput } from './dto/inputs';
-
 @Injectable()
 export class AuthService {
   constructor(
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
+    @Inject(REDIS) private readonly redis: Redis,
   ) {}
 
   async validateUser(email: string, pass: string) {
@@ -61,16 +66,16 @@ export class AuthService {
     const refreshToken = await this.createRefreshToken(user.email, user.id);
     const accessToken = await this.createAccessToken(user.email, user.id);
 
-    const updatedUser = await this.userService.upsertRefreshToken(
-      user.id,
-      refreshToken,
-    );
+    await this.redis.set(REFRESH_TOKEN_PREFIX + refreshToken, user.id);
 
-    return { accessToken, refreshToken, user: updatedUser };
+    return { accessToken, refreshToken, user };
   }
 
   async validateRefreshToken(refreshToken: string) {
-    const user = await this.userService.findOneByRefreshToken(refreshToken);
+    const userId = await this.redis.get(REFRESH_TOKEN_PREFIX + refreshToken);
+
+    if (!userId) throw new UnauthorizedException('No refresh token');
+    const user = await this.userService.findOneById(userId);
 
     if (!user) throw new UnauthorizedException('Invalid refresh token');
     return user;
@@ -109,7 +114,9 @@ export class AuthService {
   }
 
   async logout(userId: string, context: any) {
-    await this.userService.removeUserRefreshToken(userId);
+    const refreshToken = context.req.cookies.Refresh;
+
+    await this.redis.del([REFRESH_TOKEN_PREFIX + refreshToken]);
 
     this.resetAuthCookies(context);
   }

@@ -103,7 +103,7 @@ export class DataloaderService {
     }
   }
 
-  async batchSubjectByTutorRequest(ids: number[]) {
+  async batchSubjectByTutorRequest(ids: string[]) {
     try {
       const subjects = await this.prisma.subject.findMany({
         where: {
@@ -175,9 +175,9 @@ export class DataloaderService {
         await this.batchLearnerProfileByTutorRequest(keys as string[]),
     );
 
-    const subjectByTutorRequestLoader = new DataLoader<number, Subject>(
-      async (keys: number[]) =>
-        await this.batchSubjectByTutorRequest(keys as number[]),
+    const subjectByTutorRequestLoader = new DataLoader<string, Subject>(
+      async (keys: string[]) =>
+        await this.batchSubjectByTutorRequest(keys as string[]),
     );
 
     const connectionsByTutorRequestLoader = new DataLoader<

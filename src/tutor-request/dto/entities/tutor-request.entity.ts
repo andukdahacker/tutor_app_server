@@ -23,7 +23,7 @@ export class TutorRequest {
   subject?: Subject;
 
   @HideField()
-  subjectId: number;
+  subjectId: string;
 
   @Field(() => GraphQLTimestamp)
   createdAt: Date;

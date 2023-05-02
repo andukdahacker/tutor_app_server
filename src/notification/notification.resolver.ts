@@ -1,5 +1,5 @@
 import { Inject } from '@nestjs/common';
-import { Resolver, Subscription } from '@nestjs/graphql';
+import { Args, Resolver, Subscription } from '@nestjs/graphql';
 import { RedisPubSub } from 'graphql-redis-subscriptions';
 
 import { PUB_SUB } from 'src/pub-sub/pub-sub.module';
@@ -13,8 +13,15 @@ export class NotificationResolver {
     @Inject(PUB_SUB) private pubSub: RedisPubSub,
   ) {}
 
-  @Subscription(() => Notification)
-  notifications() {
+  @Subscription(() => Notification, {
+    resolve: (payload: Notification) => {
+      return payload;
+    },
+    filter: (payload: Notification, variables) => {
+      return variables.userId === payload.receiverId;
+    },
+  })
+  notifications(@Args('userId') _: string) {
     return this.pubSub.asyncIterator(['LEARNER_REQUEST']);
   }
 }

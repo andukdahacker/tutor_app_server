@@ -30,12 +30,6 @@ export class Notification {
   @Field({ nullable: true })
   itemId?: string;
 
-  @Field()
-  title: string;
-
-  @Field()
-  content: string;
-
   @Field(() => Boolean)
   isRead: boolean;
 

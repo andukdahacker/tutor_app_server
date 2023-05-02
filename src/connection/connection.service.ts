@@ -10,26 +10,22 @@ export class ConnectionService {
   constructor(private readonly prisma: PrismaService) {}
 
   async createTutorRequestConnection(input: CreateTutorRequestConnectInput) {
-    try {
-      return await this.prisma.tutorRequestConnection.create({
-        data: {
-          tutorRequest: {
-            connect: {
-              id: input.tutorRequestId,
-            },
+    return await this.prisma.tutorRequestConnection.create({
+      data: {
+        tutorRequest: {
+          connect: {
+            id: input.tutorRequestId,
           },
-          tutor: {
-            connect: {
-              id: input.tutorId,
-            },
-          },
-          status: ConnectionStatus.REQUESTED,
-          type: input.type,
         },
-      });
-    } catch (error) {
-      throw new InternalServerErrorException();
-    }
+        tutor: {
+          connect: {
+            id: input.tutorId,
+          },
+        },
+        status: ConnectionStatus.REQUESTED,
+        type: input.type,
+      },
+    });
   }
 
   async acceptTutorRequestConnection(

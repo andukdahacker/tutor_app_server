@@ -36,6 +36,25 @@ type SignUpResponse {
   user: User!
 }
 
+type Notification {
+  id: String!
+  notificationType: NotificationType!
+  notifier: User
+  receiver: User!
+  itemId: String
+  isRead: Boolean!
+  createdAt: Timestamp!
+}
+
+enum NotificationType {
+  TUTOR_REQUEST
+  TUTOR_ACCEPT
+  TUTOR_DECLINE
+  LEARNER_REQUEST
+  LEARNER_ACCEPT
+  LEARNER_DECLINE
+}
+
 type TutorRequestConnection {
   tutorRequestId: String!
   tutorId: String!
@@ -80,29 +99,8 @@ type UpdateLearnerProfileResponse {
   learnerProfile: LearnerProfile
 }
 
-type Notification {
-  id: String!
-  notificationType: NotificationType!
-  notifier: User
-  receiver: User!
-  itemId: String
-  title: String!
-  content: String!
-  isRead: Boolean!
-  createdAt: Timestamp!
-}
-
-enum NotificationType {
-  TUTOR_REQUEST
-  TUTOR_ACCEPT
-  TUTOR_DECLINE
-  LEARNER_REQUEST
-  LEARNER_ACCEPT
-  LEARNER_DECLINE
-}
-
 type Subject {
-  id: Int!
+  id: String!
   name: String!
   description: String
 }
@@ -218,6 +216,7 @@ input UpdateLearnerProfileInput {
 
 input CreateTutorRequestConnectInput {
   tutorRequestId: String!
+  tutorUserId: String!
   tutorId: String!
   type: String!
 }
@@ -229,7 +228,7 @@ input TutorRequestConnectionWhereUniqueInput {
 
 input CreateTutorRequestInput {
   learnerId: String!
-  subjectId: Float!
+  subjectId: String!
   description: String
 }
 
@@ -247,5 +246,5 @@ input UpdateTutorProfileInput {
 }
 
 type Subscription {
-  notifications: Notification!
+  notifications(userId: String!): Notification!
 }

@@ -34,34 +34,4 @@ export class UserService {
       throw new InternalServerErrorException();
     }
   }
-
-  async upsertRefreshToken(id: string, refreshToken: string) {
-    return await this.prisma.user.update({
-      where: {
-        id,
-      },
-      data: {
-        refreshToken,
-      },
-    });
-  }
-
-  async removeUserRefreshToken(id: string) {
-    return await this.prisma.user.update({
-      where: {
-        id,
-      },
-      data: {
-        refreshToken: null,
-      },
-    });
-  }
-
-  async findOneByRefreshToken(refreshToken: string) {
-    return await this.prisma.user.findUnique({
-      where: {
-        refreshToken,
-      },
-    });
-  }
 }

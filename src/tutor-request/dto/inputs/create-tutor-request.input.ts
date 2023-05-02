@@ -5,7 +5,7 @@ export class CreateTutorRequestInput {
   learnerId: string;
 
   @Field()
-  subjectId: number;
+  subjectId: string;
 
   @Field({ nullable: true })
   description?: string;

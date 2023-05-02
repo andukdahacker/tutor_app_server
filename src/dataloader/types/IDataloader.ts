@@ -10,6 +10,6 @@ export interface IDataloader {
   connectionsByTutorIdLoader: DataLoader<string, TutorRequestConnection[]>;
   tutorProfileSubjectByTutorIdLoader: DataLoader<string, TutorProfileSubject>;
   leanerProfileByTutorRequestLoader: DataLoader<string, LearnerProfile>;
-  subjectByTutorRequestLoader: DataLoader<number, Subject>;
+  subjectByTutorRequestLoader: DataLoader<string, Subject>;
   connectionsByTutorRequestLoader: DataLoader<string, TutorRequestConnection[]>;
 }

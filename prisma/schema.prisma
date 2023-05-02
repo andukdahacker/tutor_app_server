@@ -15,7 +15,6 @@ model User {
   username              String          @db.VarChar
   email                 String          @unique @db.VarChar
   password              String          @db.VarChar
-  refreshToken          String?         @unique
   isVerified            Boolean         @default(false)
   learnerProfile        LearnerProfile?
   tutorProfile          TutorProfile?
@@ -36,7 +35,7 @@ model LearnerProfile {
 }
 
 model Subject {
-  id                  Int                   @id @default(autoincrement())
+  id                  String                @id @default(cuid())
   name                String
   description         String?
   tutorRequests       TutorRequest[]
@@ -47,8 +46,8 @@ model TutorRequest {
   id                      String                   @id @default(cuid())
   learner                 LearnerProfile           @relation(fields: [learnerId], references: [id], onDelete: Cascade)
   learnerId               String
-  subject                 Subject                  @relation(fields: [subjectId], references: [id])
-  subjectId               Int
+  subject                 Subject                  @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  subjectId               String
   description             String?
   createdAt               DateTime                 @default(now())
   updatedAt               DateTime                 @updatedAt
@@ -79,8 +78,8 @@ model TutorProfile {
 model TutorProfileSubject {
   tutor     TutorProfile @relation(fields: [tutorId], references: [id], onDelete: Cascade)
   tutorId   String
-  subject   Subject      @relation(fields: [subjectId], references: [id])
-  subjectId Int
+  subject   Subject      @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  subjectId String
 
   @@id([tutorId, subjectId])
 }
@@ -104,8 +103,6 @@ model Notification {
   receiver         User             @relation("receiver", fields: [receiverId], references: [id], onDelete: Cascade)
   receiverId       String
   itemId           String?
-  title            String
-  content          String
   isRead           Boolean          @default(false)
   createdAt        DateTime         @default(now())
 }

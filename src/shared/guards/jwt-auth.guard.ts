@@ -6,7 +6,6 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { GqlExecutionContext } from '@nestjs/graphql';
-import { Request } from 'express';
 import { AuthService } from 'src/auth/auth.service';
 import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
 
@@ -40,8 +39,12 @@ export class JwtAuthGuard implements CanActivate {
     return true;
   }
 
-  private extractTokenFromHeader(request: Request): string | undefined {
-    const [type, token] = request.headers.authorization?.split(' ') ?? [];
+  private extractTokenFromHeader(request): string | undefined {
+    const authorizationToken = request.subscriptions
+      ? request.connectionParams.Authorization
+      : request.headers.authorization;
+
+    const [type, token] = authorizationToken?.split(' ') ?? [];
     return type === 'Bearer' ? token : undefined;
   }
 }

@@ -2,6 +2,7 @@ import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { APP_GUARD } from '@nestjs/core';
 import { GraphQLModule } from '@nestjs/graphql';
 import { JwtService } from '@nestjs/jwt';
 import { join } from 'path';
@@ -18,6 +19,8 @@ import { NotificationModule } from './notification/notification.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { PrismaService } from './prisma/prisma.service';
 import { PubSubModule } from './pub-sub/pub-sub.module';
+import { RedisModule } from './redis/redis.module';
+import { JwtAuthGuard } from './shared/guards/jwt-auth.guard';
 import { SubjectModule } from './subject/subject.module';
 import { TutorProfileModule } from './tutor-profile/tutor-profile.module';
 import { TutorRequestModule } from './tutor-request/tutor-request.module';
@@ -31,8 +34,11 @@ import { UserModule } from './user/user.module';
       inject: [DataloaderService],
       useFactory: (dataloaderService: DataloaderService) => {
         return {
+          installSubscriptionHandlers: true,
           playground: false,
-          context: () => ({ loaders: dataloaderService.createLoader() }),
+          context: () => {
+            return { loaders: dataloaderService.createLoader() };
+          },
           autoSchemaFile: join(process.cwd(), 'src/graphql/schema.gql'),
           plugins: [
             ApolloServerPluginLandingPageLocalDefault({ includeCookies: true }),
@@ -58,12 +64,13 @@ import { UserModule } from './user/user.module';
     TutorProfileModule,
     DataloaderModule,
     PubSubModule,
+    RedisModule,
   ],
   controllers: [AppController],
   providers: [
     AppService,
     PrismaService,
-    // { provide: APP_GUARD, useClass: JwtAuthGuard },
+    { provide: APP_GUARD, useClass: JwtAuthGuard },
     AuthService,
     JwtService,
   ],
