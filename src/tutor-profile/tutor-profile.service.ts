@@ -65,7 +65,7 @@ export class TutorProfileService {
           id: tutorProfileId,
         },
       })
-      .tutorRequestConnections();
+      .jobConnections();
   }
 
   async findManyTutorProfiles(input: FindManyTutorProfilesInput) {

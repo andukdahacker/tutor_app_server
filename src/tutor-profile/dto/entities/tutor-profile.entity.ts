@@ -1,5 +1,5 @@
 import { Field, HideField, ObjectType } from '@nestjs/graphql';
-import { TutorRequestConnection } from 'src/connection/dto/entities';
+import { JobConnection } from 'src/connection/dto/entities';
 import { User } from 'src/user/dto/entities';
 import { TutorProfileSubject } from './tutor-profile-subject.entity';
 
@@ -17,8 +17,8 @@ export class TutorProfile {
   @HideField()
   userId: string;
 
-  @Field(() => [TutorRequestConnection], { nullable: 'itemsAndList' })
-  tutorRequestConnections?: TutorRequestConnection[];
+  @Field(() => [JobConnection], { nullable: 'itemsAndList' })
+  tutorRequestConnections?: JobConnection[];
 
   @Field(() => [TutorProfileSubject], { nullable: 'itemsAndList' })
   tutorProfileSubject?: TutorProfileSubject[];

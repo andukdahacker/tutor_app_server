@@ -2,19 +2,19 @@ import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 import { ConnectionStatus } from '@prisma/client';
-import { TutorRequestConnectionWhereUniqueInput } from './dto/inputs';
-import { CreateTutorRequestConnectInput } from './dto/inputs/create-tutor-request-connection.input';
+import { JobConnectionWhereUniqueInput } from './dto/inputs';
+import { CreateJobConnectInput } from './dto/inputs/create-job-connection.input';
 
 @Injectable()
 export class ConnectionService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async createTutorRequestConnection(input: CreateTutorRequestConnectInput) {
-    return await this.prisma.tutorRequestConnection.create({
+  async createTutorRequestConnection(input: CreateJobConnectInput) {
+    return await this.prisma.jobConnection.create({
       data: {
-        tutorRequest: {
+        job: {
           connect: {
-            id: input.tutorRequestId,
+            id: input.jobId,
           },
         },
         tutor: {
@@ -28,15 +28,13 @@ export class ConnectionService {
     });
   }
 
-  async acceptTutorRequestConnection(
-    input: TutorRequestConnectionWhereUniqueInput,
-  ) {
+  async acceptTutorRequestConnection(input: JobConnectionWhereUniqueInput) {
     try {
-      return await this.prisma.tutorRequestConnection.update({
+      return await this.prisma.jobConnection.update({
         where: {
-          tutorRequestId_tutorId: {
+          jobId_tutorId: {
             tutorId: input.tutorId,
-            tutorRequestId: input.tutorRequestId,
+            jobId: input.jobId,
           },
         },
         data: {
@@ -48,15 +46,13 @@ export class ConnectionService {
     }
   }
 
-  async declineTutorRequestConnection(
-    input: TutorRequestConnectionWhereUniqueInput,
-  ) {
+  async declineTutorRequestConnection(input: JobConnectionWhereUniqueInput) {
     try {
-      return await this.prisma.tutorRequestConnection.update({
+      return await this.prisma.jobConnection.update({
         where: {
-          tutorRequestId_tutorId: {
+          jobId_tutorId: {
             tutorId: input.tutorId,
-            tutorRequestId: input.tutorRequestId,
+            jobId: input.jobId,
           },
         },
         data: {

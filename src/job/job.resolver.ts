@@ -6,26 +6,26 @@ import {
   ResolveField,
   Resolver,
 } from '@nestjs/graphql';
-import { TutorRequestConnection } from 'src/connection/dto/entities';
+import { JobConnection } from 'src/connection/dto/entities';
 import { IDataloader } from 'src/dataloader/types/IDataloader';
 import { LearnerProfile } from 'src/learner-profile/dto/entities';
 import { Loaders } from 'src/shared/decorators/dataloader.decorator';
 
 import { Subject } from 'src/subject/dto/entities';
-import { TutorRequest } from './dto/entities';
-import { CreateTutorRequestInput } from './dto/inputs';
-import { FindManyTutorRequestsInput } from './dto/inputs/find-tutor-request.input';
-import { CreateTutorRequestResponse } from './dto/response';
-import { FindTutorRequestResponse } from './dto/response/find-tutor-request.response';
-import { TutorRequestService } from './tutor-request.service';
+import { Job } from './dto/entities';
+import { CreateJobInput } from './dto/inputs';
+import { FindManyJobsInput } from './dto/inputs/find-many-jobs.input';
+import { CreateJobResponse } from './dto/response';
+import { FindJobResponse } from './dto/response/find-job.response';
+import { JobService } from './job.service';
 
-@Resolver(() => TutorRequest)
-export class TutorRequestResolver {
-  constructor(private readonly tutorRequestService: TutorRequestService) {}
+@Resolver(() => Job)
+export class JobResolver {
+  constructor(private readonly tutorRequestService: JobService) {}
 
-  @Mutation(() => CreateTutorRequestResponse)
+  @Mutation(() => CreateJobResponse)
   async createTutorRequest(
-    @Args('createTutorRequestInput') input: CreateTutorRequestInput,
+    @Args('createTutorRequestInput') input: CreateJobInput,
   ) {
     const tutorRequest = await this.tutorRequestService.createTutorRequest(
       input,
@@ -35,10 +35,10 @@ export class TutorRequestResolver {
     };
   }
 
-  @Query(() => FindTutorRequestResponse)
+  @Query(() => FindJobResponse)
   async findManyTutorRequests(
-    @Args('findManyTutorRequestsInput') input: FindManyTutorRequestsInput,
-  ): Promise<FindTutorRequestResponse> {
+    @Args('findManyTutorRequestsInput') input: FindManyJobsInput,
+  ): Promise<FindJobResponse> {
     const requests = await this.tutorRequestService.findManyTutorRequests(
       input,
     );
@@ -80,7 +80,7 @@ export class TutorRequestResolver {
 
   @ResolveField()
   async learner(
-    @Parent() tutorRequest: TutorRequest,
+    @Parent() tutorRequest: Job,
     @Loaders() loaders: IDataloader,
   ): Promise<LearnerProfile> {
     return loaders.leanerProfileByTutorRequestLoader.load(
@@ -90,7 +90,7 @@ export class TutorRequestResolver {
 
   @ResolveField()
   async subject(
-    @Parent() tutorRequest: TutorRequest,
+    @Parent() tutorRequest: Job,
     @Loaders() loaders: IDataloader,
   ): Promise<Subject> {
     const { subjectId } = tutorRequest;
@@ -98,11 +98,11 @@ export class TutorRequestResolver {
     return subject;
   }
 
-  @ResolveField(() => [TutorRequestConnection], { nullable: 'itemsAndList' })
+  @ResolveField(() => [JobConnection], { nullable: 'itemsAndList' })
   async connections(
-    @Parent() tutorRequest: TutorRequest,
+    @Parent() tutorRequest: Job,
     @Loaders() loaders: IDataloader,
-  ): Promise<TutorRequestConnection[]> {
+  ): Promise<JobConnection[]> {
     const { id } = tutorRequest;
     return loaders.connectionsByTutorRequestLoader.load(id);
   }

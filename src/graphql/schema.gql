@@ -55,11 +55,11 @@ enum NotificationType {
   LEARNER_DECLINE
 }
 
-type TutorRequestConnection {
-  tutorRequestId: String!
+type JobConnection {
+  jobId: String!
   tutorId: String!
   status: ConnectionStatus!
-  type: TutorRequestConnectType!
+  type: JobConnectType!
 }
 
 enum ConnectionStatus {
@@ -68,21 +68,21 @@ enum ConnectionStatus {
   DECLINED
 }
 
-enum TutorRequestConnectType {
-  TUTOR_TO_TUTOR_REQUEST
-  TUTOR_REQUEST_TO_TUTOR
+enum JobConnectType {
+  TUTOR_TO_JOB
+  JOB_TO_TUTOR
 }
 
-type AcceptTutorRequestConnectionResponse {
-  tutorRequestConnection: TutorRequestConnection
+type AcceptJobConnectionResponse {
+  tutorRequestConnection: JobConnection
 }
 
-type CreateTutorRequestConnectResponse {
-  tutorRequestConnection: TutorRequestConnection
+type CreateJobConnectResponse {
+  tutorRequestConnection: JobConnection
 }
 
-type DeclineTutorRequestConnectinoResponse {
-  tutorRequestConnection: TutorRequestConnection
+type DeclineJobConnectinoResponse {
+  tutorRequestConnection: JobConnection
 }
 
 type LearnerProfile {
@@ -91,35 +91,22 @@ type LearnerProfile {
   userId: String!
 }
 
-type CreateLeanerProfileResponse {
-  leanerProfile: LearnerProfile
-}
-
-type UpdateLearnerProfileResponse {
-  learnerProfile: LearnerProfile
-}
-
 type Subject {
   id: String!
   name: String!
   description: String
 }
 
-type CreateSubjectResponse {
-  subject: Subject
-}
-
-type TutorProfile {
+type Job {
   id: String!
-  bio: String
-  user: User!
-  tutorRequestConnections: [TutorRequestConnection]
-  tutorProfileSubject: [TutorProfileSubject]
+  learner: LearnerProfile!
+  subject: Subject!
+  createdAt: Timestamp!
+  connections: [JobConnection]
 }
 
-type TutorProfileSubject {
-  tutor: TutorProfile!
-  subject: Subject!
+type CreateJobResponse {
+  job: Job
 }
 
 type PageInfo {
@@ -139,35 +126,48 @@ type IntCursor {
   value: Int!
 }
 
+type FindJobResponse {
+  nodes: [Job]
+  pageInfo: PageInfo!
+}
+
+type CreateLeanerProfileResponse {
+  leanerProfile: LearnerProfile
+}
+
+type UpdateLearnerProfileResponse {
+  learnerProfile: LearnerProfile
+}
+
+type CreateSubjectResponse {
+  subject: Subject
+}
+
+type TutorProfile {
+  id: String!
+  bio: String
+  user: User!
+  tutorRequestConnections: [JobConnection]
+  tutorProfileSubject: [TutorProfileSubject]
+}
+
+type TutorProfileSubject {
+  tutor: TutorProfile!
+  subject: Subject!
+}
+
 type FindManyTutorProfilesResponse {
   nodes: [TutorProfile]
   pageInfo: PageInfo!
 }
 
-type TutorRequest {
-  id: String!
-  learner: LearnerProfile!
-  subject: Subject!
-  createdAt: Timestamp!
-  connections: [TutorRequestConnection]
-}
-
-type CreateTutorRequestResponse {
-  tutorRequest: TutorRequest
-}
-
-type FindTutorRequestResponse {
-  nodes: [TutorRequest]
-  pageInfo: PageInfo!
-}
-
 type Query {
   me: MeResponse!
-  findManyTutorRequests(findManyTutorRequestsInput: FindManyTutorRequestsInput!): FindTutorRequestResponse!
+  findManyTutorRequests(findManyTutorRequestsInput: FindManyJobsInput!): FindJobResponse!
   findManyTutorProfiles(findManyTutorProfilesInput: FindManyTutorProfilesInput!): FindManyTutorProfilesResponse!
 }
 
-input FindManyTutorRequestsInput {
+input FindManyJobsInput {
   take: Int!
   stringCursor: String
   searchString: String!
@@ -186,10 +186,10 @@ type Mutation {
   logout: LogoutResponse!
   createLearnerProfile(createLearnerProfileInput: CreateLearnerProfileInput!): CreateLeanerProfileResponse!
   updateLearnerProfile(updateLearnerProfileInput: UpdateLearnerProfileInput!): UpdateLearnerProfileResponse!
-  createTutorRequestConnection(createTutorRequestConnectInput: CreateTutorRequestConnectInput!): CreateTutorRequestConnectResponse!
-  acceptTutorRequestConnection(tutorRequestConnectionWhereUniqueInput: TutorRequestConnectionWhereUniqueInput!): AcceptTutorRequestConnectionResponse!
-  declineTutorRequestConnection(tutorRequestConnectionWhereUniqueInput: TutorRequestConnectionWhereUniqueInput!): DeclineTutorRequestConnectinoResponse!
-  createTutorRequest(createTutorRequestInput: CreateTutorRequestInput!): CreateTutorRequestResponse!
+  createTutorRequestConnection(createTutorRequestConnectInput: CreateJobConnectInput!): CreateJobConnectResponse!
+  acceptTutorRequestConnection(tutorRequestConnectionWhereUniqueInput: JobConnectionWhereUniqueInput!): AcceptJobConnectionResponse!
+  declineTutorRequestConnection(tutorRequestConnectionWhereUniqueInput: JobConnectionWhereUniqueInput!): DeclineJobConnectinoResponse!
+  createTutorRequest(createTutorRequestInput: CreateJobInput!): CreateJobResponse!
   createSubject(createSubjectInput: CreateSubjectInput!): CreateSubjectResponse!
   createTutorProfile(createTutorProfileInput: CreateTutorProfileInput!): TutorProfile
   updateTutorProfile(updateTutorProfileInput: UpdateTutorProfileInput!): TutorProfile
@@ -214,19 +214,19 @@ input UpdateLearnerProfileInput {
   bio: String
 }
 
-input CreateTutorRequestConnectInput {
-  tutorRequestId: String!
+input CreateJobConnectInput {
+  jobId: String!
   tutorUserId: String!
   tutorId: String!
   type: String!
 }
 
-input TutorRequestConnectionWhereUniqueInput {
-  tutorRequestId: String!
+input JobConnectionWhereUniqueInput {
+  jobId: String!
   tutorId: String!
 }
 
-input CreateTutorRequestInput {
+input CreateJobInput {
   learnerId: String!
   subjectId: String!
   description: String

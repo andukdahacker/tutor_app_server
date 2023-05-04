@@ -4,12 +4,12 @@ import {
   HideField,
   ObjectType,
 } from '@nestjs/graphql';
-import { TutorRequestConnection } from 'src/connection/dto/entities';
+import { JobConnection } from 'src/connection/dto/entities';
 import { LearnerProfile } from 'src/learner-profile/dto/entities';
 import { Subject } from 'src/subject/dto/entities';
 
 @ObjectType()
-export class TutorRequest {
+export class Job {
   @Field()
   id: string;
 
@@ -28,6 +28,6 @@ export class TutorRequest {
   @Field(() => GraphQLTimestamp)
   createdAt: Date;
 
-  @Field(() => [TutorRequestConnection], { nullable: 'itemsAndList' })
-  connections?: TutorRequestConnection[];
+  @Field(() => [JobConnection], { nullable: 'itemsAndList' })
+  connections?: JobConnection[];
 }

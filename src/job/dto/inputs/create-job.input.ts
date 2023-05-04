@@ -1,6 +1,6 @@
 import { Field, InputType } from '@nestjs/graphql';
 @InputType()
-export class CreateTutorRequestInput {
+export class CreateJobInput {
   @Field()
   learnerId: string;
 

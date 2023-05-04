@@ -14,6 +14,8 @@ import { ChatModule } from './chat/chat.module';
 import { ConnectionModule } from './connection/connection.module';
 import { DataloaderModule } from './dataloader/dataloader.module';
 import { DataloaderService } from './dataloader/dataloader.service';
+import { FirebaseModule } from './firebase/firebase.module';
+import { JobModule } from './job/job.module';
 import { LearnerProfileModule } from './learner-profile/learner-profile.module';
 import { NotificationModule } from './notification/notification.module';
 import { PrismaModule } from './prisma/prisma.module';
@@ -23,7 +25,6 @@ import { RedisModule } from './redis/redis.module';
 import { JwtAuthGuard } from './shared/guards/jwt-auth.guard';
 import { SubjectModule } from './subject/subject.module';
 import { TutorProfileModule } from './tutor-profile/tutor-profile.module';
-import { TutorRequestModule } from './tutor-request/tutor-request.module';
 import { UserModule } from './user/user.module';
 
 @Module({
@@ -59,12 +60,13 @@ import { UserModule } from './user/user.module';
     ConnectionModule,
     NotificationModule,
     ChatModule,
-    TutorRequestModule,
+    JobModule,
     SubjectModule,
     TutorProfileModule,
     DataloaderModule,
     PubSubModule,
     RedisModule,
+    FirebaseModule,
   ],
   controllers: [AppController],
   providers: [

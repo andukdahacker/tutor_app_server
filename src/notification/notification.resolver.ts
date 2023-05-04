@@ -4,8 +4,8 @@ import { RedisPubSub } from 'graphql-redis-subscriptions';
 
 import { PUB_SUB } from 'src/pub-sub/pub-sub.module';
 import { Notification } from './dto/entities';
+import { NotificationCreatedEvent } from './notification.constants';
 import { NotificationService } from './notification.service';
-
 @Resolver()
 export class NotificationResolver {
   constructor(
@@ -22,6 +22,6 @@ export class NotificationResolver {
     },
   })
   notifications(@Args('userId') _: string) {
-    return this.pubSub.asyncIterator(['LEARNER_REQUEST']);
+    return this.pubSub.asyncIterator([NotificationCreatedEvent]);
   }
 }

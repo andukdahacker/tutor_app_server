@@ -1,6 +1,6 @@
 import { ObjectType } from '@nestjs/graphql';
 import { Paginated } from 'src/shared/types/pagination.type';
-import { TutorRequest } from '../entities';
+import { Job } from '../entities';
 
 @ObjectType()
-export class FindTutorRequestResponse extends Paginated(TutorRequest) {}
+export class FindJobResponse extends Paginated(Job) {}

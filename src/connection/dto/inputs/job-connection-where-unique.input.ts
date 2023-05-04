@@ -1,9 +1,9 @@
 import { Field, InputType } from '@nestjs/graphql';
 
 @InputType()
-export class TutorRequestConnectionWhereUniqueInput {
+export class JobConnectionWhereUniqueInput {
   @Field()
-  tutorRequestId: string;
+  jobId: string;
 
   @Field()
   tutorId: string;

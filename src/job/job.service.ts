@@ -1,15 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { CreateTutorRequestInput } from './dto/inputs';
-import { FindManyTutorRequestsInput } from './dto/inputs/find-tutor-request.input';
+import { CreateJobInput } from './dto/inputs';
+import { FindManyJobsInput } from './dto/inputs/find-many-jobs.input';
 
 @Injectable()
-export class TutorRequestService {
+export class JobService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async createTutorRequest(input: CreateTutorRequestInput) {
-    return await this.prisma.tutorRequest.create({
+  async createTutorRequest(input: CreateJobInput) {
+    return await this.prisma.job.create({
       data: {
         learner: {
           connect: {
@@ -27,17 +27,17 @@ export class TutorRequestService {
   }
 
   async findTutorRequestConnections(tutorRequestId: string) {
-    return await this.prisma.tutorRequest
+    return await this.prisma.job
       .findUnique({
         where: {
           id: tutorRequestId,
         },
       })
-      .tutorRequestConnections();
+      .jobConnections();
   }
 
-  async findManyTutorRequests(input: FindManyTutorRequestsInput) {
-    const args: Prisma.TutorRequestFindManyArgs = {
+  async findManyTutorRequests(input: FindManyJobsInput) {
+    const args: Prisma.JobFindManyArgs = {
       take: input.take,
       cursor: input.stringCursor
         ? {
@@ -69,6 +69,6 @@ export class TutorRequestService {
       },
     };
 
-    return await this.prisma.tutorRequest.findMany(args);
+    return await this.prisma.job.findMany(args);
   }
 }

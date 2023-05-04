@@ -42,7 +42,7 @@ async function seed() {
         learnerProfile: {
           create: {
             bio: `Hi I'm Learner${i}. I am here to learn`,
-            tutorRequests: {
+            jobs: {
               create: [{ subject: { create: { name: `subject${i}` } } }],
             },
           },

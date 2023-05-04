@@ -39,12 +39,12 @@ export class LearnerProfileService {
     }
   }
 
-  async findLearnerProfile(tutorRequestId: string) {
+  async findLearnerProfile(jobId: string) {
     try {
-      return await this.prisma.tutorRequest
+      return await this.prisma.job
         .findUnique({
           where: {
-            id: tutorRequestId,
+            id: jobId,
           },
         })
         .learner();

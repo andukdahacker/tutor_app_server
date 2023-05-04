@@ -27,52 +27,52 @@ model User {
 }
 
 model LearnerProfile {
-  id            String         @id @default(cuid())
-  bio           String?        @db.VarChar(200)
-  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId        String         @unique
-  tutorRequests TutorRequest[]
+  id     String  @id @default(cuid())
+  bio    String? @db.VarChar(200)
+  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String  @unique
+  jobs   Job[]
 }
 
 model Subject {
   id                  String                @id @default(cuid())
   name                String
   description         String?
-  tutorRequests       TutorRequest[]
+  jobs                Job[]
   tutorProfileSubject TutorProfileSubject[]
 }
 
-model TutorRequest {
-  id                      String                   @id @default(cuid())
-  learner                 LearnerProfile           @relation(fields: [learnerId], references: [id], onDelete: Cascade)
-  learnerId               String
-  subject                 Subject                  @relation(fields: [subjectId], references: [id], onDelete: Cascade)
-  subjectId               String
-  description             String?
-  createdAt               DateTime                 @default(now())
-  updatedAt               DateTime                 @updatedAt
-  tutorRequestConnections TutorRequestConnection[]
+model Job {
+  id             String          @id @default(cuid())
+  learner        LearnerProfile  @relation(fields: [learnerId], references: [id], onDelete: Cascade)
+  learnerId      String
+  subject        Subject         @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  subjectId      String
+  description    String?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  jobConnections JobConnection[]
 }
 
-model TutorRequestConnection {
-  tutorRequest   TutorRequest               @relation(fields: [tutorRequestId], references: [id], onDelete: Cascade)
-  tutorRequestId String
-  tutor          TutorProfile               @relation(fields: [tutorId], references: [id], onDelete: Cascade)
-  tutorId        String
-  status         ConnectionStatus
-  type           TutorRequestConnectionType
-  createdAt      DateTime                   @default(now())
+model JobConnection {
+  job       Job               @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  jobId     String
+  tutor     TutorProfile      @relation(fields: [tutorId], references: [id], onDelete: Cascade)
+  tutorId   String
+  status    ConnectionStatus
+  type      JobConnectionType
+  createdAt DateTime          @default(now())
 
-  @@id([tutorRequestId, tutorId])
+  @@id([jobId, tutorId])
 }
 
 model TutorProfile {
-  id                      String                   @id @default(cuid())
-  bio                     String?                  @db.VarChar(200)
-  user                    User                     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId                  String                   @unique
-  tutorRequestConnections TutorRequestConnection[]
-  tutorProfileSubject     TutorProfileSubject[]
+  id                  String                @id @default(cuid())
+  bio                 String?               @db.VarChar(200)
+  user                User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId              String                @unique
+  jobConnections      JobConnection[]
+  tutorProfileSubject TutorProfileSubject[]
 }
 
 model TutorProfileSubject {
@@ -90,9 +90,9 @@ enum ConnectionStatus {
   DECLINED
 }
 
-enum TutorRequestConnectionType {
-  TUTOR_TO_TUTOR_REQUEST
-  TUTOR_REQUEST_TO_TUTOR
+enum JobConnectionType {
+  TUTOR_TO_JOB
+  JOB_TO_TUTOR
 }
 
 model Notification {

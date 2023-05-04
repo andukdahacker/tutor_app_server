@@ -1,5 +1,5 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { TutorProfileSubject, TutorRequestConnection } from '@prisma/client';
+import { JobConnection, TutorProfileSubject } from '@prisma/client';
 import DataLoader from 'dataloader';
 import { LearnerProfile } from 'src/learner-profile/dto/entities';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -47,7 +47,7 @@ export class DataloaderService {
                 id,
               },
             })
-            .tutorRequestConnections(),
+            .jobConnections(),
         ),
       );
 
@@ -125,19 +125,19 @@ export class DataloaderService {
     try {
       const connections = await Promise.all(
         ids.map((id) => {
-          return this.prisma.tutorRequest
+          return this.prisma.job
             .findUnique({
               where: {
                 id,
               },
             })
-            .tutorRequestConnections();
+            .jobConnections();
         }),
       );
 
       const mappedResult = ids.map((id) =>
         connections.find((connection) =>
-          connection.find((e) => e.tutorRequestId === id),
+          connection.find((e) => e.jobId === id),
         ),
       );
 
@@ -151,10 +151,7 @@ export class DataloaderService {
       async (keys: string[]) => await this.findUsersByBatch(keys as string[]),
     );
 
-    const connectionsByTutorIdLoader = new DataLoader<
-      string,
-      TutorRequestConnection[]
-    >(
+    const connectionsByTutorIdLoader = new DataLoader<string, JobConnection[]>(
       async (keys: string[]) =>
         await this.findTutorRequestConnectionByBatch(keys as string[]),
     );
@@ -182,7 +179,7 @@ export class DataloaderService {
 
     const connectionsByTutorRequestLoader = new DataLoader<
       string,
-      TutorRequestConnection[]
+      JobConnection[]
     >(async (keys: string[]) => {
       const result = await this.batchConnectionByTutorRequest(keys as string[]);
 

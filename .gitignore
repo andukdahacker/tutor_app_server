@@ -1,7 +1,10 @@
 # compiled output
 /dist
 /node_modules
+
+# files
 .env
+tutor-app-1018a-firebase-adminsdk-xxf8t-7978df27ba.json
 
 # Logs
 logs
