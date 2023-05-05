@@ -13,5 +13,8 @@ export class CreateJobConnectInput {
   tutorId: string;
 
   @Field()
+  learnerUserId: string;
+
+  @Field()
   type: JobConnectionType;
 }

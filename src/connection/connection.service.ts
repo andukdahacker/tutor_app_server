@@ -3,6 +3,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 
 import { ConnectionStatus } from '@prisma/client';
 import { JobConnectionWhereUniqueInput } from './dto/inputs';
+import { AcceptJobConnectionInput } from './dto/inputs/accept-job-connection.input';
 import { CreateJobConnectInput } from './dto/inputs/create-job-connection.input';
 
 @Injectable()
@@ -28,7 +29,7 @@ export class ConnectionService {
     });
   }
 
-  async acceptTutorRequestConnection(input: JobConnectionWhereUniqueInput) {
+  async acceptTutorRequestConnection(input: AcceptJobConnectionInput) {
     try {
       return await this.prisma.jobConnection.update({
         where: {

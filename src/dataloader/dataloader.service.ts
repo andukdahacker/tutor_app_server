@@ -146,6 +146,7 @@ export class DataloaderService {
       throw new InternalServerErrorException();
     }
   }
+
   createLoader(): IDataloader {
     const usersLoader = new DataLoader<string, User>(
       async (keys: string[]) => await this.findUsersByBatch(keys as string[]),

@@ -35,7 +35,6 @@ import { UserModule } from './user/user.module';
       inject: [DataloaderService],
       useFactory: (dataloaderService: DataloaderService) => {
         return {
-          installSubscriptionHandlers: true,
           playground: false,
           context: () => {
             return { loaders: dataloaderService.createLoader() };

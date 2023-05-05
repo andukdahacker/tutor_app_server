@@ -1,9 +1,4 @@
-import {
-  Field,
-  GraphQLTimestamp,
-  HideField,
-  ObjectType,
-} from '@nestjs/graphql';
+import { Field, HideField, ObjectType } from '@nestjs/graphql';
 import { NotificationType } from '@prisma/client';
 import { User } from 'src/user/dto/entities';
 
@@ -33,6 +28,6 @@ export class Notification {
   @Field(() => Boolean)
   isRead: boolean;
 
-  @Field(() => GraphQLTimestamp)
+  @Field()
   createdAt: Date;
 }

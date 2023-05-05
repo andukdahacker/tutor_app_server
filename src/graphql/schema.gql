@@ -6,14 +6,9 @@ type User {
   id: String!
   username: String!
   email: String!
-  createdAt: Timestamp!
-  updatedAt: Timestamp
+  createdAt: DateScalar!
+  updatedAt: DateScalar
 }
-
-"""
-`Date` type as integer. Type represents date and time as number of milliseconds from start of UNIX epoch.
-"""
-scalar Timestamp
 
 type LoginResponse {
   access_token: String!
@@ -43,7 +38,7 @@ type Notification {
   receiver: User!
   itemId: String
   isRead: Boolean!
-  createdAt: Timestamp!
+  createdAt: DateScalar!
 }
 
 enum NotificationType {
@@ -105,6 +100,11 @@ type Job {
   connections: [JobConnection]
 }
 
+"""
+`Date` type as integer. Type represents date and time as number of milliseconds from start of UNIX epoch.
+"""
+scalar Timestamp
+
 type CreateJobResponse {
   job: Job
 }
@@ -161,6 +161,11 @@ type FindManyTutorProfilesResponse {
   pageInfo: PageInfo!
 }
 
+"""
+`Date` type as integer. Type represents date and time as number of milliseconds from start of UNIX epoch.
+"""
+scalar DateScalar
+
 type Query {
   me: MeResponse!
   findManyTutorRequests(findManyTutorRequestsInput: FindManyJobsInput!): FindJobResponse!
@@ -187,7 +192,7 @@ type Mutation {
   createLearnerProfile(createLearnerProfileInput: CreateLearnerProfileInput!): CreateLeanerProfileResponse!
   updateLearnerProfile(updateLearnerProfileInput: UpdateLearnerProfileInput!): UpdateLearnerProfileResponse!
   createTutorRequestConnection(createTutorRequestConnectInput: CreateJobConnectInput!): CreateJobConnectResponse!
-  acceptTutorRequestConnection(tutorRequestConnectionWhereUniqueInput: JobConnectionWhereUniqueInput!): AcceptJobConnectionResponse!
+  acceptTutorRequestConnection(acceptJobConnectionInput: AcceptJobConnectionInput!, connectionType: String!): AcceptJobConnectionResponse!
   declineTutorRequestConnection(tutorRequestConnectionWhereUniqueInput: JobConnectionWhereUniqueInput!): DeclineJobConnectinoResponse!
   createTutorRequest(createTutorRequestInput: CreateJobInput!): CreateJobResponse!
   createSubject(createSubjectInput: CreateSubjectInput!): CreateSubjectResponse!
@@ -218,7 +223,16 @@ input CreateJobConnectInput {
   jobId: String!
   tutorUserId: String!
   tutorId: String!
+  learnerUserId: String!
   type: String!
+}
+
+input AcceptJobConnectionInput {
+  jobId: String
+  tutorUserId: String
+  tutorId: String
+  learnerUserId: String
+  type: String
 }
 
 input JobConnectionWhereUniqueInput {
