@@ -113,7 +113,7 @@ export class AuthService {
     });
   }
 
-  async logout(userId: string, context: any) {
+  async logout(context: any) {
     const refreshToken = context.req.cookies.Refresh;
 
     await this.redis.del([REFRESH_TOKEN_PREFIX + refreshToken]);

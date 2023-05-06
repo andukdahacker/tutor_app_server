@@ -72,10 +72,7 @@ export class AuthResolver {
 
   @Mutation(() => LogoutResponse)
   async logout(@Context() context): Promise<LogoutResponse> {
-    await this.authService.logout(
-      (context.req.user as ITokenPayload).userId,
-      context,
-    );
+    await this.authService.logout(context);
 
     return {
       message: 'Logged out successfully',
