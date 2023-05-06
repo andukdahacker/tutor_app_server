@@ -81,4 +81,4 @@ COPY --from=build /usr/src/app/prisma ./prisma
 
 RUN npx prisma migrate deploy
 # Start the server using the production build
-CMD [ "node", "dist/main.js" ]
+CMD [ "node", "dist/src/main.js" ]
