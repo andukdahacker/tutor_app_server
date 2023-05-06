@@ -6,11 +6,9 @@ import { NotificationCreatedEvent } from 'src/notification/notification.constant
 import { NotificationService } from 'src/notification/notification.service';
 import { PUB_SUB } from 'src/pub-sub/pub-sub.module';
 import { ConnectionService } from './connection.service';
-import {
-  CreateJobConnectInput,
-  JobConnectionWhereUniqueInput,
-} from './dto/inputs';
+import { CreateJobConnectInput } from './dto/inputs';
 import { AcceptJobConnectionInput } from './dto/inputs/accept-job-connection.input';
+import { DeclineJobConnectionInput } from './dto/inputs/decline-job-connection.input';
 import {
   AcceptJobConnectionResponse,
   CreateJobConnectResponse,
@@ -88,14 +86,25 @@ export class ConnectionResolver {
 
   @Mutation(() => DeclineJobConnectinoResponse)
   async declineTutorRequestConnection(
-    @Args('tutorRequestConnectionWhereUniqueInput')
-    input: JobConnectionWhereUniqueInput,
+    @Args('declineJobConnectionInput')
+    input: DeclineJobConnectionInput,
   ): Promise<DeclineJobConnectinoResponse> {
     const connection =
-      await this.connectionService.declineTutorRequestConnection(input);
+      this.connectionService.declineTutorRequestConnection(input);
 
+    const isJobToTutorType = input.type === 'JOB_TO_TUTOR';
+
+    const notification = this.notificationService.createNotification({
+      type: isJobToTutorType ? 'TUTOR_DECLINE' : 'LEARNER_DECLINE',
+      notifierId: isJobToTutorType ? input.tutorUserId : input.learnerUserId,
+      receiverId: isJobToTutorType ? input.learnerUserId : input.tutorUserId,
+      itemId: input.jobId,
+    });
+
+    const result = await Promise.all([connection, notification]);
+    this.pubSub.publish(NotificationCreatedEvent, result[1]);
     return {
-      tutorRequestConnection: connection,
+      tutorRequestConnection: result[0],
     };
   }
 }

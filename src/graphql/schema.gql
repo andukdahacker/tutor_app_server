@@ -193,7 +193,7 @@ type Mutation {
   updateLearnerProfile(updateLearnerProfileInput: UpdateLearnerProfileInput!): UpdateLearnerProfileResponse!
   createTutorRequestConnection(createTutorRequestConnectInput: CreateJobConnectInput!): CreateJobConnectResponse!
   acceptTutorRequestConnection(acceptJobConnectionInput: AcceptJobConnectionInput!, connectionType: String!): AcceptJobConnectionResponse!
-  declineTutorRequestConnection(tutorRequestConnectionWhereUniqueInput: JobConnectionWhereUniqueInput!): DeclineJobConnectinoResponse!
+  declineTutorRequestConnection(declineJobConnectionInput: DeclineJobConnectionInput!): DeclineJobConnectinoResponse!
   createTutorRequest(createTutorRequestInput: CreateJobInput!): CreateJobResponse!
   createSubject(createSubjectInput: CreateSubjectInput!): CreateSubjectResponse!
   createTutorProfile(createTutorProfileInput: CreateTutorProfileInput!): TutorProfile
@@ -235,9 +235,12 @@ input AcceptJobConnectionInput {
   type: String
 }
 
-input JobConnectionWhereUniqueInput {
-  jobId: String!
-  tutorId: String!
+input DeclineJobConnectionInput {
+  jobId: String
+  tutorUserId: String
+  tutorId: String
+  learnerUserId: String
+  type: String
 }
 
 input CreateJobInput {

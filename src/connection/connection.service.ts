@@ -1,10 +1,10 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 import { ConnectionStatus } from '@prisma/client';
-import { JobConnectionWhereUniqueInput } from './dto/inputs';
 import { AcceptJobConnectionInput } from './dto/inputs/accept-job-connection.input';
 import { CreateJobConnectInput } from './dto/inputs/create-job-connection.input';
+import { DeclineJobConnectionInput } from './dto/inputs/decline-job-connection.input';
 
 @Injectable()
 export class ConnectionService {
@@ -30,38 +30,30 @@ export class ConnectionService {
   }
 
   async acceptTutorRequestConnection(input: AcceptJobConnectionInput) {
-    try {
-      return await this.prisma.jobConnection.update({
-        where: {
-          jobId_tutorId: {
-            tutorId: input.tutorId,
-            jobId: input.jobId,
-          },
+    return await this.prisma.jobConnection.update({
+      where: {
+        jobId_tutorId: {
+          tutorId: input.tutorId,
+          jobId: input.jobId,
         },
-        data: {
-          status: ConnectionStatus.ACCEPTED,
-        },
-      });
-    } catch (error) {
-      throw new InternalServerErrorException();
-    }
+      },
+      data: {
+        status: ConnectionStatus.ACCEPTED,
+      },
+    });
   }
 
-  async declineTutorRequestConnection(input: JobConnectionWhereUniqueInput) {
-    try {
-      return await this.prisma.jobConnection.update({
-        where: {
-          jobId_tutorId: {
-            tutorId: input.tutorId,
-            jobId: input.jobId,
-          },
+  async declineTutorRequestConnection(input: DeclineJobConnectionInput) {
+    return await this.prisma.jobConnection.update({
+      where: {
+        jobId_tutorId: {
+          tutorId: input.tutorId,
+          jobId: input.jobId,
         },
-        data: {
-          status: ConnectionStatus.DECLINED,
-        },
-      });
-    } catch (error) {
-      throw new InternalServerErrorException();
-    }
+      },
+      data: {
+        status: ConnectionStatus.DECLINED,
+      },
+    });
   }
 }
