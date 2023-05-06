@@ -2,6 +2,13 @@
 # BUILD FOR LOCAL DEVELOPMENT
 ###################
 
+ARG ACCESS_TOKEN_SECRET
+ARG ACCESS_TOKEN_EXPIRATION_TIME
+ARG REFRESH_TOKEN_SECRET
+ARG REFRESH_TOKEN_EXPIRATION_TIME
+ARG DATABASE_URL
+ARG REDIS_URL
+
 FROM node:18-alpine As development
 
 # Create app directory
@@ -52,8 +59,6 @@ ENV NODE_ENV production
 # This ensures that the node_modules directory is as optimized as possible.
 RUN npm ci --only=production && npm cache clean --force
 
-RUN npx prisma db push
-
 EXPOSE 4000
 
 ###################
@@ -66,5 +71,6 @@ FROM node:18-alpine As production
 COPY --from=build /usr/src/app/node_modules ./node_modules
 COPY --from=build /usr/src/app/dist ./dist
 
+RUN npx prisma migrate deploy
 # Start the server using the production build
 CMD [ "node", "dist/main.js" ]
