@@ -14,7 +14,6 @@ import { ChatModule } from './chat/chat.module';
 import { ConnectionModule } from './connection/connection.module';
 import { DataloaderModule } from './dataloader/dataloader.module';
 import { DataloaderService } from './dataloader/dataloader.service';
-import { FirebaseModule } from './firebase/firebase.module';
 import { JobModule } from './job/job.module';
 import { LearnerProfileModule } from './learner-profile/learner-profile.module';
 import { NotificationModule } from './notification/notification.module';
@@ -65,7 +64,7 @@ import { UserModule } from './user/user.module';
     DataloaderModule,
     PubSubModule,
     RedisModule,
-    FirebaseModule,
+    // FirebaseModule,
   ],
   controllers: [AppController],
   providers: [
