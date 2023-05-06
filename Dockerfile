@@ -67,6 +67,13 @@ EXPOSE 4000
 
 FROM node:18-alpine As production
 
+ARG ACCESS_TOKEN_SECRET
+ARG ACCESS_TOKEN_EXPIRATION_TIME
+ARG REFRESH_TOKEN_SECRET
+ARG REFRESH_TOKEN_EXPIRATION_TIME
+ARG DATABASE_URL
+ARG REDIS_URL
+
 # Copy the bundled code from the build stage to the production image
 COPY --from=build /usr/src/app/node_modules ./node_modules
 COPY --from=build /usr/src/app/dist ./dist
