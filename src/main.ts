@@ -21,7 +21,7 @@ async function bootstrap() {
     credentials: true,
     origin:
       configService.get('NODE_ENV') === Environment.Production
-        ? ['https://tutorappserver-production.up.railway.app/graphql']
+        ? ['https://tutor-app-client.vercel.app']
         : ['http://localhost:3000'],
   });
   app.use(cookieParser());
