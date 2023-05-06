@@ -2,7 +2,9 @@ import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import cookieParser from 'cookie-parser';
 
+import { ConfigService } from '@nestjs/config';
 import { AppModule } from './app.module';
+import { Environment } from './config/env.validation';
 import { PrismaService } from './prisma/prisma.service';
 
 async function bootstrap() {
@@ -13,7 +15,15 @@ async function bootstrap() {
     }),
   );
 
-  app.enableCors({ credentials: true, origin: ['http://localhost:3000'] });
+  const configService = app.get<ConfigService>(ConfigService);
+
+  app.enableCors({
+    credentials: true,
+    origin:
+      configService.get('NODE_ENV') === Environment.Production
+        ? ['https://tutorappserver-production.up.railway.app/graphql']
+        : ['http://localhost:3000'],
+  });
   app.use(cookieParser());
 
   const prismaService = app.get(PrismaService);
