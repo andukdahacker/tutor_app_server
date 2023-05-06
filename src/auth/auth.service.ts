@@ -13,6 +13,7 @@ import { Response } from 'express';
 import { GraphQLError } from 'graphql';
 
 import { Redis } from 'ioredis';
+import { Environment } from 'src/config/env.validation';
 import { REDIS } from 'src/redis/redis.module';
 import { SignUpInput } from 'src/user/dto/inputs';
 import { UserService } from 'src/user/user.service';
@@ -122,11 +123,13 @@ export class AuthService {
   }
 
   setAuthCookies(refreshToken: string, context: any) {
+    const environment = this.configService.get('NODE_ENV') as Environment;
+
     (context.req.res as Response).cookie('Refresh', refreshToken, {
       httpOnly: true,
       maxAge: 1000 * 60 * 60 * 24 * 30,
-      secure: false,
-      sameSite: 'lax',
+      secure: environment === Environment.Production ? true : false,
+      sameSite: environment === Environment.Production ? 'none' : 'lax',
     });
   }
 
