@@ -10,7 +10,7 @@ import { DeclineJobConnectionInput } from './dto/inputs/decline-job-connection.i
 export class ConnectionService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async createTutorRequestConnection(input: CreateJobConnectInput) {
+  async createJobConnection(input: CreateJobConnectInput) {
     return await this.prisma.jobConnection.create({
       data: {
         job: {
@@ -29,7 +29,7 @@ export class ConnectionService {
     });
   }
 
-  async acceptTutorRequestConnection(input: AcceptJobConnectionInput) {
+  async acceptJobConnection(input: AcceptJobConnectionInput) {
     return await this.prisma.jobConnection.update({
       where: {
         jobId_tutorId: {
@@ -43,7 +43,7 @@ export class ConnectionService {
     });
   }
 
-  async declineTutorRequestConnection(input: DeclineJobConnectionInput) {
+  async declineJobConnection(input: DeclineJobConnectionInput) {
     return await this.prisma.jobConnection.update({
       where: {
         jobId_tutorId: {

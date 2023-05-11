@@ -9,7 +9,7 @@ export interface IDataloader {
   usersLoader: DataLoader<string, User>;
   connectionsByTutorIdLoader: DataLoader<string, JobConnection[]>;
   tutorProfileSubjectByTutorIdLoader: DataLoader<string, TutorProfileSubject>;
-  leanerProfileByTutorRequestLoader: DataLoader<string, LearnerProfile>;
-  subjectByTutorRequestLoader: DataLoader<string, Subject>;
-  connectionsByTutorRequestLoader: DataLoader<string, JobConnection[]>;
+  leanerProfileByJobLoader: DataLoader<string, LearnerProfile>;
+  subjectByJobLoader: DataLoader<string, Subject>;
+  connectionsByJobLoader: DataLoader<string, JobConnection[]>;
 }

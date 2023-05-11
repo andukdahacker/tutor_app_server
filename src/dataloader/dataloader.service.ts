@@ -37,7 +37,7 @@ export class DataloaderService {
     }
   }
 
-  async findTutorRequestConnectionByBatch(ids: string[]) {
+  async findJobConnectionByBatch(ids: string[]) {
     try {
       const connections = await Promise.all(
         ids.map((id) =>
@@ -83,7 +83,7 @@ export class DataloaderService {
     }
   }
 
-  async batchLearnerProfileByTutorRequest(ids: string[]) {
+  async batchLearnerProfileByJob(ids: string[]) {
     try {
       const profiles = await this.prisma.learnerProfile.findMany({
         where: {
@@ -103,7 +103,7 @@ export class DataloaderService {
     }
   }
 
-  async batchSubjectByTutorRequest(ids: string[]) {
+  async batchSubjectByJob(ids: string[]) {
     try {
       const subjects = await this.prisma.subject.findMany({
         where: {
@@ -121,7 +121,7 @@ export class DataloaderService {
     }
   }
 
-  async batchConnectionByTutorRequest(ids: string[]) {
+  async batchConnectionByJob(ids: string[]) {
     try {
       const connections = await Promise.all(
         ids.map((id) => {
@@ -154,7 +154,7 @@ export class DataloaderService {
 
     const connectionsByTutorIdLoader = new DataLoader<string, JobConnection[]>(
       async (keys: string[]) =>
-        await this.findTutorRequestConnectionByBatch(keys as string[]),
+        await this.findJobConnectionByBatch(keys as string[]),
     );
 
     const tutorProfileSubjectByTutorIdLoader = new DataLoader<
@@ -165,35 +165,30 @@ export class DataloaderService {
         await this.batchSubjectsByTutorId(keys as string[]),
     );
 
-    const leanerProfileByTutorRequestLoader = new DataLoader<
-      string,
-      LearnerProfile
-    >(
+    const leanerProfileByJobLoader = new DataLoader<string, LearnerProfile>(
       async (keys: string[]) =>
-        await this.batchLearnerProfileByTutorRequest(keys as string[]),
+        await this.batchLearnerProfileByJob(keys as string[]),
     );
 
-    const subjectByTutorRequestLoader = new DataLoader<string, Subject>(
-      async (keys: string[]) =>
-        await this.batchSubjectByTutorRequest(keys as string[]),
+    const subjectByJobLoader = new DataLoader<string, Subject>(
+      async (keys: string[]) => await this.batchSubjectByJob(keys as string[]),
     );
 
-    const connectionsByTutorRequestLoader = new DataLoader<
-      string,
-      JobConnection[]
-    >(async (keys: string[]) => {
-      const result = await this.batchConnectionByTutorRequest(keys as string[]);
+    const connectionsByJobLoader = new DataLoader<string, JobConnection[]>(
+      async (keys: string[]) => {
+        const result = await this.batchConnectionByJob(keys as string[]);
 
-      return result;
-    });
+        return result;
+      },
+    );
 
     return {
       usersLoader,
       connectionsByTutorIdLoader,
       tutorProfileSubjectByTutorIdLoader,
-      leanerProfileByTutorRequestLoader,
-      subjectByTutorRequestLoader,
-      connectionsByTutorRequestLoader,
+      leanerProfileByJobLoader: leanerProfileByJobLoader,
+      subjectByJobLoader: subjectByJobLoader,
+      connectionsByJobLoader: connectionsByJobLoader,
     };
   }
 }

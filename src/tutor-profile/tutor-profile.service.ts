@@ -58,7 +58,7 @@ export class TutorProfileService {
     });
   }
 
-  async findTutorRequestConnections(tutorProfileId: string) {
+  async findJobConnections(tutorProfileId: string) {
     return await this.prisma.tutorProfile
       .findUnique({
         where: {

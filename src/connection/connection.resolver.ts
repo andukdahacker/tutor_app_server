@@ -24,12 +24,11 @@ export class ConnectionResolver {
   ) {}
 
   @Mutation(() => CreateJobConnectResponse)
-  async createTutorRequestConnection(
-    @Args('createTutorRequestConnectInput')
+  async createJobConnection(
+    @Args('createJobConnectInput')
     input: CreateJobConnectInput,
   ): Promise<CreateJobConnectResponse> {
-    const connection =
-      this.connectionService.createTutorRequestConnection(input);
+    const connection = this.connectionService.createJobConnection(input);
 
     const isJobToTutorType = input.type === 'JOB_TO_TUTOR';
 
@@ -55,18 +54,17 @@ export class ConnectionResolver {
     this.pubSub.publish(NotificationCreatedEvent, result[1]);
 
     return {
-      tutorRequestConnection: result[0],
+      jobConnection: result[0],
     };
   }
 
   @Mutation(() => AcceptJobConnectionResponse)
-  async acceptTutorRequestConnection(
+  async acceptJobConnection(
     @Args('acceptJobConnectionInput')
     input: AcceptJobConnectionInput,
     @Args('connectionType') type: JobConnectionType,
   ): Promise<AcceptJobConnectionResponse> {
-    const connection =
-      this.connectionService.acceptTutorRequestConnection(input);
+    const connection = this.connectionService.acceptJobConnection(input);
 
     const notification = this.notificationService.createNotification({
       type: type === 'JOB_TO_TUTOR' ? 'TUTOR_ACCEPT' : 'LEARNER_ACCEPT',
@@ -80,17 +78,16 @@ export class ConnectionResolver {
     const result = await Promise.all([connection, notification]);
     this.pubSub.publish(NotificationCreatedEvent, result[1]);
     return {
-      tutorRequestConnection: result[0],
+      jobConnection: result[0],
     };
   }
 
   @Mutation(() => DeclineJobConnectinoResponse)
-  async declineTutorRequestConnection(
+  async declineJobConnection(
     @Args('declineJobConnectionInput')
     input: DeclineJobConnectionInput,
   ): Promise<DeclineJobConnectinoResponse> {
-    const connection =
-      this.connectionService.declineTutorRequestConnection(input);
+    const connection = this.connectionService.declineJobConnection(input);
 
     const isJobToTutorType = input.type === 'JOB_TO_TUTOR';
 
@@ -104,7 +101,7 @@ export class ConnectionResolver {
     const result = await Promise.all([connection, notification]);
     this.pubSub.publish(NotificationCreatedEvent, result[1]);
     return {
-      tutorRequestConnection: result[0],
+      jobConnection: result[0],
     };
   }
 }

@@ -21,32 +21,26 @@ import { JobService } from './job.service';
 
 @Resolver(() => Job)
 export class JobResolver {
-  constructor(private readonly tutorRequestService: JobService) {}
+  constructor(private readonly jobService: JobService) {}
 
   @Mutation(() => CreateJobResponse)
-  async createTutorRequest(
-    @Args('createTutorRequestInput') input: CreateJobInput,
-  ) {
-    const tutorRequest = await this.tutorRequestService.createTutorRequest(
-      input,
-    );
+  async createJob(@Args('createJob') input: CreateJobInput) {
+    const job = await this.jobService.createJob(input);
     return {
-      tutorRequest,
+      job,
     };
   }
 
   @Query(() => FindJobResponse)
-  async findManyTutorRequests(
-    @Args('findManyTutorRequestsInput') input: FindManyJobsInput,
+  async findManyJobs(
+    @Args('findManyJobsInput') input: FindManyJobsInput,
   ): Promise<FindJobResponse> {
-    const requests = await this.tutorRequestService.findManyTutorRequests(
-      input,
-    );
+    const requests = await this.jobService.findManyJobs(input);
 
     if (requests.length > 0) {
       const lastRequest = requests[requests.length - 1];
       const cursor = lastRequest.id;
-      const nextQuery = await this.tutorRequestService.findManyTutorRequests({
+      const nextQuery = await this.jobService.findManyJobs({
         take: input.take,
         searchString: input.searchString,
         stringCursor: cursor,
@@ -80,30 +74,28 @@ export class JobResolver {
 
   @ResolveField()
   async learner(
-    @Parent() tutorRequest: Job,
+    @Parent() job: Job,
     @Loaders() loaders: IDataloader,
   ): Promise<LearnerProfile> {
-    return loaders.leanerProfileByTutorRequestLoader.load(
-      tutorRequest.learnerId,
-    );
+    return loaders.leanerProfileByJobLoader.load(job.learnerId);
   }
 
   @ResolveField()
   async subject(
-    @Parent() tutorRequest: Job,
+    @Parent() job: Job,
     @Loaders() loaders: IDataloader,
   ): Promise<Subject> {
-    const { subjectId } = tutorRequest;
-    const subject = loaders.subjectByTutorRequestLoader.load(subjectId);
+    const { subjectId } = job;
+    const subject = loaders.subjectByJobLoader.load(subjectId);
     return subject;
   }
 
   @ResolveField(() => [JobConnection], { nullable: 'itemsAndList' })
   async connections(
-    @Parent() tutorRequest: Job,
+    @Parent() job: Job,
     @Loaders() loaders: IDataloader,
   ): Promise<JobConnection[]> {
-    const { id } = tutorRequest;
-    return loaders.connectionsByTutorRequestLoader.load(id);
+    const { id } = job;
+    return loaders.connectionsByJobLoader.load(id);
   }
 }

@@ -4,5 +4,5 @@ import { JobConnection } from '../entities';
 @ObjectType()
 export class CreateJobConnectResponse {
   @Field({ nullable: true })
-  tutorRequestConnection?: JobConnection;
+  jobConnection?: JobConnection;
 }

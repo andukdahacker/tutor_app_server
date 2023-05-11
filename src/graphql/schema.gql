@@ -69,15 +69,15 @@ enum JobConnectType {
 }
 
 type AcceptJobConnectionResponse {
-  tutorRequestConnection: JobConnection
+  jobConnection: JobConnection
 }
 
 type CreateJobConnectResponse {
-  tutorRequestConnection: JobConnection
+  jobConnection: JobConnection
 }
 
 type DeclineJobConnectinoResponse {
-  tutorRequestConnection: JobConnection
+  jobConnection: JobConnection
 }
 
 type LearnerProfile {
@@ -147,7 +147,7 @@ type TutorProfile {
   id: String!
   bio: String
   user: User!
-  tutorRequestConnections: [JobConnection]
+  jobConnections: [JobConnection]
   tutorProfileSubject: [TutorProfileSubject]
 }
 
@@ -168,7 +168,7 @@ scalar DateScalar
 
 type Query {
   me: MeResponse!
-  findManyTutorRequests(findManyTutorRequestsInput: FindManyJobsInput!): FindJobResponse!
+  findManyJobs(findManyJobsInput: FindManyJobsInput!): FindJobResponse!
   findManyTutorProfiles(findManyTutorProfilesInput: FindManyTutorProfilesInput!): FindManyTutorProfilesResponse!
 }
 
@@ -191,10 +191,10 @@ type Mutation {
   logout: LogoutResponse!
   createLearnerProfile(createLearnerProfileInput: CreateLearnerProfileInput!): CreateLeanerProfileResponse!
   updateLearnerProfile(updateLearnerProfileInput: UpdateLearnerProfileInput!): UpdateLearnerProfileResponse!
-  createTutorRequestConnection(createTutorRequestConnectInput: CreateJobConnectInput!): CreateJobConnectResponse!
-  acceptTutorRequestConnection(acceptJobConnectionInput: AcceptJobConnectionInput!, connectionType: String!): AcceptJobConnectionResponse!
-  declineTutorRequestConnection(declineJobConnectionInput: DeclineJobConnectionInput!): DeclineJobConnectinoResponse!
-  createTutorRequest(createTutorRequestInput: CreateJobInput!): CreateJobResponse!
+  createJobConnection(createJobConnectInput: CreateJobConnectInput!): CreateJobConnectResponse!
+  acceptJobConnection(acceptJobConnectionInput: AcceptJobConnectionInput!, connectionType: String!): AcceptJobConnectionResponse!
+  declineJobConnection(declineJobConnectionInput: DeclineJobConnectionInput!): DeclineJobConnectinoResponse!
+  createJob(createJob: CreateJobInput!): CreateJobResponse!
   createSubject(createSubjectInput: CreateSubjectInput!): CreateSubjectResponse!
   createTutorProfile(createTutorProfileInput: CreateTutorProfileInput!): TutorProfile
   updateTutorProfile(updateTutorProfileInput: UpdateTutorProfileInput!): TutorProfile

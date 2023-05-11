@@ -104,7 +104,7 @@ export class TutorProfileResolver {
   }
 
   @ResolveField(() => [JobConnection], { nullable: 'itemsAndList' })
-  async tutorRequestConnections(
+  async jobConnections(
     @Parent() tutorProfile: TutorProfile,
     @Loaders() loaders: IDataloader,
   ) {

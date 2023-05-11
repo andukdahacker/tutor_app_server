@@ -6,5 +6,5 @@ export class JobConnectionWhereInput {
   tutorId?: string;
 
   @Field({ nullable: true })
-  tutorRequestId?: string;
+  jobId?: string;
 }
