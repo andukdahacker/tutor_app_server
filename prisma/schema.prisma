@@ -48,10 +48,20 @@ model Job {
   learnerId      String
   subject        Subject         @relation(fields: [subjectId], references: [id], onDelete: Cascade)
   subjectId      String
+  title          String
   description    String?
   createdAt      DateTime        @default(now())
+  fee            Int
+  paymentPeriod  PaymentPeriod
+  duration       Int?
   updatedAt      DateTime        @updatedAt
   jobConnections JobConnection[]
+}
+
+enum PaymentPeriod {
+  HOURLY
+  MONTHLY
+  YEARLY
 }
 
 model JobConnection {
