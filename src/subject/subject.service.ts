@@ -1,5 +1,6 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { FindManySubjectsInput } from './dto/inputs';
 import { CreateSubjectInput } from './dto/inputs/create-subject.input';
 import { SubjectWhereUniqueInput } from './dto/inputs/subject-where-unique.input';
 
@@ -8,27 +9,34 @@ export class SubjectService {
   constructor(private readonly prisma: PrismaService) {}
 
   async createSubject(input: CreateSubjectInput) {
-    try {
-      return await this.prisma.subject.create({
-        data: {
-          name: input.name,
-          description: input.description,
-        },
-      });
-    } catch (error) {
-      throw new InternalServerErrorException();
-    }
+    return await this.prisma.subject.create({
+      data: {
+        name: input.name,
+        description: input.description,
+      },
+    });
   }
 
   async findSubject(input: SubjectWhereUniqueInput) {
-    try {
-      return await this.prisma.subject.findUnique({
-        where: {
-          id: input.id,
+    return await this.prisma.subject.findUnique({
+      where: {
+        id: input.id,
+      },
+    });
+  }
+
+  async findManySubject(input: FindManySubjectsInput) {
+    return await this.prisma.subject.findMany({
+      where: {
+        name: {
+          contains: input.searchString,
+          mode: 'insensitive',
         },
-      });
-    } catch (error) {
-      throw new InternalServerErrorException();
-    }
+      },
+      take: input.take,
+      cursor: {
+        id: input.stringCursor,
+      },
+    });
   }
 }

@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { GetManyNotificationsInput } from './dto/inputs/get-many-notifications.input';
 import { CreateNotificationInput } from './types/create-notification-input.type';
 
 @Injectable()
@@ -30,5 +31,19 @@ export class NotificationService {
     });
 
     return notification;
+  }
+
+  async getNotifications(userId: string, input: GetManyNotificationsInput) {
+    return await this.prisma.notification.findMany({
+      where: {
+        receiver: {
+          id: userId,
+        },
+      },
+      take: input.take,
+      cursor: {
+        id: input.stringCursor,
+      },
+    });
   }
 }

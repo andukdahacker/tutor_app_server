@@ -1,7 +1,11 @@
-import { Args, Mutation, Resolver } from '@nestjs/graphql';
+import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { ArrayUtils } from 'src/shared/utils/array.utils';
 import { Subject } from './dto/entities';
-import { CreateSubjectInput } from './dto/inputs';
-import { CreateSubjectResponse } from './dto/response';
+import { CreateSubjectInput, FindManySubjectsInput } from './dto/inputs';
+import {
+  CreateSubjectResponse,
+  FindManySubjectsRespones,
+} from './dto/response';
 import { SubjectService } from './subject.service';
 
 @Resolver(() => Subject)
@@ -14,6 +18,44 @@ export class SubjectResolver {
 
     return {
       subject,
+    };
+  }
+
+  @Query(() => FindManySubjectsRespones)
+  async findManySubjects(
+    @Args('findManySubjectsInput') input: FindManySubjectsInput,
+  ): Promise<FindManySubjectsRespones> {
+    const subjects = await this.subjectService.findManySubject(input);
+
+    if (subjects.length > 0) {
+      const lastSubject = ArrayUtils.last(subjects);
+      const cursor = lastSubject.id;
+
+      const nextQuery = await this.subjectService.findManySubject({
+        stringCursor: cursor,
+        ...input,
+      });
+
+      if (nextQuery.length > 0) {
+        return {
+          nodes: subjects,
+          pageInfo: {
+            hasNextPage: true,
+            lastTake: nextQuery.length,
+            totalAmount: subjects.length,
+            cursor: { value: cursor },
+          },
+        };
+      }
+    }
+
+    return {
+      nodes: subjects,
+      pageInfo: {
+        hasNextPage: false,
+        lastTake: 0,
+        totalAmount: subjects.length,
+      },
     };
   }
 }

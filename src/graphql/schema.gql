@@ -50,6 +50,28 @@ enum NotificationType {
   LEARNER_DECLINE
 }
 
+type PageInfo {
+  hasNextPage: Boolean!
+  cursor: Cursor
+  lastTake: Int!
+  totalAmount: Int!
+}
+
+union Cursor = StringCursor | IntCursor
+
+type StringCursor {
+  value: String!
+}
+
+type IntCursor {
+  value: Int!
+}
+
+type GetManyNotificationsResponse {
+  nodes: [Notification]
+  pageInfo: PageInfo!
+}
+
 type JobConnection {
   jobId: String!
   tutorId: String!
@@ -78,6 +100,11 @@ type CreateJobConnectResponse {
 
 type DeclineJobConnectinoResponse {
   jobConnection: JobConnection
+}
+
+type GetRequestedJobsForTutorResponse {
+  nodes: [JobConnection]
+  pageInfo: PageInfo!
 }
 
 type LearnerProfile {
@@ -109,23 +136,6 @@ type CreateJobResponse {
   job: Job
 }
 
-type PageInfo {
-  hasNextPage: Boolean!
-  cursor: Cursor
-  lastTake: Int!
-  totalAmount: Int!
-}
-
-union Cursor = StringCursor | IntCursor
-
-type StringCursor {
-  value: String!
-}
-
-type IntCursor {
-  value: Int!
-}
-
 type FindJobResponse {
   nodes: [Job]
   pageInfo: PageInfo!
@@ -141,6 +151,11 @@ type UpdateLearnerProfileResponse {
 
 type CreateSubjectResponse {
   subject: Subject
+}
+
+type FindManySubjectsRespones {
+  nodes: [Subject]
+  pageInfo: PageInfo!
 }
 
 type TutorProfile {
@@ -168,8 +183,22 @@ scalar DateScalar
 
 type Query {
   me: MeResponse!
+  getRequestedJobsForTutor(getTutorJobConnectionsInput: GetRequestedJobForTutorInput!): GetRequestedJobsForTutorResponse!
+  getManyNotifications(getManyNotificationsInput: GetManyNotificationsInput!): GetManyNotificationsResponse!
   findManyJobs(findManyJobsInput: FindManyJobsInput!): FindJobResponse!
+  findManySubjects(findManySubjectsInput: FindManySubjectsInput!): FindManySubjectsRespones!
   findManyTutorProfiles(findManyTutorProfilesInput: FindManyTutorProfilesInput!): FindManyTutorProfilesResponse!
+}
+
+input GetRequestedJobForTutorInput {
+  take: Int!
+  stringCursor: String
+  tutorId: String!
+}
+
+input GetManyNotificationsInput {
+  take: Int!
+  stringCursor: String
 }
 
 input FindManyJobsInput {
@@ -180,6 +209,12 @@ input FindManyJobsInput {
   jobType: String
   jobMethod: String
   sortOrder: String!
+}
+
+input FindManySubjectsInput {
+  take: Int!
+  stringCursor: String
+  searchString: String!
 }
 
 input FindManyTutorProfilesInput {
@@ -271,5 +306,5 @@ input UpdateTutorProfileInput {
 }
 
 type Subscription {
-  notifications(userId: String!): Notification!
+  subscribeNotifications(userId: String!): Notification!
 }

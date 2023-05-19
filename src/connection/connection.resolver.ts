@@ -1,17 +1,22 @@
 import { Inject } from '@nestjs/common';
-import { Args, Mutation, Resolver } from '@nestjs/graphql';
+import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { JobConnectionType } from '@prisma/client';
 import { RedisPubSub } from 'graphql-redis-subscriptions';
 import { NotificationCreatedEvent } from 'src/notification/notification.constants';
 import { NotificationService } from 'src/notification/notification.service';
 import { PUB_SUB } from 'src/pub-sub/pub-sub.module';
+import { paginate } from 'src/shared/utils/pagination.utils';
 import { ConnectionService } from './connection.service';
-import { CreateJobConnectInput } from './dto/inputs';
+import {
+  CreateJobConnectInput,
+  GetRequestedJobForTutorInput,
+} from './dto/inputs';
 import { AcceptJobConnectionInput } from './dto/inputs/accept-job-connection.input';
 import { DeclineJobConnectionInput } from './dto/inputs/decline-job-connection.input';
 import {
   AcceptJobConnectionResponse,
   CreateJobConnectResponse,
+  GetRequestedJobsForTutorResponse,
 } from './dto/response';
 import { DeclineJobConnectinoResponse } from './dto/response/decline-job-connection.response';
 
@@ -103,5 +108,21 @@ export class ConnectionResolver {
     return {
       jobConnection: result[0],
     };
+  }
+
+  @Query(() => GetRequestedJobsForTutorResponse)
+  async getRequestedJobsForTutor(
+    @Args('getTutorJobConnectionsInput') input: GetRequestedJobForTutorInput,
+  ): Promise<GetRequestedJobsForTutorResponse> {
+    const jobConnections = await this.connectionService.getTutorJobConnections(
+      input,
+    );
+
+    return await paginate(jobConnections, 'jobId', async (cursor) => {
+      return await this.connectionService.getTutorJobConnections({
+        stringCursor: cursor as string,
+        ...input,
+      });
+    });
   }
 }

@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 import { ConnectionStatus } from '@prisma/client';
+import { GetRequestedJobForTutorInput } from './dto/inputs';
 import { AcceptJobConnectionInput } from './dto/inputs/accept-job-connection.input';
 import { CreateJobConnectInput } from './dto/inputs/create-job-connection.input';
 import { DeclineJobConnectionInput } from './dto/inputs/decline-job-connection.input';
@@ -53,6 +54,23 @@ export class ConnectionService {
       },
       data: {
         status: ConnectionStatus.DECLINED,
+      },
+    });
+  }
+
+  async getTutorJobConnections(input: GetRequestedJobForTutorInput) {
+    return await this.prisma.jobConnection.findMany({
+      where: {
+        tutorId: input.tutorId,
+        type: 'JOB_TO_TUTOR',
+        status: 'REQUESTED',
+      },
+      take: input.take,
+      cursor: {
+        jobId_tutorId: {
+          jobId: input.stringCursor,
+          tutorId: input.tutorId,
+        },
       },
     });
   }
