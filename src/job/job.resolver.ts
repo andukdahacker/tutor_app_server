@@ -42,8 +42,8 @@ export class JobResolver {
       const cursor = lastRequest.id;
       const nextQuery = await this.jobService.findManyJobs({
         take: input.take,
-        searchString: input.searchString,
         stringCursor: cursor,
+        ...input,
       });
 
       if (nextQuery.length > 0) {

@@ -176,6 +176,10 @@ input FindManyJobsInput {
   take: Int!
   stringCursor: String
   searchString: String!
+  fee: Int
+  jobType: String
+  jobMethod: String
+  sortOrder: String!
 }
 
 input FindManyTutorProfilesInput {
@@ -247,6 +251,10 @@ input CreateJobInput {
   learnerId: String!
   subjectId: String!
   description: String
+  fee: Int!
+  title: String!
+  jobType: String!
+  jobMethod: String!
 }
 
 input CreateSubjectInput {

@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
+
 import { CreateJobInput } from './dto/inputs';
 import { FindManyJobsInput } from './dto/inputs/find-many-jobs.input';
 
@@ -21,6 +22,10 @@ export class JobService {
             id: input.subjectId,
           },
         },
+        fee: input.fee,
+        title: input.title,
+        jobType: input.jobType,
+        jobMethod: input.jobMethod,
         description: input.description,
       },
     });
@@ -66,6 +71,12 @@ export class JobService {
             },
           },
         ],
+        fee: input.fee,
+        jobType: input.jobType,
+        jobMethod: input.jobMethod,
+      },
+      orderBy: {
+        createdAt: input.sortOrder,
       },
     };
 

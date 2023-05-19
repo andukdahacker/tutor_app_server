@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { JobMethod, JobType, PrismaClient } from '@prisma/client';
 import * as argon2 from 'argon2';
 
 function getArgs() {
@@ -43,7 +43,15 @@ async function seed() {
           create: {
             bio: `Hi I'm Learner${i}. I am here to learn`,
             jobs: {
-              create: [{ subject: { create: { name: `subject${i}` } } }],
+              create: [
+                {
+                  subject: { create: { name: `subject${i}` } },
+                  fee: 100000,
+                  title: 'title',
+                  jobType: JobType.TUTOR,
+                  jobMethod: JobMethod.BOTH,
+                },
+              ],
             },
           },
         },

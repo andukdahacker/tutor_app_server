@@ -27,11 +27,13 @@ model User {
 }
 
 model LearnerProfile {
-  id     String  @id @default(cuid())
-  bio    String? @db.VarChar(200)
-  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId String  @unique
-  jobs   Job[]
+  id       String  @id @default(cuid())
+  bio      String? @db.VarChar(200)
+  user     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId   String  @unique
+  jobs     Job[]
+  jobTitle String?
+  avatar   String?
 }
 
 model Subject {
@@ -52,16 +54,22 @@ model Job {
   description    String?
   createdAt      DateTime        @default(now())
   fee            Int
-  paymentPeriod  PaymentPeriod
+  jobType        JobType
+  jobMethod      JobMethod
   duration       Int?
   updatedAt      DateTime        @updatedAt
   jobConnections JobConnection[]
 }
 
-enum PaymentPeriod {
-  HOURLY
-  MONTHLY
-  YEARLY
+enum JobType {
+  QA
+  TUTOR
+}
+
+enum JobMethod {
+  ONLINE
+  OFFLINE
+  BOTH
 }
 
 model JobConnection {
