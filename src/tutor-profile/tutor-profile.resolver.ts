@@ -49,7 +49,7 @@ export class TutorProfileResolver {
   }
 
   @Query(() => FindManyTutorProfilesResponse)
-  async findManyTutorProfiles(
+  async tutorProfiles(
     @Args('findManyTutorProfilesInput') input: FindManyTutorProfilesInput,
   ): Promise<FindManyTutorProfilesResponse> {
     const profiles = await this.tutorProfileService.findManyTutorProfiles(

@@ -213,9 +213,9 @@ type Query {
   me: MeResponse!
   getRequestedJobsForTutor(getTutorJobConnectionsInput: GetRequestedJobForTutorInput!): GetRequestedJobsForTutorResponse!
   getManyNotifications(getManyNotificationsInput: GetManyNotificationsInput!): GetManyNotificationsResponse!
-  findManyJobs(findManyJobsInput: FindManyJobsInput!): FindJobResponse!
-  findManySubjects(findManySubjectsInput: FindManySubjectsInput!): FindManySubjectsRespones!
-  findManyTutorProfiles(findManyTutorProfilesInput: FindManyTutorProfilesInput!): FindManyTutorProfilesResponse!
+  jobs(findManyJobsInput: FindManyJobsInput!): FindJobResponse!
+  subjects(findManySubjectsInput: FindManySubjectsInput!): FindManySubjectsRespones!
+  tutorProfiles(findManyTutorProfilesInput: FindManyTutorProfilesInput!): FindManyTutorProfilesResponse!
 }
 
 input GetRequestedJobForTutorInput {

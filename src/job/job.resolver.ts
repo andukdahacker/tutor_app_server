@@ -32,7 +32,7 @@ export class JobResolver {
   }
 
   @Query(() => FindJobResponse)
-  async findManyJobs(
+  async jobs(
     @Args('findManyJobsInput') input: FindManyJobsInput,
   ): Promise<FindJobResponse> {
     const requests = await this.jobService.findManyJobs(input);

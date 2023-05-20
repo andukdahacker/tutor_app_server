@@ -22,7 +22,7 @@ export class SubjectResolver {
   }
 
   @Query(() => FindManySubjectsRespones)
-  async findManySubjects(
+  async subjects(
     @Args('findManySubjectsInput') input: FindManySubjectsInput,
   ): Promise<FindManySubjectsRespones> {
     const subjects = await this.subjectService.findManySubject(input);
