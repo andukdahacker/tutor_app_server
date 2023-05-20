@@ -11,19 +11,23 @@ datasource db {
 }
 
 model User {
-  id                    String          @id @default(cuid())
-  username              String          @db.VarChar
-  email                 String          @unique @db.VarChar
-  password              String          @db.VarChar
-  isVerified            Boolean         @default(false)
+  id                    String           @id @default(cuid())
+  username              String           @db.VarChar
+  email                 String           @unique @db.VarChar
+  password              String           @db.VarChar
+  isVerified            Boolean          @default(false)
   learnerProfile        LearnerProfile?
   tutorProfile          TutorProfile?
-  notificationNotifier  Notification[]  @relation("notifier")
-  notificationsReceiver Notification[]  @relation("receiver")
-  createdAt             DateTime        @default(now())
-  updatedAt             DateTime        @updatedAt
+  notificationNotifier  Notification[]   @relation("notifier")
+  notificationsReceiver Notification[]   @relation("receiver")
+  createdAt             DateTime         @default(now())
+  updatedAt             DateTime         @updatedAt
   message               ChatMessage[]
   chatMembers           ChatMember[]
+  rater                 Rating[]         @relation("rater")
+  rated                 Rating[]         @relation("rated")
+  workExperience        WorkExperience[]
+  education             Education[]
 }
 
 model LearnerProfile {
@@ -53,12 +57,13 @@ model Job {
   title          String
   description    String?
   createdAt      DateTime        @default(now())
-  fee            Int
+  fee            Decimal         @db.Money
   jobType        JobType
   jobMethod      JobMethod
   duration       Int?
   updatedAt      DateTime        @updatedAt
   jobConnections JobConnection[]
+  ratings        Rating[]
 }
 
 enum JobType {
@@ -91,6 +96,44 @@ model TutorProfile {
   userId              String                @unique
   jobConnections      JobConnection[]
   tutorProfileSubject TutorProfileSubject[]
+}
+
+model WorkExperience {
+  id           String   @id @default(cuid())
+  position     String
+  workplace    String
+  workplaceUrl String?
+  description  String?
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId       String
+  fromDate     DateTime
+  toDate       DateTime
+}
+
+model Education {
+  id                 String   @id @default(cuid())
+  educationEntity    String
+  educationEntityUrl String?
+  fromDate           DateTime
+  toDate             DateTime
+  description        String?
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId             String
+}
+
+model Rating {
+  score     Int
+  comment   String?
+  rater     User     @relation(fields: [raterId], references: [id], onDelete: Cascade, "rater")
+  raterId   String
+  rated     User     @relation(fields: [ratedId], references: [id], onDelete: Cascade, "rated")
+  ratedId   String
+  job       Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  jobId     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@id([ratedId, raterId, jobId])
 }
 
 model TutorProfileSubject {

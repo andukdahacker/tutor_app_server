@@ -176,6 +176,34 @@ type FindManyTutorProfilesResponse {
   pageInfo: PageInfo!
 }
 
+type WorkExperience {
+  id: String!
+  position: String!
+  workplace: String!
+  workplaceUrl: String
+  fromDate: DateScalar!
+  toDate: DateScalar!
+}
+
+type Education {
+  id: String!
+  educationEntity: String!
+  educationEntityUrl: String
+  fromDate: DateScalar!
+  toDate: DateScalar!
+  description: String
+}
+
+type Rating {
+  score: Int!
+  comment: String
+  rater: User!
+  rated: User!
+  job: Job!
+  createdAt: DateScalar!
+  updatedAt: DateScalar
+}
+
 """
 `Date` type as integer. Type represents date and time as number of milliseconds from start of UNIX epoch.
 """
@@ -237,6 +265,15 @@ type Mutation {
   createSubject(createSubjectInput: CreateSubjectInput!): CreateSubjectResponse!
   createTutorProfile(createTutorProfileInput: CreateTutorProfileInput!): TutorProfile
   updateTutorProfile(updateTutorProfileInput: UpdateTutorProfileInput!): TutorProfile
+  createWorkExperience(createWorkExperienceInput: CreateWorkExperienceInput!): WorkExperience!
+  updateWorkExperience(updateWorkExperienceInput: UpdateWorkExperienceInput!): WorkExperience!
+  deleteWorkExperience(workExperienceId: String!): WorkExperience!
+  createEducation(createEducationInput: CreateEducationInput!): Education!
+  updateEducation(updateEducationInput: UpdateEducationInput!): Education!
+  deleteEducation(educationId: String!): Education!
+  createRating(createRatingInput: CreateRatingInput!): Rating!
+  updateRating(updateRatingInput: UpdateRatingInput!): Rating!
+  deleteRating(deleteRatingInput: DeleteRatingInput!): Rating!
 }
 
 input LoginInput {
@@ -303,6 +340,64 @@ input CreateTutorProfileInput {
 
 input UpdateTutorProfileInput {
   bio: String
+}
+
+input CreateWorkExperienceInput {
+  position: String!
+  workplace: String!
+  workplaceUrl: String
+  description: String
+  fromDate: DateScalar!
+  toDate: DateScalar!
+}
+
+input UpdateWorkExperienceInput {
+  position: String
+  workplace: String
+  workplaceUrl: String
+  description: String
+  fromDate: DateScalar
+  toDate: DateScalar
+  workExperienceId: String!
+}
+
+input CreateEducationInput {
+  educationEntity: String
+  educationEntityUrl: String
+  fromDate: DateScalar
+  toDate: DateScalar
+  description: String
+}
+
+input UpdateEducationInput {
+  id: String
+  educationEntity: String
+  educationEntityUrl: String
+  fromDate: DateScalar
+  toDate: DateScalar
+  description: String
+}
+
+input CreateRatingInput {
+  score: Float!
+  raterId: String!
+  ratedId: String!
+  jobId: String!
+  comment: String
+}
+
+input UpdateRatingInput {
+  score: Float
+  raterId: String
+  ratedId: String
+  jobId: String
+  comment: String
+}
+
+input DeleteRatingInput {
+  jobId: String!
+  raterId: String!
+  ratedId: String!
 }
 
 type Subscription {

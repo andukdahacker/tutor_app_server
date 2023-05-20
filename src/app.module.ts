@@ -25,6 +25,9 @@ import { JwtAuthGuard } from './shared/guards/jwt-auth.guard';
 import { SubjectModule } from './subject/subject.module';
 import { TutorProfileModule } from './tutor-profile/tutor-profile.module';
 import { UserModule } from './user/user.module';
+import { WorkExperienceModule } from './work-experience/work-experience.module';
+import { EducationModule } from './education/education.module';
+import { RatingModule } from './rating/rating.module';
 
 @Module({
   imports: [
@@ -64,6 +67,9 @@ import { UserModule } from './user/user.module';
     DataloaderModule,
     PubSubModule,
     RedisModule,
+    WorkExperienceModule,
+    EducationModule,
+    RatingModule,
     // FirebaseModule,
   ],
   controllers: [AppController],
