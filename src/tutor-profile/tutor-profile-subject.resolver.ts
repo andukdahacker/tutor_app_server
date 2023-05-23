@@ -3,7 +3,7 @@ import DataLoader from 'dataloader';
 import { Loader } from 'src/dataloader/dataloader';
 import { Subject } from 'src/subject/dto/entities';
 import { TutorProfileSubject } from './dto/entities/tutor-profile-subject.entity';
-import { SubjectByTutorProfileSubjectLoader } from './loaders/subject-by-tutor-profile-subjects.loader';
+import { SubjectByTutorProfileSubjectLoader } from './loaders';
 import { TutorProfileSubjectService } from './tutor-profile-subject.service';
 
 @Resolver(() => TutorProfileSubject)
