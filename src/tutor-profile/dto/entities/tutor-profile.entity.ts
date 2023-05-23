@@ -21,5 +21,5 @@ export class TutorProfile {
   jobConnections?: JobConnection[];
 
   @Field(() => [TutorProfileSubject], { nullable: 'itemsAndList' })
-  tutorProfileSubject?: TutorProfileSubject[];
+  tutorProfileSubjects?: TutorProfileSubject[];
 }

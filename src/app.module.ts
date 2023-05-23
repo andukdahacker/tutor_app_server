@@ -12,35 +12,28 @@ import { AuthModule } from './auth/auth.module';
 import { AuthService } from './auth/auth.service';
 import { ChatModule } from './chat/chat.module';
 import { ConnectionModule } from './connection/connection.module';
-import { DataloaderModule } from './dataloader/dataloader.module';
-import { DataloaderService } from './dataloader/dataloader.service';
+import { EducationModule } from './education/education.module';
 import { JobModule } from './job/job.module';
 import { LearnerProfileModule } from './learner-profile/learner-profile.module';
 import { NotificationModule } from './notification/notification.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { PrismaService } from './prisma/prisma.service';
 import { PubSubModule } from './pub-sub/pub-sub.module';
+import { RatingModule } from './rating/rating.module';
 import { RedisModule } from './redis/redis.module';
 import { JwtAuthGuard } from './shared/guards/jwt-auth.guard';
 import { SubjectModule } from './subject/subject.module';
 import { TutorProfileModule } from './tutor-profile/tutor-profile.module';
 import { UserModule } from './user/user.module';
 import { WorkExperienceModule } from './work-experience/work-experience.module';
-import { EducationModule } from './education/education.module';
-import { RatingModule } from './rating/rating.module';
 
 @Module({
   imports: [
     GraphQLModule.forRootAsync<ApolloDriverConfig>({
       driver: ApolloDriver,
-      imports: [DataloaderModule],
-      inject: [DataloaderService],
-      useFactory: (dataloaderService: DataloaderService) => {
+      useFactory: () => {
         return {
           playground: false,
-          context: () => {
-            return { loaders: dataloaderService.createLoader() };
-          },
           autoSchemaFile: join(process.cwd(), 'src/graphql/schema.gql'),
           plugins: [
             ApolloServerPluginLandingPageLocalDefault({ includeCookies: true }),
@@ -64,7 +57,6 @@ import { RatingModule } from './rating/rating.module';
     JobModule,
     SubjectModule,
     TutorProfileModule,
-    DataloaderModule,
     PubSubModule,
     RedisModule,
     WorkExperienceModule,

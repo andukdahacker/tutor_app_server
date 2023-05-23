@@ -52,26 +52,4 @@ export class LearnerProfileService {
       throw new InternalServerErrorException();
     }
   }
-
-  async findLearnersByBatch(learnerIds: string[]) {
-    try {
-      const result = await this.prisma.learnerProfile.findMany({
-        where: {
-          id: {
-            in: learnerIds,
-          },
-        },
-      });
-
-      const mappedResult = learnerIds.map(
-        (id) =>
-          result.find((result) => result.id === id) ||
-          new InternalServerErrorException(),
-      );
-
-      return mappedResult;
-    } catch (error) {
-      throw new InternalServerErrorException();
-    }
-  }
 }

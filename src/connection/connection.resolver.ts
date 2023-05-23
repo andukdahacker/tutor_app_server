@@ -7,10 +7,7 @@ import { NotificationService } from 'src/notification/notification.service';
 import { PUB_SUB } from 'src/pub-sub/pub-sub.module';
 import { paginate } from 'src/shared/utils/pagination.utils';
 import { ConnectionService } from './connection.service';
-import {
-  CreateJobConnectInput,
-  GetRequestedJobForTutorInput,
-} from './dto/inputs';
+import { CreateJobConnectInput, JobConnectionWhereInput } from './dto/inputs';
 import { AcceptJobConnectionInput } from './dto/inputs/accept-job-connection.input';
 import { DeclineJobConnectionInput } from './dto/inputs/decline-job-connection.input';
 import {
@@ -111,15 +108,15 @@ export class ConnectionResolver {
   }
 
   @Query(() => GetRequestedJobsForTutorResponse)
-  async getRequestedJobsForTutor(
-    @Args('getTutorJobConnectionsInput') input: GetRequestedJobForTutorInput,
+  async jobConnections(
+    @Args('jobConnectionWhereInput') input: JobConnectionWhereInput,
   ): Promise<GetRequestedJobsForTutorResponse> {
-    const jobConnections = await this.connectionService.getTutorJobConnections(
+    const jobConnections = await this.connectionService.getJobConnections(
       input,
     );
 
     return await paginate(jobConnections, 'jobId', async (cursor) => {
-      return await this.connectionService.getTutorJobConnections({
+      return await this.connectionService.getJobConnections({
         stringCursor: cursor as string,
         ...input,
       });

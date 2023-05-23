@@ -40,10 +40,31 @@ export class NotificationService {
           id: userId,
         },
       },
-      take: input.take,
+      take: input.take ?? undefined,
       cursor: {
-        id: input.stringCursor,
+        id: input.stringCursor ?? undefined,
+      },
+      skip: input.stringCursor ? 1 : undefined,
+    });
+  }
+
+  async getUserByNotificationIds(ids: string[]) {
+    const notifications = await this.prisma.notification.findMany({
+      where: {
+        id: {
+          in: ids,
+        },
+      },
+      include: {
+        notifier: true,
       },
     });
+
+    const mappedResult = ids.map(
+      (id) =>
+        notifications.find((notification) => notification.id == id).notifier,
+    );
+
+    return mappedResult;
   }
 }

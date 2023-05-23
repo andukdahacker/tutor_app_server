@@ -7,16 +7,17 @@ import {
   Resolver,
   Subscription,
 } from '@nestjs/graphql';
+import DataLoader from 'dataloader';
 import { RedisPubSub } from 'graphql-redis-subscriptions';
-
 import { ITokenPayload } from 'src/auth/types';
-import { IDataloader } from 'src/dataloader/types/IDataloader';
+import { Loader } from 'src/dataloader/dataloader';
 import { PUB_SUB } from 'src/pub-sub/pub-sub.module';
 import { TokenPayload } from 'src/shared/decorators/current-user.decorator';
-import { Loaders } from 'src/shared/decorators/dataloader.decorator';
+import { User } from 'src/user/dto/entities';
 import { Notification } from './dto/entities';
 import { GetManyNotificationsInput } from './dto/inputs/get-many-notifications.input';
 import { GetManyNotificationsResponse } from './dto/response';
+import { UserByNotificationLoader } from './loaders';
 import { NotificationCreatedEvent } from './notification.constants';
 import { NotificationService } from './notification.service';
 @Resolver(() => Notification)
@@ -74,7 +75,6 @@ export class NotificationResolver {
 
   @Subscription(() => Notification, {
     resolve: (payload: Notification) => {
-      console.log('payload', payload);
       return payload;
     },
     filter: (payload: Notification, variables) => {
@@ -88,19 +88,8 @@ export class NotificationResolver {
   @ResolveField()
   async notifier(
     @Parent() notification: Notification,
-    @Loaders() loader: IDataloader,
+    @Loader(UserByNotificationLoader) loader: DataLoader<string, User>,
   ) {
-    const user = loader.usersLoader.load(notification.notifierId);
-
-    return user;
-  }
-
-  @ResolveField()
-  async receiver(
-    @Parent() notification: Notification,
-    @Loaders() loader: IDataloader,
-  ) {
-    const user = loader.usersLoader.load(notification.receiverId);
-    return user;
+    return loader.load(notification.id);
   }
 }

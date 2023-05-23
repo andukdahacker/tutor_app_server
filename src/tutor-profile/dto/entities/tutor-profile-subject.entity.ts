@@ -14,5 +14,5 @@ export class TutorProfileSubject {
   subject: Subject;
 
   @HideField()
-  subjectId: number;
+  subjectId: string;
 }

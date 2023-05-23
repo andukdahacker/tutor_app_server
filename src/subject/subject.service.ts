@@ -33,10 +33,11 @@ export class SubjectService {
           mode: 'insensitive',
         },
       },
-      take: input.take,
+      take: input.take ?? undefined,
       cursor: {
-        id: input.stringCursor,
+        id: input.stringCursor ?? undefined,
       },
+      skip: input.stringCursor ? 1 : undefined,
     });
   }
 }

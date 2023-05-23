@@ -35,7 +35,6 @@ type Notification {
   id: String!
   notificationType: NotificationType!
   notifier: User
-  receiver: User!
   itemId: String
   isRead: Boolean!
   createdAt: DateScalar!
@@ -107,6 +106,15 @@ type GetRequestedJobsForTutorResponse {
   pageInfo: PageInfo!
 }
 
+type Education {
+  id: String!
+  educationEntity: String!
+  educationEntityUrl: String
+  fromDate: DateScalar!
+  toDate: DateScalar!
+  description: String
+}
+
 type LearnerProfile {
   id: String!
   bio: String
@@ -149,6 +157,16 @@ type UpdateLearnerProfileResponse {
   learnerProfile: LearnerProfile
 }
 
+type Rating {
+  score: Int!
+  comment: String
+  rater: User!
+  rated: User!
+  job: Job!
+  createdAt: DateScalar!
+  updatedAt: DateScalar
+}
+
 type CreateSubjectResponse {
   subject: Subject
 }
@@ -163,7 +181,7 @@ type TutorProfile {
   bio: String
   user: User!
   jobConnections: [JobConnection]
-  tutorProfileSubject: [TutorProfileSubject]
+  tutorProfileSubjects: [TutorProfileSubject]
 }
 
 type TutorProfileSubject {
@@ -185,25 +203,6 @@ type WorkExperience {
   toDate: DateScalar!
 }
 
-type Education {
-  id: String!
-  educationEntity: String!
-  educationEntityUrl: String
-  fromDate: DateScalar!
-  toDate: DateScalar!
-  description: String
-}
-
-type Rating {
-  score: Int!
-  comment: String
-  rater: User!
-  rated: User!
-  job: Job!
-  createdAt: DateScalar!
-  updatedAt: DateScalar
-}
-
 """
 `Date` type as integer. Type represents date and time as number of milliseconds from start of UNIX epoch.
 """
@@ -211,17 +210,20 @@ scalar DateScalar
 
 type Query {
   me: MeResponse!
-  getRequestedJobsForTutor(getTutorJobConnectionsInput: GetRequestedJobForTutorInput!): GetRequestedJobsForTutorResponse!
+  jobConnections(jobConnectionWhereInput: JobConnectionWhereInput!): GetRequestedJobsForTutorResponse!
   getManyNotifications(getManyNotificationsInput: GetManyNotificationsInput!): GetManyNotificationsResponse!
   jobs(findManyJobsInput: FindManyJobsInput!): FindJobResponse!
   subjects(findManySubjectsInput: FindManySubjectsInput!): FindManySubjectsRespones!
   tutorProfiles(findManyTutorProfilesInput: FindManyTutorProfilesInput!): FindManyTutorProfilesResponse!
 }
 
-input GetRequestedJobForTutorInput {
+input JobConnectionWhereInput {
   take: Int!
   stringCursor: String
-  tutorId: String!
+  tutorId: String
+  jobId: String
+  type: String
+  status: String
 }
 
 input GetManyNotificationsInput {

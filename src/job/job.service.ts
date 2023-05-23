@@ -82,4 +82,61 @@ export class JobService {
 
     return await this.prisma.job.findMany(args);
   }
+
+  async findLearnerByJobIds(ids: string[]) {
+    const jobs = await this.prisma.job.findMany({
+      where: {
+        id: {
+          in: ids,
+        },
+      },
+      include: {
+        learner: true,
+      },
+    });
+
+    const mappedResult = ids.map(
+      (id) => jobs.find((job) => job.id == id).learner,
+    );
+
+    return mappedResult;
+  }
+
+  async findSubjectByJobIds(ids: string[]) {
+    const jobs = await this.prisma.job.findMany({
+      where: {
+        id: {
+          in: ids,
+        },
+      },
+      include: {
+        subject: true,
+      },
+    });
+
+    const mappedResult = ids.map(
+      (id) => jobs.find((job) => job.id == id).subject,
+    );
+
+    return mappedResult;
+  }
+
+  async findConnectionsByJobIds(ids: string[]) {
+    const jobs = await this.prisma.job.findMany({
+      where: {
+        id: {
+          in: ids,
+        },
+      },
+      include: {
+        jobConnections: true,
+      },
+    });
+
+    const mappedResult = ids.map(
+      (id) => jobs.find((job) => job.id == id).jobConnections,
+    );
+
+    return mappedResult;
+  }
 }

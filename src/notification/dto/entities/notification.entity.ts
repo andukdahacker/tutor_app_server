@@ -16,9 +16,6 @@ export class Notification {
   @HideField()
   notifierId?: string;
 
-  @Field(() => User)
-  receiver?: User;
-
   @HideField()
   receiverId: string;
 

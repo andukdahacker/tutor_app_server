@@ -6,16 +6,26 @@ import {
   ResolveField,
   Resolver,
 } from '@nestjs/graphql';
+import { Subject } from '@prisma/client';
+import DataLoader from 'dataloader';
 import { ITokenPayload } from 'src/auth/types';
 import { JobConnection } from 'src/connection/dto/entities';
-import { IDataloader } from 'src/dataloader/types/IDataloader';
+import { Loader } from 'src/dataloader/dataloader';
 import { TokenPayload } from 'src/shared/decorators/current-user.decorator';
-import { Loaders } from 'src/shared/decorators/dataloader.decorator';
+import { paginate } from 'src/shared/utils/pagination.utils';
+import { User } from 'src/user/dto/entities';
 import { TutorProfile } from './dto/entities';
-import { FindManyTutorProfilesInput } from './dto/inputs';
-import { CreateTutorProfileInput } from './dto/inputs/create-tutor-profile.input';
-import { UpdateTutorProfileInput } from './dto/inputs/update-tutor-profile-input';
+import {
+  CreateTutorProfileInput,
+  FindManyTutorProfilesInput,
+  UpdateTutorProfileInput,
+} from './dto/inputs';
 import { FindManyTutorProfilesResponse } from './dto/response';
+import {
+  JobConnectionsByTutorLoader,
+  TutorProfileSubjectsByTutorLoader,
+  UserByTutorLoader,
+} from './loaders';
 import { TutorProfileService } from './tutor-profile.service';
 
 @Resolver(() => TutorProfile)
@@ -56,49 +66,23 @@ export class TutorProfileResolver {
       input,
     );
 
-    if (profiles.length > 0) {
-      const lastProfiles = profiles[profiles.length - 1];
-      const cursor = lastProfiles.id;
-
-      const nextQuery = await this.tutorProfileService.findManyTutorProfiles({
-        take: input.take,
-        searchString: input.searchString,
-        stringCursor: cursor,
-      });
-
-      if (nextQuery.length > 0) {
-        return {
-          nodes: profiles,
-          pageInfo: {
-            hasNextPage: true,
-            lastTake: nextQuery.length,
-            totalAmount: profiles.length,
-            cursor: {
-              value: cursor,
-            },
-          },
-        };
-      }
-    }
-
-    return {
-      nodes: profiles,
-      pageInfo: {
-        hasNextPage: false,
-        lastTake: 0,
-        totalAmount: profiles.length,
-        cursor: null,
-      },
-    };
+    return await paginate(
+      profiles,
+      'id',
+      async (cursor: string) =>
+        await this.tutorProfileService.findManyTutorProfiles({
+          stringCursor: cursor,
+          ...input,
+        }),
+    );
   }
 
   @ResolveField()
   async user(
     @Parent() tutorProfile: TutorProfile,
-    @Loaders() loaders: IDataloader,
+    @Loader(UserByTutorLoader) loader: DataLoader<string, User>,
   ) {
-    const { userId } = tutorProfile;
-    const user = loaders.usersLoader.load(userId);
+    const user = loader.load(tutorProfile.id);
 
     return user;
   }
@@ -106,23 +90,25 @@ export class TutorProfileResolver {
   @ResolveField(() => [JobConnection], { nullable: 'itemsAndList' })
   async jobConnections(
     @Parent() tutorProfile: TutorProfile,
-    @Loaders() loaders: IDataloader,
+    @Loader(JobConnectionsByTutorLoader)
+    loader: DataLoader<string, JobConnection[]>,
   ) {
     const { id } = tutorProfile;
 
-    const connections = loaders.connectionsByTutorIdLoader.load(id);
+    const connections = loader.load(id);
 
     return connections;
   }
 
   @ResolveField()
-  async tutorProfileSubject(
+  async tutorProfileSubjects(
     @Parent() tutorProfile: TutorProfile,
-    @Loaders() loaders: IDataloader,
+    @Loader(TutorProfileSubjectsByTutorLoader)
+    loader: DataLoader<string, Subject>,
   ) {
     const { id } = tutorProfile;
 
-    const subjects = loaders.tutorProfileSubjectByTutorIdLoader.load(id);
+    const subjects = loader.load(id);
 
     return subjects;
   }

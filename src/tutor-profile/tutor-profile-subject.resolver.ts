@@ -1,19 +1,33 @@
 import { Parent, ResolveField, Resolver } from '@nestjs/graphql';
-import { IDataloader } from 'src/dataloader/types/IDataloader';
-import { Loaders } from 'src/shared/decorators/dataloader.decorator';
+import DataLoader from 'dataloader';
+import { Loader } from 'src/dataloader/dataloader';
+import { Subject } from 'src/subject/dto/entities';
 import { TutorProfileSubject } from './dto/entities/tutor-profile-subject.entity';
+import { SubjectByTutorProfileSubjectLoader } from './loaders/subject-by-tutor-profile-subjects.loader';
+import { TutorProfileSubjectService } from './tutor-profile-subject.service';
 
 @Resolver(() => TutorProfileSubject)
 export class TutorProfileSubjectResolver {
+  constructor(
+    private readonly tutorProfileSubjectService: TutorProfileSubjectService,
+  ) {}
   @ResolveField()
-  tutor(
-    @Parent() tutorProfileSubject: TutorProfileSubject,
-    @Loaders() loaders: IDataloader,
-  ) {
-    const tutor = loaders.tutorProfileSubjectByTutorIdLoader.load(
+  async tutor(@Parent() tutorProfileSubject: TutorProfileSubject) {
+    const tutor = await this.tutorProfileSubjectService.findTutor(
       tutorProfileSubject.tutorId,
     );
 
     return tutor;
+  }
+
+  @ResolveField()
+  async subject(
+    @Parent() tutorProfileSubject: TutorProfileSubject,
+    @Loader(SubjectByTutorProfileSubjectLoader)
+    loader: DataLoader<string, Subject>,
+  ) {
+    const subject = loader.load(tutorProfileSubject.tutorId);
+
+    return subject;
   }
 }
