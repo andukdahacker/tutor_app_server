@@ -28,6 +28,21 @@ model User {
   rated                 Rating[]         @relation("rated")
   workExperience        WorkExperience[]
   education             Education[]
+  requester             Relationship[]   @relation("requester")
+  addressee             Relationship[]   @relation("addressee")
+}
+
+model Relationship {
+  requester    User     @relation("requester", fields: [requester_id], references: [id], onDelete: Cascade)
+  requester_id String
+  addressee    User     @relation("addressee", fields: [addressee_id], references: [id], onDelete: Cascade)
+  addressee_id String
+  chat         Chat?    @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  chatId       String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@id([requester_id, addressee_id])
 }
 
 model LearnerProfile {
@@ -189,9 +204,10 @@ model ChatMessage {
 }
 
 model Chat {
-  id          String        @id @default(cuid())
-  message     ChatMessage[]
-  chatMembers ChatMember[]
+  id            String         @id @default(cuid())
+  messages      ChatMessage[]
+  chatMembers   ChatMember[]
+  relationships Relationship[]
 }
 
 model ChatMember {

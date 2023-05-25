@@ -6,6 +6,7 @@ type User {
   id: String!
   username: String!
   email: String!
+  isVerified: Boolean!
   createdAt: DateScalar!
   updatedAt: DateScalar
 }
@@ -29,6 +30,27 @@ type RefreshAccessTokenResponse {
 
 type SignUpResponse {
   user: User!
+}
+
+type ChatMember {
+  isRead: Boolean!
+  isViewed: Boolean!
+  joinedAt: DateScalar!
+  leftAt: DateScalar
+}
+
+type Chat {
+  id: String!
+  chatMembers: [ChatMember!]!
+}
+
+type ChatMessage {
+  id: String!
+  author: User!
+  chat: Chat!
+  content: String!
+  createdAt: DateScalar!
+  updatedAt: DateScalar
 }
 
 type Notification {
@@ -263,6 +285,8 @@ type Mutation {
   createJobConnection(createJobConnectInput: CreateJobConnectInput!): CreateJobConnectResponse!
   acceptJobConnection(acceptJobConnectionInput: AcceptJobConnectionInput!, connectionType: String!): AcceptJobConnectionResponse!
   declineJobConnection(declineJobConnectionInput: DeclineJobConnectionInput!): DeclineJobConnectinoResponse!
+  createChat(createChatInput: CreateChatInput!): Chat!
+  createMessage(createMessageInput: CreateMessageInput!): ChatMessage!
   createJob(createJob: CreateJobInput!): CreateJobResponse!
   createSubject(createSubjectInput: CreateSubjectInput!): CreateSubjectResponse!
   createTutorProfile(createTutorProfileInput: CreateTutorProfileInput!): TutorProfile
@@ -319,6 +343,16 @@ input DeclineJobConnectionInput {
   tutorId: String
   learnerUserId: String
   type: String
+}
+
+input CreateChatInput {
+  receiverId: String!
+  message: String
+}
+
+input CreateMessageInput {
+  content: String!
+  chatId: String!
 }
 
 input CreateJobInput {

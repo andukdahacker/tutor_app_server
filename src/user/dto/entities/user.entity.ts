@@ -11,6 +11,9 @@ export class User {
   @Field(() => String)
   email: string;
 
+  @Field(() => Boolean)
+  isVerified: boolean;
+
   @Field()
   createdAt: Date;
 
