@@ -1,6 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { CreateChatInput, CreateMessageInput } from './dto/inputs';
+import {
+  CreateChatInput,
+  CreateMessageInput,
+  GetChatMessagesInput,
+  GetChatsInput,
+} from './dto/inputs';
 
 @Injectable()
 export class ChatService {
@@ -71,7 +76,15 @@ export class ChatService {
   }
 
   async createMessage(input: CreateMessageInput, userId: string) {
-    return await this.prisma.chatMessage.create({
+    const chat = this.prisma.chat.update({
+      where: {
+        id: input.chatId,
+      },
+      data: {
+        updatedAt: Date(),
+      },
+    });
+    const message = this.prisma.chatMessage.create({
       data: {
         content: input.content,
         chat: {
@@ -84,6 +97,85 @@ export class ChatService {
             id: userId,
           },
         },
+      },
+    });
+
+    const result = await this.prisma.$transaction([message, chat]);
+
+    return result[0];
+  }
+
+  async getChats(input: GetChatsInput, userId: string) {
+    const chats = await this.prisma.chat.findMany({
+      where: {
+        chatMembers: {
+          some: {
+            memberId: userId,
+          },
+        },
+      },
+      take: input.take,
+      cursor: {
+        id: input.stringCursor ?? undefined,
+      },
+      orderBy: { updatedAt: 'desc' },
+    });
+
+    return chats;
+  }
+
+  async getChatMessagesByChatIds(ids: string[]) {
+    const chats = await this.prisma.chat.findMany({
+      where: {
+        id: {
+          in: ids,
+        },
+      },
+      include: {
+        messages: {
+          take: 20,
+          orderBy: {
+            createdAt: 'desc',
+          },
+        },
+      },
+    });
+
+    const mappedResult = ids.map(
+      (id) => chats.find((chat) => chat.id == id).messages,
+    );
+
+    return mappedResult;
+  }
+
+  async getUserByChatIds(ids: string[]) {
+    const chatMessages = await this.prisma.chatMessage.findMany({
+      where: {
+        chatId: {
+          in: ids,
+        },
+      },
+      include: {
+        author: true,
+      },
+    });
+
+    const mappedResult = ids.map(
+      (id) =>
+        chatMessages.find((chatMessage) => chatMessage.chatId == id).author,
+    );
+
+    return mappedResult;
+  }
+
+  async getChatMessages(input: GetChatMessagesInput) {
+    return await this.prisma.chatMessage.findMany({
+      where: {
+        chatId: input.chatId,
+      },
+      take: input.take,
+      cursor: {
+        id: input.stringCursor ?? undefined,
       },
     });
   }

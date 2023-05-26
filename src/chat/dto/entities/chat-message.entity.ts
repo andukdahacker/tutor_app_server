@@ -1,6 +1,5 @@
 import { Field, HideField, ObjectType } from '@nestjs/graphql';
 import { User } from 'src/user/dto/entities';
-import { Chat } from './chat.entity';
 
 @ObjectType()
 export class ChatMessage {
@@ -15,9 +14,6 @@ export class ChatMessage {
 
   @HideField()
   chatId: string;
-
-  @Field()
-  chat: Chat;
 
   @Field()
   content: string;

@@ -208,6 +208,7 @@ model Chat {
   messages      ChatMessage[]
   chatMembers   ChatMember[]
   relationships Relationship[]
+  updatedAt     DateTime       @updatedAt
 }
 
 model ChatMember {
