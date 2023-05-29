@@ -1,3 +1,4 @@
+import { Inject } from '@nestjs/common';
 import {
   Args,
   Mutation,
@@ -5,10 +6,14 @@ import {
   Query,
   ResolveField,
   Resolver,
+  Subscription,
 } from '@nestjs/graphql';
 import DataLoader from 'dataloader';
+import { RedisPubSub } from 'graphql-redis-subscriptions';
 import { ITokenPayload } from 'src/auth/types';
 import { Loader } from 'src/dataloader/dataloader';
+import { NewChatMessageEvent } from 'src/notification/notification.constants';
+import { PUB_SUB } from 'src/pub-sub/pub-sub.module';
 import { TokenPayload } from 'src/shared/decorators/current-user.decorator';
 import { paginate } from 'src/shared/utils/pagination.utils';
 import { ChatService } from './chat.service';
@@ -21,10 +26,14 @@ import {
 } from './dto/inputs';
 import { GetChatsResponse, GetMessagesResponse } from './dto/response';
 import { ChatMembersByChatLoader, ChatMessagesByChatLoader } from './loaders';
+import { CreateChatMessagePayload } from './types/create-chat-message-payload.type';
 
 @Resolver(() => Chat)
 export class ChatResolver {
-  constructor(private readonly chatService: ChatService) {}
+  constructor(
+    private readonly chatService: ChatService,
+    @Inject(PUB_SUB) private pubSub: RedisPubSub,
+  ) {}
 
   @Mutation(() => Chat)
   async createChat(
@@ -39,7 +48,9 @@ export class ChatResolver {
     @Args('createMessageInput') input: CreateMessageInput,
     @TokenPayload() { userId }: ITokenPayload,
   ) {
-    return await this.chatService.createMessage(input, userId);
+    const result = await this.chatService.createMessage(input, userId);
+    this.pubSub.publish(NewChatMessageEvent, result);
+    return result.message;
   }
 
   @Query(() => GetChatsResponse)
@@ -72,6 +83,24 @@ export class ChatResolver {
           ...input,
         }),
     );
+  }
+
+  @Subscription(() => ChatMessage, {
+    resolve: (payload: CreateChatMessagePayload) => {
+      return payload.message;
+    },
+    filter: (payload: CreateChatMessagePayload, _, context) => {
+      const isMember = payload.members.find(
+        (member) => member.memberId == context.req.user.userId,
+      );
+
+      if (isMember) return true;
+
+      return false;
+    },
+  })
+  subscribeChatMessages() {
+    return this.pubSub.asyncIterator([NewChatMessageEvent]);
   }
 
   @ResolveField()

@@ -462,4 +462,5 @@ input DeleteRatingInput {
 
 type Subscription {
   subscribeNotifications(userId: String!): Notification!
+  subscribeChatMessages: ChatMessage!
 }

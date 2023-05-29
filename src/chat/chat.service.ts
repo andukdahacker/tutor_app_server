@@ -81,7 +81,14 @@ export class ChatService {
         id: input.chatId,
       },
       data: {
-        updatedAt: Date(),
+        updatedAt: new Date().toISOString(),
+      },
+      include: {
+        chatMembers: {
+          select: {
+            memberId: true,
+          },
+        },
       },
     });
     const message = this.prisma.chatMessage.create({
@@ -102,7 +109,10 @@ export class ChatService {
 
     const result = await this.prisma.$transaction([message, chat]);
 
-    return result[0];
+    return {
+      message: result[0],
+      members: result[1].chatMembers,
+    };
   }
 
   async getChats(input: GetChatsInput, userId: string) {
