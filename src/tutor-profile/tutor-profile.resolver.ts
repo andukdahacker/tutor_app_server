@@ -27,7 +27,6 @@ import {
   UserByTutorLoader,
 } from './loaders';
 import { TutorProfileService } from './tutor-profile.service';
-
 @Resolver(() => TutorProfile)
 export class TutorProfileResolver {
   constructor(private readonly tutorProfileService: TutorProfileService) {}

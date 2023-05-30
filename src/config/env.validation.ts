@@ -40,6 +40,15 @@ class EnvironmentVariables {
   @IsString()
   REFRESH_TOKEN_EXPIRATION_TIME: string;
 
+  @IsString()
+  AWS_ACCESS_KEY: string;
+
+  @IsString()
+  AWS_SECRET_ACCESS_KEY: string;
+
+  @IsString()
+  AWS_S3_REGION: string;
+
   // @IsString()
   // FIREBASE_PROJECT_ID: string;
 

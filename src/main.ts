@@ -3,6 +3,7 @@ import { NestFactory } from '@nestjs/core';
 import cookieParser from 'cookie-parser';
 
 import { ConfigService } from '@nestjs/config';
+import { graphqlUploadExpress } from 'graphql-upload-ts';
 import { AppModule } from './app.module';
 import { Environment } from './config/env.validation';
 import { PrismaService } from './prisma/prisma.service';
@@ -26,6 +27,7 @@ async function bootstrap() {
   });
   app.use(cookieParser());
 
+  app.use(graphqlUploadExpress());
   const prismaService = app.get(PrismaService);
   await prismaService.enableShutdownHooks(app);
 

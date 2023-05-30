@@ -11,8 +11,10 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { AuthService } from './auth/auth.service';
 import { ChatModule } from './chat/chat.module';
+import { validate } from './config/env.validation';
 import { ConnectionModule } from './connection/connection.module';
 import { EducationModule } from './education/education.module';
+import { FileUploadModule } from './file-upload/file-upload.module';
 import { JobModule } from './job/job.module';
 import { LearnerProfileModule } from './learner-profile/learner-profile.module';
 import { NotificationModule } from './notification/notification.module';
@@ -49,7 +51,7 @@ import { WorkExperienceModule } from './work-experience/work-experience.module';
     PrismaModule,
     UserModule,
     AuthModule,
-    ConfigModule.forRoot({ isGlobal: true }),
+    ConfigModule.forRoot({ isGlobal: true, validate }),
     LearnerProfileModule,
     ConnectionModule,
     NotificationModule,
@@ -62,6 +64,7 @@ import { WorkExperienceModule } from './work-experience/work-experience.module';
     WorkExperienceModule,
     EducationModule,
     RatingModule,
+    FileUploadModule,
     // FirebaseModule,
   ],
   controllers: [AppController],
