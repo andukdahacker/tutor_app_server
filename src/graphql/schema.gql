@@ -300,7 +300,6 @@ input FindManyTutorProfilesInput {
 }
 
 type Mutation {
-  uploadAvatar(file: Upload!): String!
   login(loginInput: LoginInput!): LoginResponse!
   signUp(signUpInput: SignUpInput!): SignUpResponse!
   refreshAccessToken: RefreshAccessTokenResponse!
@@ -326,9 +325,6 @@ type Mutation {
   updateRating(updateRatingInput: UpdateRatingInput!): Rating!
   deleteRating(deleteRatingInput: DeleteRatingInput!): Rating!
 }
-
-"""The `Upload` scalar type represents a file upload."""
-scalar Upload
 
 input LoginInput {
   email: String!
