@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { FileUploadService } from 'src/file-upload/file-upload.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import {
   CreateChatInput,
@@ -9,7 +10,10 @@ import {
 
 @Injectable()
 export class ChatService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly fileService: FileUploadService,
+  ) {}
 
   async createChat(input: CreateChatInput, userId: string) {
     return await this.prisma.chat.create({
@@ -188,5 +192,24 @@ export class ChatService {
         id: input.stringCursor ?? undefined,
       },
     });
+  }
+
+  async createChatMessageWithFile(
+    files: Array<Express.Multer.File>,
+    chatId: string,
+    userId: string,
+  ) {
+    const uploadFiles = await Promise.all(
+      files.map(async (file) => {
+        const result = await this.fileService.upload(file);
+        if (!result) {
+          const retryResult = await this.fileService.retryUpload(file, 5);
+          return retryResult;
+        }
+        return file;
+      }),
+    );
+
+    const uploadedFiles = uploadFiles.filter((e) => typeof e === 'string');
   }
 }

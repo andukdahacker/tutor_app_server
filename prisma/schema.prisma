@@ -16,6 +16,7 @@ model User {
   email                 String           @unique @db.VarChar
   password              String           @db.VarChar
   isVerified            Boolean          @default(false)
+  avatar                String?
   learnerProfile        LearnerProfile?
   tutorProfile          TutorProfile?
   notificationNotifier  Notification[]   @relation("notifier")
@@ -198,7 +199,8 @@ model ChatMessage {
   authorId  String
   chat      Chat     @relation(fields: [chatId], references: [id], onDelete: Cascade)
   chatId    String
-  content   String   @db.Text
+  content   String?  @db.Text
+  file      String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

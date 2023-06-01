@@ -1,8 +1,7 @@
 import { ValidationPipe } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import cookieParser from 'cookie-parser';
-
-import { ConfigService } from '@nestjs/config';
 import { AppModule } from './app.module';
 import { Environment } from './config/env.validation';
 import { PrismaService } from './prisma/prisma.service';
