@@ -28,6 +28,7 @@ import { SubjectModule } from './subject/subject.module';
 import { TutorProfileModule } from './tutor-profile/tutor-profile.module';
 import { UserModule } from './user/user.module';
 import { WorkExperienceModule } from './work-experience/work-experience.module';
+import { MailerModule } from './mailer/mailer.module';
 
 @Module({
   imports: [
@@ -65,6 +66,7 @@ import { WorkExperienceModule } from './work-experience/work-experience.module';
     EducationModule,
     RatingModule,
     FileUploadModule,
+    MailerModule,
     // FirebaseModule,
   ],
   controllers: [AppController],

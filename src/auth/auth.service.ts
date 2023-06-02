@@ -6,25 +6,33 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-
 import * as argon2 from 'argon2';
-
 import { Response } from 'express';
 import { GraphQLError } from 'graphql';
-
 import { Redis } from 'ioredis';
 import { Environment } from 'src/config/env.validation';
+import { MailerService } from 'src/mailer/mailer.service';
+import { PrismaService } from 'src/prisma/prisma.service';
 import { REDIS } from 'src/redis/redis.module';
 import { SignUpInput } from 'src/user/dto/inputs';
 import { UserService } from 'src/user/user.service';
-import { REFRESH_TOKEN_PREFIX } from './auth.constants';
-import { LoginInput } from './dto/inputs';
+import { v4 as uuidv4 } from 'uuid';
+import {
+  EMAIL_VERIFICATION_PREFIX,
+  EMAIL_VERIFICATION_SUBJECT,
+  FORGOT_PASSWORD_PREFIX,
+  FORGOT_PASSWORD_SUBJECT,
+  REFRESH_TOKEN_PREFIX,
+} from './auth.constants';
+import { ChangePasswordInput, LoginInput } from './dto/inputs';
 @Injectable()
 export class AuthService {
   constructor(
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
+    private readonly mailerService: MailerService,
+    private readonly prisma: PrismaService,
     @Inject(REDIS) private readonly redis: Redis,
   ) {}
 
@@ -64,12 +72,117 @@ export class AuthService {
 
   async login(loginInput: LoginInput) {
     const user = await this.validateUser(loginInput.email, loginInput.password);
-    const refreshToken = await this.createRefreshToken(user.email, user.id);
-    const accessToken = await this.createAccessToken(user.email, user.id);
+    const refreshToken = this.createRefreshToken(user.email, user.id);
+    const accessToken = this.createAccessToken(user.email, user.id);
 
-    await this.redis.set(REFRESH_TOKEN_PREFIX + refreshToken, user.id);
+    const saveRefreshToken = this.redis.set(
+      REFRESH_TOKEN_PREFIX + refreshToken,
+      user.id,
+    );
 
-    return { accessToken, refreshToken, user };
+    const sendMail = user.isVerified
+      ? Promise.resolve()
+      : this.sendAccountValidationEmail(user.id, user.email);
+
+    const result = await Promise.all([
+      refreshToken,
+      accessToken,
+      saveRefreshToken,
+      sendMail,
+    ]);
+
+    return { accessToken: result[1], refreshToken: result[0], user };
+  }
+
+  async sendAccountValidationEmail(userId: string, email: string) {
+    const token = uuidv4();
+    const url = this.configService.get('CLIENT');
+
+    await this.redis.set(
+      EMAIL_VERIFICATION_PREFIX + token,
+      userId,
+      'EX',
+      1000 * 60 * 60,
+    );
+
+    const emailVerificationURL = `${url}/verify-email/${token}`;
+
+    await this.mailerService.sendMail({
+      from: 'me',
+      to: email,
+      subject: EMAIL_VERIFICATION_SUBJECT,
+      html: ` <p>Click the link below to confirm your email address</p>
+      <a href=${emailVerificationURL} clicktracking=off>${emailVerificationURL}</a>`,
+    });
+  }
+
+  async sendForgotPasswordEmail(email: string) {
+    const user = await this.userService.findOneByEmail(email);
+
+    if (!user) throw new UnauthorizedException('User is not found');
+
+    const token = uuidv4();
+    const url = this.configService.get('CLIENT');
+
+    await this.redis.set(
+      FORGOT_PASSWORD_PREFIX + token,
+      user.id,
+      'EX',
+      1000 * 60 * 60,
+    );
+
+    const changePasswordURL = `${url}/forgot-password/${token}`;
+
+    const result = await this.mailerService.sendMail({
+      from: 'me',
+      to: email,
+      subject: FORGOT_PASSWORD_SUBJECT,
+      html: `
+      <h1>You have requested a password reset</h1>
+      <p>Click the link below to continue the process</p>
+      <a href=${changePasswordURL} clicktracking=off>${changePasswordURL}</a>
+      `,
+    });
+
+    if (!result) return false;
+
+    return true;
+  }
+
+  async changePassword(input: ChangePasswordInput) {
+    const userId = await this.redis.get(FORGOT_PASSWORD_PREFIX + input.token);
+
+    if (!userId) throw new UnauthorizedException('User is not found');
+
+    const hashedPassword = await argon2.hash(input.password);
+
+    return await this.prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        password: hashedPassword,
+      },
+    });
+  }
+
+  async verifyEmail(token: string) {
+    const userId = await this.redis.get(EMAIL_VERIFICATION_PREFIX + token);
+
+    if (!userId) throw new UnauthorizedException('User is not found');
+
+    const user = await this.prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        isVerified: true,
+      },
+    });
+
+    await this.redis.del(EMAIL_VERIFICATION_PREFIX + token);
+
+    return user;
   }
 
   async validateRefreshToken(refreshToken: string) {

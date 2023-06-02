@@ -76,10 +76,17 @@ model Job {
   fee            Decimal         @db.Money
   jobType        JobType
   jobMethod      JobMethod
+  jobStatus      JobStatus       @default(OPEN)
   duration       Int?
   updatedAt      DateTime        @updatedAt
   jobConnections JobConnection[]
   ratings        Rating[]
+}
+
+enum JobStatus {
+  OPEN
+  EMPLOYED
+  DONE
 }
 
 enum JobType {

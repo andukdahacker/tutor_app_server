@@ -4,6 +4,8 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import {
   CreateChatInput,
   CreateMessageInput,
+  DeleteChatMessageInput,
+  EditChatMessageInput,
   GetChatMessagesInput,
   GetChatsInput,
 } from './dto/inputs';
@@ -194,22 +196,41 @@ export class ChatService {
     });
   }
 
-  async createChatMessageWithFile(
-    files: Array<Express.Multer.File>,
-    chatId: string,
-    userId: string,
-  ) {
-    const uploadFiles = await Promise.all(
-      files.map(async (file) => {
-        const result = await this.fileService.upload(file);
-        if (!result) {
-          const retryResult = await this.fileService.retryUpload(file, 5);
-          return retryResult;
-        }
-        return file;
-      }),
-    );
-
-    const uploadedFiles = uploadFiles.filter((e) => typeof e === 'string');
+  async editChatMessage(input: EditChatMessageInput) {
+    return await this.prisma.chatMessage.update({
+      where: {
+        id: input.chatMessageId,
+      },
+      data: {
+        content: input.chatMessage,
+      },
+    });
   }
+
+  async deleteChatMessage(input: DeleteChatMessageInput) {
+    return await this.prisma.chatMessage.delete({
+      where: {
+        id: input.chatMessageId,
+      },
+    });
+  }
+
+  // async createChatMessageWithFile(
+  //   files: Array<Express.Multer.File>,
+  //   chatId: string,
+  //   userId: string,
+  // ) {
+  //   const uploadFiles = await Promise.all(
+  //     files.map(async (file) => {
+  //       const result = await this.fileService.upload(file);
+  //       if (!result) {
+  //         const retryResult = await this.fileService.retryUpload(file, 5);
+  //         return retryResult;
+  //       }
+  //       return file;
+  //     }),
+  //   );
+
+  //   const uploadedFiles = uploadFiles.filter((e) => typeof e === 'string');
+  // }
 }

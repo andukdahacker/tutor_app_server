@@ -33,14 +33,20 @@ export class FileUploadService {
     return false;
   }
 
+  async uploadManyFiles(files: Array<Express.Multer.File>) {
+    return await Promise.all(
+      files.map(async (file) => {
+        const result = await this.upload(file);
+        if (!result) return await this.retryUpload(file, 1);
+        return result;
+      }),
+    );
+  }
+
   async retryUpload(file: Express.Multer.File, maxRetries: number) {
-    for (let i = 0; i >= maxRetries; i++) {
+    for (let i = 0; i <= maxRetries; i++) {
       const retryResult = await this.upload(file);
-      if (retryResult) {
-        return retryResult;
-      } else {
-        continue;
-      }
+      if (retryResult) return retryResult;
     }
 
     return file;

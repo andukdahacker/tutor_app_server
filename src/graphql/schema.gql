@@ -304,6 +304,9 @@ type Mutation {
   signUp(signUpInput: SignUpInput!): SignUpResponse!
   refreshAccessToken: RefreshAccessTokenResponse!
   logout: LogoutResponse!
+  verifyEmail(token: String!): User!
+  forgotPassword(email: String!): Boolean!
+  changePassword(changePasswordInput: ChangePasswordInput!): User!
   createLearnerProfile(createLearnerProfileInput: CreateLearnerProfileInput!): CreateLeanerProfileResponse!
   updateLearnerProfile(updateLearnerProfileInput: UpdateLearnerProfileInput!): UpdateLearnerProfileResponse!
   createJobConnection(createJobConnectInput: CreateJobConnectInput!): CreateJobConnectResponse!
@@ -311,6 +314,8 @@ type Mutation {
   declineJobConnection(declineJobConnectionInput: DeclineJobConnectionInput!): DeclineJobConnectinoResponse!
   createChat(createChatInput: CreateChatInput!): Chat!
   createMessage(createMessageInput: CreateMessageInput!): ChatMessage!
+  editChatMessage(editChatMessageInput: EditChatMessageInput!): ChatMessage!
+  deleteChatMessage(deleteChatMessageInput: DeleteChatMessageInput!): ChatMessage!
   createJob(createJob: CreateJobInput!): CreateJobResponse!
   createSubject(createSubjectInput: CreateSubjectInput!): CreateSubjectResponse!
   createTutorProfile(createTutorProfileInput: CreateTutorProfileInput!): TutorProfile
@@ -335,6 +340,11 @@ input SignUpInput {
   username: String
   email: String
   password: String
+}
+
+input ChangePasswordInput {
+  token: String!
+  password: String!
 }
 
 input CreateLearnerProfileInput {
@@ -377,6 +387,17 @@ input CreateChatInput {
 input CreateMessageInput {
   content: String!
   chatId: String!
+}
+
+input EditChatMessageInput {
+  chatId: String!
+  chatMessageId: String!
+  chatMessage: String!
+}
+
+input DeleteChatMessageInput {
+  chatId: String!
+  chatMessageId: String!
 }
 
 input CreateJobInput {

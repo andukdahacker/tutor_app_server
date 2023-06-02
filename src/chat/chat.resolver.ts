@@ -21,6 +21,8 @@ import { Chat, ChatMember, ChatMessage } from './dto/entities';
 import {
   CreateChatInput,
   CreateMessageInput,
+  DeleteChatMessageInput,
+  EditChatMessageInput,
   GetChatMessagesInput,
   GetChatsInput,
 } from './dto/inputs';
@@ -51,6 +53,20 @@ export class ChatResolver {
     const result = await this.chatService.createMessage(input, userId);
     this.pubSub.publish(NewChatMessageEvent, result);
     return result.message;
+  }
+
+  @Mutation(() => ChatMessage)
+  async editChatMessage(
+    @Args('editChatMessageInput') input: EditChatMessageInput,
+  ) {
+    return await this.chatService.editChatMessage(input);
+  }
+
+  @Mutation(() => ChatMessage)
+  async deleteChatMessage(
+    @Args('deleteChatMessageInput') input: DeleteChatMessageInput,
+  ) {
+    return await this.chatService.deleteChatMessage(input);
   }
 
   @Query(() => GetChatsResponse)

@@ -1,7 +1,6 @@
 import { UseGuards } from '@nestjs/common';
 import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
 
-import { User } from '@prisma/client';
 import { TokenPayload } from 'src/shared/decorators/current-user.decorator';
 import { Public } from 'src/shared/decorators/public.decorator';
 import { RefreshTokenGuard } from 'src/shared/guards/refresh-token.guard';
@@ -18,6 +17,8 @@ import {
   SignUpResponse,
 } from './dto/response';
 
+import { User } from 'src/user/dto/entities';
+import { ChangePasswordInput } from './dto/inputs';
 import { ITokenPayload } from './types/ITokenPayload';
 
 @Resolver()
@@ -58,7 +59,7 @@ export class AuthResolver {
   @Public()
   @UseGuards(RefreshTokenGuard)
   async refreshAccessToken(
-    @TokenPayload() user: User,
+    @TokenPayload() user,
   ): Promise<RefreshAccessTokenResponse> {
     const accessToken = await this.authService.createAccessToken(
       user.email,
@@ -88,5 +89,22 @@ export class AuthResolver {
     if (!user) return null;
 
     return { user };
+  }
+
+  @Mutation(() => User)
+  async verifyEmail(@Args('token') token: string) {
+    return await this.authService.verifyEmail(token);
+  }
+
+  @Mutation(() => Boolean)
+  async forgotPassword(@Args('email') email: string) {
+    return await this.authService.sendForgotPasswordEmail(email);
+  }
+
+  @Mutation(() => User)
+  async changePassword(
+    @Args('changePasswordInput') input: ChangePasswordInput,
+  ) {
+    return await this.authService.changePassword(input);
   }
 }
