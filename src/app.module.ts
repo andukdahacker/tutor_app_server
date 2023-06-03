@@ -29,6 +29,9 @@ import { TutorProfileModule } from './tutor-profile/tutor-profile.module';
 import { UserModule } from './user/user.module';
 import { WorkExperienceModule } from './work-experience/work-experience.module';
 import { MailerModule } from './mailer/mailer.module';
+import { ScheduleModule } from './schedule/schedule.module';
+import { EventModule } from './event/event.module';
+import { EventScheduleModule } from './event-schedule/event-schedule.module';
 
 @Module({
   imports: [
@@ -67,6 +70,9 @@ import { MailerModule } from './mailer/mailer.module';
     RatingModule,
     FileUploadModule,
     MailerModule,
+    ScheduleModule,
+    EventModule,
+    EventScheduleModule,
     // FirebaseModule,
   ],
   controllers: [AppController],

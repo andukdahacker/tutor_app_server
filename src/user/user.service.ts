@@ -15,6 +15,9 @@ export class UserService {
         username,
         email,
         password,
+        schedule: {
+          create: {},
+        },
       },
     });
   }

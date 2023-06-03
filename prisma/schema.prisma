@@ -31,6 +31,7 @@ model User {
   education             Education[]
   requester             Relationship[]   @relation("requester")
   addressee             Relationship[]   @relation("addressee")
+  schedule              Schedule[]
 }
 
 model Relationship {
@@ -231,4 +232,27 @@ model ChatMember {
   leftAt   DateTime?
 
   @@id([memberId, chatId])
+}
+
+model Schedule {
+  id            String          @id @default(cuid())
+  user          User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId        String
+  eventSchedule EventSchedule[]
+}
+
+model Event {
+  id            String          @id @default(cuid())
+  startTime     DateTime
+  endTime       DateTime
+  eventSchedule EventSchedule[]
+}
+
+model EventSchedule {
+  schedule   Schedule @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
+  scheduleId String
+  event      Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  eventId    String
+
+  @@id([scheduleId, eventId])
 }

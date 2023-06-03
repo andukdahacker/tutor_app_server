@@ -236,6 +236,17 @@ type WorkExperience {
   toDate: DateScalar!
 }
 
+type AppEvent {
+  id: String!
+  startTime: DateScalar!
+  endTime: DateScalar!
+}
+
+type Schedule {
+  id: String!
+  user: User!
+}
+
 """
 `Date` type as integer. Type represents date and time as number of milliseconds from start of UNIX epoch.
 """

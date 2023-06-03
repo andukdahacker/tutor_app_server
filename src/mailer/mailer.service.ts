@@ -20,9 +20,14 @@ export class MailerService {
   }
 
   async sendMail(messageData: MailgunMessageData) {
-    return await this.mailClient.messages.create(this.mailDomain, {
-      from: messageData.from + ' ' + this.address,
-      ...messageData,
-    });
+    const { from, ...data } = messageData;
+    try {
+      return await this.mailClient.messages.create(this.mailDomain, {
+        from: `${from} ${this.address}`,
+        ...data,
+      });
+    } catch (error) {
+      console.log(error);
+    }
   }
 }

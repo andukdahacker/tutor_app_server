@@ -58,15 +58,17 @@ export class ChatResolver {
   @Mutation(() => ChatMessage)
   async editChatMessage(
     @Args('editChatMessageInput') input: EditChatMessageInput,
+    @TokenPayload() { userId }: ITokenPayload,
   ) {
-    return await this.chatService.editChatMessage(input);
+    return await this.chatService.editChatMessage(input, userId);
   }
 
   @Mutation(() => ChatMessage)
   async deleteChatMessage(
     @Args('deleteChatMessageInput') input: DeleteChatMessageInput,
+    @TokenPayload() { userId }: ITokenPayload,
   ) {
-    return await this.chatService.deleteChatMessage(input);
+    return await this.chatService.deleteChatMessage(input, userId);
   }
 
   @Query(() => GetChatsResponse)

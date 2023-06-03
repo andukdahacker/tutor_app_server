@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { FileUploadService } from 'src/file-upload/file-upload.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import {
@@ -196,7 +196,9 @@ export class ChatService {
     });
   }
 
-  async editChatMessage(input: EditChatMessageInput) {
+  async editChatMessage(input: EditChatMessageInput, userId: string) {
+    if (!this.isChatMessageAuthor(userId, input.chatMessageId))
+      throw new UnauthorizedException();
     return await this.prisma.chatMessage.update({
       where: {
         id: input.chatMessageId,
@@ -207,12 +209,25 @@ export class ChatService {
     });
   }
 
-  async deleteChatMessage(input: DeleteChatMessageInput) {
+  async deleteChatMessage(input: DeleteChatMessageInput, userId: string) {
+    if (!this.isChatMessageAuthor(userId, input.chatMessageId))
+      throw new UnauthorizedException();
     return await this.prisma.chatMessage.delete({
       where: {
         id: input.chatMessageId,
       },
     });
+  }
+
+  async isChatMessageAuthor(userId: string, chatMessageId: string) {
+    const chatMessage = await this.prisma.chatMessage.findUnique({
+      where: {
+        id: chatMessageId,
+      },
+    });
+
+    if (chatMessage.authorId == userId) return true;
+    return false;
   }
 
   // async createChatMessageWithFile(
