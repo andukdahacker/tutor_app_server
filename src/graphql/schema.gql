@@ -236,17 +236,6 @@ type WorkExperience {
   toDate: DateScalar!
 }
 
-type AppEvent {
-  id: String!
-  startTime: DateScalar!
-  endTime: DateScalar!
-}
-
-type Schedule {
-  id: String!
-  user: User!
-}
-
 """
 `Date` type as integer. Type represents date and time as number of milliseconds from start of UNIX epoch.
 """
@@ -372,6 +361,8 @@ input CreateJobConnectInput {
   tutorId: String!
   learnerUserId: String!
   type: String!
+  startTime: DateScalar!
+  endTime: DateScalar!
 }
 
 input AcceptJobConnectionInput {
@@ -380,6 +371,8 @@ input AcceptJobConnectionInput {
   tutorId: String
   learnerUserId: String
   type: String
+  startTime: DateScalar
+  endTime: DateScalar
 }
 
 input DeclineJobConnectionInput {
@@ -388,6 +381,8 @@ input DeclineJobConnectionInput {
   tutorId: String
   learnerUserId: String
   type: String
+  startTime: DateScalar
+  endTime: DateScalar
 }
 
 input CreateChatInput {

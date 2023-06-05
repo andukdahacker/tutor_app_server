@@ -17,4 +17,10 @@ export class CreateJobConnectInput {
 
   @Field()
   type: JobConnectionType;
+
+  @Field()
+  startTime: Date;
+
+  @Field()
+  endTime: Date;
 }

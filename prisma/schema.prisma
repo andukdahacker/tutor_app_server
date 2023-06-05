@@ -31,7 +31,7 @@ model User {
   education             Education[]
   requester             Relationship[]   @relation("requester")
   addressee             Relationship[]   @relation("addressee")
-  schedule              Schedule[]
+  schedule              Schedule?
 }
 
 model Relationship {
@@ -102,13 +102,15 @@ enum JobMethod {
 }
 
 model JobConnection {
-  job       Job               @relation(fields: [jobId], references: [id], onDelete: Cascade)
-  jobId     String
-  tutor     TutorProfile      @relation(fields: [tutorId], references: [id], onDelete: Cascade)
-  tutorId   String
-  status    ConnectionStatus
-  type      JobConnectionType
-  createdAt DateTime          @default(now())
+  job         Job               @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  jobId       String
+  tutor       TutorProfile      @relation(fields: [tutorId], references: [id], onDelete: Cascade)
+  tutorId     String
+  status      ConnectionStatus
+  type        JobConnectionType
+  createdAt   DateTime          @default(now())
+  userEvent   UserEvent         @relation(fields: [userEventId], references: [id], onDelete: Cascade)
+  userEventId String            @unique
 
   @@id([jobId, tutorId])
 }
@@ -235,24 +237,31 @@ model ChatMember {
 }
 
 model Schedule {
-  id            String          @id @default(cuid())
-  user          User            @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId        String
-  eventSchedule EventSchedule[]
+  id                String              @id @default(cuid())
+  user              User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId            String              @unique
+  userEventSchedule UserEventSchedule[]
 }
 
-model Event {
-  id            String          @id @default(cuid())
-  startTime     DateTime
-  endTime       DateTime
-  eventSchedule EventSchedule[]
+model UserEvent {
+  id                String              @id @default(cuid())
+  startTime         DateTime
+  endTime           DateTime
+  userEventSchedule UserEventSchedule[]
+  userEventType     UserEventType
+  jobConnection     JobConnection?
 }
 
-model EventSchedule {
-  schedule   Schedule @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
+model UserEventSchedule {
+  schedule   Schedule  @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
   scheduleId String
-  event      Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  userEvent  UserEvent @relation(fields: [eventId], references: [id], onDelete: Cascade)
   eventId    String
 
   @@id([scheduleId, eventId])
+}
+
+enum UserEventType {
+  JOB
+  FREE
 }

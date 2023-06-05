@@ -17,21 +17,20 @@ import { EducationModule } from './education/education.module';
 import { FileUploadModule } from './file-upload/file-upload.module';
 import { JobModule } from './job/job.module';
 import { LearnerProfileModule } from './learner-profile/learner-profile.module';
+import { MailerModule } from './mailer/mailer.module';
 import { NotificationModule } from './notification/notification.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { PrismaService } from './prisma/prisma.service';
 import { PubSubModule } from './pub-sub/pub-sub.module';
 import { RatingModule } from './rating/rating.module';
 import { RedisModule } from './redis/redis.module';
+import { ScheduleModule } from './schedule/schedule.module';
 import { JwtAuthGuard } from './shared/guards/jwt-auth.guard';
 import { SubjectModule } from './subject/subject.module';
 import { TutorProfileModule } from './tutor-profile/tutor-profile.module';
+import { UserEventModule } from './user-event/user-event.module';
 import { UserModule } from './user/user.module';
 import { WorkExperienceModule } from './work-experience/work-experience.module';
-import { MailerModule } from './mailer/mailer.module';
-import { ScheduleModule } from './schedule/schedule.module';
-import { EventModule } from './event/event.module';
-import { EventScheduleModule } from './event-schedule/event-schedule.module';
 
 @Module({
   imports: [
@@ -71,8 +70,7 @@ import { EventScheduleModule } from './event-schedule/event-schedule.module';
     FileUploadModule,
     MailerModule,
     ScheduleModule,
-    EventModule,
-    EventScheduleModule,
+    UserEventModule,
     // FirebaseModule,
   ],
   controllers: [AppController],
