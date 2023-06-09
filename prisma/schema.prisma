@@ -82,6 +82,7 @@ model Job {
   updatedAt      DateTime        @updatedAt
   jobConnections JobConnection[]
   ratings        Rating[]
+  userEvent      UserEvent[]
 }
 
 enum JobStatus {
@@ -102,15 +103,13 @@ enum JobMethod {
 }
 
 model JobConnection {
-  job         Job               @relation(fields: [jobId], references: [id], onDelete: Cascade)
-  jobId       String
-  tutor       TutorProfile      @relation(fields: [tutorId], references: [id], onDelete: Cascade)
-  tutorId     String
-  status      ConnectionStatus
-  type        JobConnectionType
-  createdAt   DateTime          @default(now())
-  userEvent   UserEvent         @relation(fields: [userEventId], references: [id], onDelete: Cascade)
-  userEventId String            @unique
+  job       Job               @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  jobId     String
+  tutor     TutorProfile      @relation(fields: [tutorId], references: [id], onDelete: Cascade)
+  tutorId   String
+  status    ConnectionStatus
+  type      JobConnectionType
+  createdAt DateTime          @default(now())
 
   @@id([jobId, tutorId])
 }
@@ -248,8 +247,16 @@ model UserEvent {
   startTime         DateTime
   endTime           DateTime
   userEventSchedule UserEventSchedule[]
-  userEventType     UserEventType
-  jobConnection     JobConnection?
+  userEventStatus   UserEventStatus
+  job               Job                 @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  jobId             String
+}
+
+enum UserEventStatus {
+  REQUESTED
+  ACCEPTED
+  PRESENT
+  DONE
 }
 
 model UserEventSchedule {
@@ -259,9 +266,4 @@ model UserEventSchedule {
   eventId    String
 
   @@id([scheduleId, eventId])
-}
-
-enum UserEventType {
-  JOB
-  FREE
 }

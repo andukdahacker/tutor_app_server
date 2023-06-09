@@ -1,11 +1,12 @@
 import { Injectable } from '@nestjs/common';
+import { ConnectionStatus } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
-
-import { ConnectionStatus, Prisma, UserEventType } from '@prisma/client';
-import { JobConnectionWhereInput } from './dto/inputs';
-import { AcceptJobConnectionInput } from './dto/inputs/accept-job-connection.input';
-import { CreateJobConnectInput } from './dto/inputs/create-job-connection.input';
-import { DeclineJobConnectionInput } from './dto/inputs/decline-job-connection.input';
+import {
+  AcceptJobConnectionInput,
+  CreateJobConnectInput,
+  DeclineJobConnectionInput,
+  JobConnectionWhereInput,
+} from './dto/inputs';
 
 @Injectable()
 export class ConnectionService {
@@ -22,13 +23,6 @@ export class ConnectionService {
         tutor: {
           connect: {
             id: input.tutorId,
-          },
-        },
-        userEvent: {
-          create: {
-            startTime: input.startTime,
-            endTime: input.endTime,
-            userEventType: UserEventType.JOB,
           },
         },
         status: ConnectionStatus.REQUESTED,
@@ -66,8 +60,6 @@ export class ConnectionService {
   }
 
   async getJobConnections(input: JobConnectionWhereInput) {
-    let args: Prisma.JobConnectionFindManyArgs;
-
     return await this.prisma.jobConnection.findMany({
       where: {
         tutorId: input.tutorId,
