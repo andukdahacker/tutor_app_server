@@ -11,6 +11,7 @@ import { LearnerProfile } from 'src/learner-profile/dto/entities';
 
 import DataLoader from 'dataloader';
 import { Loader } from 'src/dataloader/dataloader';
+import { Public } from 'src/shared/decorators/public.decorator';
 import { paginate } from 'src/shared/utils/pagination.utils';
 import { Subject } from 'src/subject/dto/entities';
 import { Job } from './dto/entities';
@@ -37,6 +38,7 @@ export class JobResolver {
     };
   }
 
+  @Public()
   @Query(() => FindJobResponse)
   async jobs(
     @Args('findManyJobsInput') input: FindManyJobsInput,

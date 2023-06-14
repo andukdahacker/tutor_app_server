@@ -1,4 +1,8 @@
 import { registerEnumType } from '@nestjs/graphql';
-import { Prisma } from '@prisma/client';
 
-registerEnumType(Prisma.SortOrder, { name: 'SortOrder' });
+export enum SortBy {
+  asc = 'asc',
+  desc = 'desc',
+}
+
+registerEnumType(SortBy, { name: 'SortBy' });

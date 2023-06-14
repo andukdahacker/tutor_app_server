@@ -297,7 +297,12 @@ input FindManyJobsInput {
   fee: Int
   jobType: String
   jobMethod: String
-  sortOrder: String!
+  sortBy: SortBy!
+}
+
+enum SortBy {
+  asc
+  desc
 }
 
 input FindManySubjectsInput {

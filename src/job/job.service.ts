@@ -76,7 +76,7 @@ export class JobService {
         jobMethod: input.jobMethod,
       },
       orderBy: {
-        createdAt: input.sortOrder,
+        createdAt: input.sortBy,
       },
     };
 

@@ -6,21 +6,33 @@ export async function paginate<T, K extends keyof T>(
   cursorField: K,
   nextQuery: (cursor: string | number) => Promise<T[]>,
 ): Promise<IPaginated<T>> {
-  const last = ArrayUtils.last(results);
-  const cursor = last[cursorField];
+  if (results.length > 0) {
+    const last = ArrayUtils.last(results);
 
-  const resultsFromNextQuery = await nextQuery(cursor as any);
+    const cursor = last[cursorField];
 
-  if (resultsFromNextQuery.length > 0) {
+    const resultsFromNextQuery = await nextQuery(cursor as any);
+
+    if (resultsFromNextQuery.length > 0) {
+      return {
+        nodes: results,
+        pageInfo: {
+          hasNextPage: true,
+          lastTake: resultsFromNextQuery.length,
+          totalAmount: results.length,
+          cursor: {
+            value: cursor as any,
+          },
+        },
+      };
+    }
+
     return {
       nodes: results,
       pageInfo: {
-        hasNextPage: true,
-        lastTake: resultsFromNextQuery.length,
+        hasNextPage: false,
+        lastTake: 0,
         totalAmount: results.length,
-        cursor: {
-          value: cursor as any,
-        },
       },
     };
   }
