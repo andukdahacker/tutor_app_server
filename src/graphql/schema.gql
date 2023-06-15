@@ -72,12 +72,12 @@ type IntCursor {
 }
 
 type GetChatsResponse {
-  nodes: [Chat]
+  nodes: [Chat!]!
   pageInfo: PageInfo!
 }
 
 type GetMessagesResponse {
-  nodes: [ChatMessage]
+  nodes: [ChatMessage!]!
   pageInfo: PageInfo!
 }
 
@@ -100,7 +100,7 @@ enum NotificationType {
 }
 
 type GetManyNotificationsResponse {
-  nodes: [Notification]
+  nodes: [Notification!]!
   pageInfo: PageInfo!
 }
 
@@ -135,7 +135,7 @@ type DeclineJobConnectinoResponse {
 }
 
 type GetRequestedJobsForTutorResponse {
-  nodes: [JobConnection]
+  nodes: [JobConnection!]!
   pageInfo: PageInfo!
 }
 
@@ -164,9 +164,17 @@ type Job {
   id: String!
   learner: LearnerProfile!
   subject: Subject!
+  title: String!
+  description: String
+  fee: BigInt!
   createdAt: Timestamp!
   connections: [JobConnection]
 }
+
+"""
+The `BigInt` scalar type represents non-fractional signed whole numeric values.
+"""
+scalar BigInt
 
 """
 `Date` type as integer. Type represents date and time as number of milliseconds from start of UNIX epoch.
@@ -178,7 +186,7 @@ type CreateJobResponse {
 }
 
 type FindJobResponse {
-  nodes: [Job]
+  nodes: [Job!]!
   pageInfo: PageInfo!
 }
 
@@ -210,7 +218,7 @@ type CreateSubjectResponse {
 }
 
 type FindManySubjectsRespones {
-  nodes: [Subject]
+  nodes: [Subject!]!
   pageInfo: PageInfo!
 }
 
@@ -228,7 +236,7 @@ type TutorProfileSubject {
 }
 
 type FindManyTutorProfilesResponse {
-  nodes: [TutorProfile]
+  nodes: [TutorProfile!]!
   pageInfo: PageInfo!
 }
 
@@ -296,8 +304,14 @@ input FindManyJobsInput {
   searchString: String!
   fee: Int
   jobType: String
-  jobMethod: String
+  jobMethod: JobMethod
   sortBy: SortBy!
+}
+
+enum JobMethod {
+  ONLINE
+  OFFLINE
+  BOTH
 }
 
 enum SortBy {
@@ -424,7 +438,7 @@ input CreateJobInput {
   learnerId: String!
   subjectId: String!
   description: String
-  fee: Int!
+  fee: BigInt!
   title: String!
   jobType: String!
   jobMethod: String!

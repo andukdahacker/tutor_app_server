@@ -74,7 +74,7 @@ model Job {
   title          String
   description    String?
   createdAt      DateTime        @default(now())
-  fee            Decimal         @db.Money
+  fee            BigInt
   jobType        JobType
   jobMethod      JobMethod
   jobStatus      JobStatus       @default(OPEN)

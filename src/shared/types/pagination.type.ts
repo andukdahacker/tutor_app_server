@@ -10,7 +10,7 @@ export interface IPaginated<T> {
 export function Paginated<T>(classRef: Type<T>): Type<IPaginated<T>> {
   @ObjectType({ isAbstract: true })
   abstract class PaginatedType implements IPaginated<T> {
-    @Field(() => [classRef], { nullable: 'itemsAndList' })
+    @Field(() => [classRef])
     nodes: T[];
 
     @Field(() => PageInfoType)

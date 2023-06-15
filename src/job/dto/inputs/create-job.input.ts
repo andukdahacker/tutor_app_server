@@ -1,5 +1,6 @@
-import { Field, InputType, Int } from '@nestjs/graphql';
+import { Field, InputType } from '@nestjs/graphql';
 import { JobMethod, JobType } from '@prisma/client';
+import { GraphQLBigInt } from 'graphql-scalars';
 
 @InputType()
 export class CreateJobInput {
@@ -12,8 +13,8 @@ export class CreateJobInput {
   @Field({ nullable: true })
   description?: string;
 
-  @Field(() => Int)
-  fee: number;
+  @Field(() => GraphQLBigInt)
+  fee: bigint;
 
   @Field()
   title: string;

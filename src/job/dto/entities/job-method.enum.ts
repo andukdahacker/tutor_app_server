@@ -1,4 +1,9 @@
 import { registerEnumType } from '@nestjs/graphql';
-import { JobMethod } from '@prisma/client';
+
+export enum JobMethod {
+  ONLINE = 'ONLINE',
+  OFFLINE = 'OFFLINE',
+  BOTH = 'BOTH',
+}
 
 registerEnumType(JobMethod, { name: 'JobMethod' });

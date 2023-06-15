@@ -4,6 +4,7 @@ import {
   HideField,
   ObjectType,
 } from '@nestjs/graphql';
+import { GraphQLBigInt } from 'graphql-scalars';
 import { JobConnection } from 'src/connection/dto/entities';
 import { LearnerProfile } from 'src/learner-profile/dto/entities';
 import { Subject } from 'src/subject/dto/entities';
@@ -24,6 +25,15 @@ export class Job {
 
   @HideField()
   subjectId: string;
+
+  @Field()
+  title: string;
+
+  @Field({ nullable: true })
+  description?: string;
+
+  @Field(() => GraphQLBigInt)
+  fee: bigint;
 
   @Field(() => GraphQLTimestamp)
   createdAt: Date;

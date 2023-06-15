@@ -38,7 +38,7 @@ export async function paginate<T, K extends keyof T>(
   }
 
   return {
-    nodes: results,
+    nodes: [],
     pageInfo: {
       hasNextPage: false,
       lastTake: 0,
