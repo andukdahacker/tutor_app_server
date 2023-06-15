@@ -167,6 +167,7 @@ type Job {
   title: String!
   description: String
   fee: BigInt!
+  numberOfSessions: Int
   createdAt: Timestamp!
   connections: [JobConnection]
 }
@@ -440,6 +441,7 @@ input CreateJobInput {
   description: String
   fee: BigInt!
   title: String!
+  numberOfSessions: Int
   jobType: String!
   jobMethod: String!
 }

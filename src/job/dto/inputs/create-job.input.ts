@@ -1,4 +1,4 @@
-import { Field, InputType } from '@nestjs/graphql';
+import { Field, InputType, Int } from '@nestjs/graphql';
 import { JobMethod, JobType } from '@prisma/client';
 import { GraphQLBigInt } from 'graphql-scalars';
 
@@ -18,6 +18,9 @@ export class CreateJobInput {
 
   @Field()
   title: string;
+
+  @Field(() => Int, { nullable: true })
+  numberOfSessions?: number;
 
   @Field()
   jobType: JobType;

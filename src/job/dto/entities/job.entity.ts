@@ -2,6 +2,7 @@ import {
   Field,
   GraphQLTimestamp,
   HideField,
+  Int,
   ObjectType,
 } from '@nestjs/graphql';
 import { GraphQLBigInt } from 'graphql-scalars';
@@ -34,6 +35,9 @@ export class Job {
 
   @Field(() => GraphQLBigInt)
   fee: bigint;
+
+  @Field(() => Int, { nullable: true })
+  numberOfSessions?: number;
 
   @Field(() => GraphQLTimestamp)
   createdAt: Date;

@@ -66,23 +66,23 @@ model Subject {
 }
 
 model Job {
-  id             String          @id @default(cuid())
-  learner        LearnerProfile  @relation(fields: [learnerId], references: [id], onDelete: Cascade)
-  learnerId      String
-  subject        Subject         @relation(fields: [subjectId], references: [id], onDelete: Cascade)
-  subjectId      String
-  title          String
-  description    String?
-  createdAt      DateTime        @default(now())
-  fee            BigInt
-  jobType        JobType
-  jobMethod      JobMethod
-  jobStatus      JobStatus       @default(OPEN)
-  duration       Int?
-  updatedAt      DateTime        @updatedAt
-  jobConnections JobConnection[]
-  ratings        Rating[]
-  userEvent      UserEvent[]
+  id               String          @id @default(cuid())
+  learner          LearnerProfile  @relation(fields: [learnerId], references: [id], onDelete: Cascade)
+  learnerId        String
+  subject          Subject         @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  subjectId        String
+  title            String
+  description      String?
+  createdAt        DateTime        @default(now())
+  fee              BigInt
+  jobType          JobType
+  jobMethod        JobMethod
+  jobStatus        JobStatus       @default(OPEN)
+  numberOfSessions Int?
+  updatedAt        DateTime        @updatedAt
+  jobConnections   JobConnection[]
+  ratings          Rating[]
+  userEvent        UserEvent[]
 }
 
 enum JobStatus {
