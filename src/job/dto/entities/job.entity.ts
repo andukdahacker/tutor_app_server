@@ -42,6 +42,9 @@ export class Job {
   @Field(() => GraphQLTimestamp)
   createdAt: Date;
 
+  @Field(() => GraphQLTimestamp)
+  updatedAt: Date;
+
   @Field(() => [JobConnection], { nullable: 'itemsAndList' })
   connections?: JobConnection[];
 }

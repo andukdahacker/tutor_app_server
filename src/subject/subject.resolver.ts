@@ -1,4 +1,5 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Public } from 'src/shared/decorators/public.decorator';
 import { ArrayUtils } from 'src/shared/utils/array.utils';
 import { Subject } from './dto/entities';
 import { CreateSubjectInput, FindManySubjectsInput } from './dto/inputs';
@@ -22,6 +23,7 @@ export class SubjectResolver {
   }
 
   @Query(() => FindManySubjectsRespones)
+  @Public()
   async subjects(
     @Args('findManySubjectsInput') input: FindManySubjectsInput,
   ): Promise<FindManySubjectsRespones> {

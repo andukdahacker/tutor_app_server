@@ -34,9 +34,11 @@ export class SubjectService {
         },
       },
       take: input.take ?? undefined,
-      cursor: {
-        id: input.stringCursor ?? undefined,
-      },
+      cursor: input.stringCursor
+        ? {
+            id: input.stringCursor,
+          }
+        : undefined,
       skip: input.stringCursor ? 1 : undefined,
     });
   }

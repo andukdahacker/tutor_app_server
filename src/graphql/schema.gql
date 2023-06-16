@@ -169,6 +169,7 @@ type Job {
   fee: BigInt!
   numberOfSessions: Int
   createdAt: Timestamp!
+  updatedAt: Timestamp!
   connections: [JobConnection]
 }
 
