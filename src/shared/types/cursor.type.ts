@@ -2,13 +2,13 @@ import { Field, Int, ObjectType, createUnionType } from '@nestjs/graphql';
 
 @ObjectType()
 export class StringCursor {
-  @Field()
-  value: string;
+  @Field({ nullable: true })
+  value?: string;
 }
 @ObjectType()
 export class IntCursor {
-  @Field(() => Int)
-  value: number;
+  @Field(() => Int, { nullable: true })
+  value?: number;
 }
 
 export const Cursor = createUnionType({

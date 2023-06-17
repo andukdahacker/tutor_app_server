@@ -4,14 +4,14 @@ import { TutorProfile } from './tutor-profile.entity';
 
 @ObjectType()
 export class TutorProfileSubject {
-  @Field(() => TutorProfile)
-  tutor: TutorProfile;
+  @Field(() => TutorProfile, { nullable: true })
+  tutor?: TutorProfile;
 
   @HideField()
   tutorId: string;
 
-  @Field(() => Subject)
-  subject: Subject;
+  @Field(() => Subject, { nullable: true })
+  subject?: Subject;
 
   @HideField()
   subjectId: string;

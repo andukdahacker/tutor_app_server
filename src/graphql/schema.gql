@@ -6,6 +6,7 @@ type User {
   id: String!
   username: String!
   email: String!
+  avatar: String
   isVerified: Boolean!
   createdAt: DateScalar!
   updatedAt: DateScalar
@@ -64,11 +65,11 @@ type PageInfo {
 union Cursor = StringCursor | IntCursor
 
 type StringCursor {
-  value: String!
+  value: String
 }
 
 type IntCursor {
-  value: Int!
+  value: Int
 }
 
 type GetChatsResponse {
@@ -233,8 +234,8 @@ type TutorProfile {
 }
 
 type TutorProfileSubject {
-  tutor: TutorProfile!
-  subject: Subject!
+  tutor: TutorProfile
+  subject: Subject
 }
 
 type FindManyTutorProfilesResponse {

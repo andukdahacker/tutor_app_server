@@ -12,6 +12,7 @@ import { ITokenPayload } from 'src/auth/types';
 import { JobConnection } from 'src/connection/dto/entities';
 import { Loader } from 'src/dataloader/dataloader';
 import { TokenPayload } from 'src/shared/decorators/current-user.decorator';
+import { Public } from 'src/shared/decorators/public.decorator';
 import { paginate } from 'src/shared/utils/pagination.utils';
 import { User } from 'src/user/dto/entities';
 import { TutorProfile } from './dto/entities';
@@ -58,13 +59,14 @@ export class TutorProfileResolver {
   }
 
   @Query(() => FindManyTutorProfilesResponse)
+  @Public()
   async tutorProfiles(
     @Args('findManyTutorProfilesInput') input: FindManyTutorProfilesInput,
   ): Promise<FindManyTutorProfilesResponse> {
     const profiles = await this.tutorProfileService.findManyTutorProfiles(
       input,
     );
-
+    delete input.stringCursor;
     return await paginate(
       profiles,
       'id',

@@ -11,6 +11,9 @@ export class User {
   @Field(() => String)
   email: string;
 
+  @Field({ nullable: true })
+  avatar?: string;
+
   @Field(() => Boolean)
   isVerified: boolean;
 
