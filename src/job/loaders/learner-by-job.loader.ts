@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import DataLoader from 'dataloader';
 import { NestDataLoader } from 'src/dataloader/dataloader';
-import { LearnerProfile } from 'src/learner-profile/dto/entities';
+
+import { LearnerProfile } from '@prisma/client';
 import { JobService } from '../job.service';
 
 @Injectable()

@@ -153,6 +153,7 @@ type LearnerProfile {
   id: String!
   bio: String
   userId: String!
+  user: User!
 }
 
 type Subject {
@@ -191,14 +192,6 @@ type CreateJobResponse {
 type FindJobResponse {
   nodes: [Job!]!
   pageInfo: PageInfo!
-}
-
-type CreateLeanerProfileResponse {
-  leanerProfile: LearnerProfile
-}
-
-type UpdateLearnerProfileResponse {
-  learnerProfile: LearnerProfile
 }
 
 type Rating {
@@ -342,8 +335,8 @@ type Mutation {
   verifyEmail(token: String!): User!
   forgotPassword(email: String!): Boolean!
   changePassword(changePasswordInput: ChangePasswordInput!): User!
-  createLearnerProfile(createLearnerProfileInput: CreateLearnerProfileInput!): CreateLeanerProfileResponse!
-  updateLearnerProfile(updateLearnerProfileInput: UpdateLearnerProfileInput!): UpdateLearnerProfileResponse!
+  createLearnerProfile(createLearnerProfileInput: CreateLearnerProfileInput!): LearnerProfile!
+  updateLearnerProfile(updateLearnerProfileInput: UpdateLearnerProfileInput!): LearnerProfile!
   createJobConnection(createJobConnectInput: CreateJobConnectInput!): CreateJobConnectResponse!
   acceptJobConnection(acceptJobConnectionInput: AcceptJobConnectionInput!, connectionType: String!): AcceptJobConnectionResponse!
   declineJobConnection(declineJobConnectionInput: DeclineJobConnectionInput!): DeclineJobConnectinoResponse!
