@@ -7,11 +7,11 @@ export class LearnerProfile {
   id: string;
 
   @Field({ nullable: true })
-  bio: string;
+  bio?: string;
 
-  @Field()
-  userId: string;
+  @Field({ nullable: true })
+  userId?: string;
 
-  @Field(() => User)
-  user: User;
+  @Field(() => User, { nullable: true })
+  user?: User;
 }

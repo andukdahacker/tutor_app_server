@@ -1,6 +1,10 @@
 import { registerEnumType } from '@nestjs/graphql';
-import { JobConnectionType } from '@prisma/client';
+
+export enum JobConnectionType {
+  TUTOR_TO_JOB = 'TUTOR_TO_JOB',
+  JOB_TO_TUTOR = 'JOB_TO_TUTOR',
+}
 
 registerEnumType(JobConnectionType, {
-  name: 'JobConnectType',
+  name: 'JobConnectionType',
 });

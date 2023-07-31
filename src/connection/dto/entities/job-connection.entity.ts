@@ -1,5 +1,9 @@
 import { Field, ObjectType } from '@nestjs/graphql';
-import { ConnectionStatus, JobConnectionType } from '@prisma/client';
+import {
+  ConnectionStatus as ConnectionStatusPrisma,
+  JobConnectionType as JobConnectionTypePrisma,
+} from '@prisma/client';
+import { ConnectionStatus, JobConnectionType } from '.';
 
 @ObjectType()
 export class JobConnection {
@@ -10,8 +14,8 @@ export class JobConnection {
   tutorId: string;
 
   @Field(() => ConnectionStatus)
-  status: ConnectionStatus;
+  status: ConnectionStatusPrisma;
 
   @Field(() => JobConnectionType)
-  type: JobConnectionType;
+  type: JobConnectionTypePrisma;
 }

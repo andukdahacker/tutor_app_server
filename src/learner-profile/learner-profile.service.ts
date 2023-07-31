@@ -31,6 +31,14 @@ export class LearnerProfileService {
     });
   }
 
+  async findLearnerProfileByUserId(userId: string) {
+    return await this.prisma.learnerProfile.findUnique({
+      where: {
+        userId,
+      },
+    });
+  }
+
   async findLearnerProfile(jobId: string) {
     return await this.prisma.job
       .findUnique({

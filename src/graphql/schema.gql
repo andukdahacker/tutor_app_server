@@ -2,14 +2,82 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type Subject {
+  id: String!
+  name: String!
+  description: String
+}
+
+type JobConnection {
+  jobId: String!
+  tutorId: String!
+  status: ConnectionStatus!
+  type: JobConnectionType!
+}
+
+enum ConnectionStatus {
+  REQUESTED
+  ACCEPTED
+  DECLINED
+}
+
+enum JobConnectionType {
+  TUTOR_TO_JOB
+  JOB_TO_TUTOR
+}
+
+type TutorProfile {
+  id: String!
+  bio: String
+  user: User
+  jobConnections: [JobConnection]
+  tutorProfileSubjects: [TutorProfileSubject]
+}
+
+type TutorProfileSubject {
+  tutor: TutorProfile
+  subject: Subject
+}
+
 type User {
   id: String!
   username: String!
   email: String!
   avatar: String
   isVerified: Boolean!
+  tutorProfile: TutorProfile
+  learnerProfile: LearnerProfile
   createdAt: DateScalar!
   updatedAt: DateScalar
+}
+
+type LearnerProfile {
+  id: String!
+  bio: String
+  userId: String
+  user: User
+}
+
+type PageInfo {
+  hasNextPage: Boolean!
+  cursor: Cursor
+  lastTake: Int!
+  totalAmount: Int!
+}
+
+union Cursor = StringCursor | IntCursor
+
+type StringCursor {
+  value: String
+}
+
+type IntCursor {
+  value: Int
+}
+
+type FindManyTutorProfilesResponse {
+  nodes: [TutorProfile!]!
+  pageInfo: PageInfo!
 }
 
 type LoginResponse {
@@ -55,23 +123,6 @@ type Chat {
   updatedAt: DateScalar!
 }
 
-type PageInfo {
-  hasNextPage: Boolean!
-  cursor: Cursor
-  lastTake: Int!
-  totalAmount: Int!
-}
-
-union Cursor = StringCursor | IntCursor
-
-type StringCursor {
-  value: String
-}
-
-type IntCursor {
-  value: Int
-}
-
 type GetChatsResponse {
   nodes: [Chat!]!
   pageInfo: PageInfo!
@@ -105,24 +156,6 @@ type GetManyNotificationsResponse {
   pageInfo: PageInfo!
 }
 
-type JobConnection {
-  jobId: String!
-  tutorId: String!
-  status: ConnectionStatus!
-  type: JobConnectType!
-}
-
-enum ConnectionStatus {
-  REQUESTED
-  ACCEPTED
-  DECLINED
-}
-
-enum JobConnectType {
-  TUTOR_TO_JOB
-  JOB_TO_TUTOR
-}
-
 type AcceptJobConnectionResponse {
   jobConnection: JobConnection
 }
@@ -149,19 +182,6 @@ type Education {
   description: String
 }
 
-type LearnerProfile {
-  id: String!
-  bio: String
-  userId: String!
-  user: User!
-}
-
-type Subject {
-  id: String!
-  name: String!
-  description: String
-}
-
 type Job {
   id: String!
   learner: LearnerProfile!
@@ -172,6 +192,9 @@ type Job {
   numberOfSessions: Int
   createdAt: Timestamp!
   updatedAt: Timestamp!
+  jobType: JobType!
+  jobMethod: JobMethod!
+  jobStatus: JobStatus!
   connections: [JobConnection]
 }
 
@@ -184,6 +207,23 @@ scalar BigInt
 `Date` type as integer. Type represents date and time as number of milliseconds from start of UNIX epoch.
 """
 scalar Timestamp
+
+enum JobType {
+  QA
+  TUTOR
+}
+
+enum JobMethod {
+  ONLINE
+  OFFLINE
+  BOTH
+}
+
+enum JobStatus {
+  OPEN
+  EMPLOYED
+  DONE
+}
 
 type CreateJobResponse {
   job: Job
@@ -218,24 +258,6 @@ type FindManySubjectsRespones {
   pageInfo: PageInfo!
 }
 
-type TutorProfile {
-  id: String!
-  bio: String
-  user: User!
-  jobConnections: [JobConnection]
-  tutorProfileSubjects: [TutorProfileSubject]
-}
-
-type TutorProfileSubject {
-  tutor: TutorProfile
-  subject: Subject
-}
-
-type FindManyTutorProfilesResponse {
-  nodes: [TutorProfile!]!
-  pageInfo: PageInfo!
-}
-
 type UserEvent {
   id: String!
   startTime: DateScalar!
@@ -259,6 +281,7 @@ type WorkExperience {
 scalar DateScalar
 
 type Query {
+  tutorProfiles(findManyTutorProfilesInput: FindManyTutorProfilesInput!): FindManyTutorProfilesResponse!
   me: MeResponse!
   jobConnections(jobConnectionWhereInput: JobConnectionWhereInput!): GetRequestedJobsForTutorResponse!
   getManyNotifications(getManyNotificationsInput: GetManyNotificationsInput!): GetManyNotificationsResponse!
@@ -266,7 +289,12 @@ type Query {
   messages(getChatMessagesInput: GetChatMessagesInput!): GetMessagesResponse!
   jobs(findManyJobsInput: FindManyJobsInput!): FindJobResponse!
   subjects(findManySubjectsInput: FindManySubjectsInput!): FindManySubjectsRespones!
-  tutorProfiles(findManyTutorProfilesInput: FindManyTutorProfilesInput!): FindManyTutorProfilesResponse!
+}
+
+input FindManyTutorProfilesInput {
+  take: Int!
+  stringCursor: String
+  searchString: String!
 }
 
 input JobConnectionWhereInput {
@@ -304,12 +332,6 @@ input FindManyJobsInput {
   sortBy: SortBy!
 }
 
-enum JobMethod {
-  ONLINE
-  OFFLINE
-  BOTH
-}
-
 enum SortBy {
   asc
   desc
@@ -321,13 +343,11 @@ input FindManySubjectsInput {
   searchString: String!
 }
 
-input FindManyTutorProfilesInput {
-  take: Int!
-  stringCursor: String
-  searchString: String!
-}
-
 type Mutation {
+  createTutorProfile(createTutorProfileInput: CreateTutorProfileInput!): TutorProfile
+  updateTutorProfile(updateTutorProfileInput: UpdateTutorProfileInput!): TutorProfile
+  createLearnerProfile(createLearnerProfileInput: CreateLearnerProfileInput!): LearnerProfile!
+  updateLearnerProfile(updateLearnerProfileInput: UpdateLearnerProfileInput!): LearnerProfile!
   login(loginInput: LoginInput!): LoginResponse!
   signUp(signUpInput: SignUpInput!): SignUpResponse!
   refreshAccessToken: RefreshAccessTokenResponse!
@@ -335,8 +355,6 @@ type Mutation {
   verifyEmail(token: String!): User!
   forgotPassword(email: String!): Boolean!
   changePassword(changePasswordInput: ChangePasswordInput!): User!
-  createLearnerProfile(createLearnerProfileInput: CreateLearnerProfileInput!): LearnerProfile!
-  updateLearnerProfile(updateLearnerProfileInput: UpdateLearnerProfileInput!): LearnerProfile!
   createJobConnection(createJobConnectInput: CreateJobConnectInput!): CreateJobConnectResponse!
   acceptJobConnection(acceptJobConnectionInput: AcceptJobConnectionInput!, connectionType: String!): AcceptJobConnectionResponse!
   declineJobConnection(declineJobConnectionInput: DeclineJobConnectionInput!): DeclineJobConnectinoResponse!
@@ -346,8 +364,6 @@ type Mutation {
   deleteChatMessage(deleteChatMessageInput: DeleteChatMessageInput!): ChatMessage!
   createJob(createJob: CreateJobInput!): CreateJobResponse!
   createSubject(createSubjectInput: CreateSubjectInput!): CreateSubjectResponse!
-  createTutorProfile(createTutorProfileInput: CreateTutorProfileInput!): TutorProfile
-  updateTutorProfile(updateTutorProfileInput: UpdateTutorProfileInput!): TutorProfile
   createWorkExperience(createWorkExperienceInput: CreateWorkExperienceInput!): WorkExperience!
   updateWorkExperience(updateWorkExperienceInput: UpdateWorkExperienceInput!): WorkExperience!
   deleteWorkExperience(workExperienceId: String!): WorkExperience!
@@ -359,6 +375,22 @@ type Mutation {
   deleteRating(deleteRatingInput: DeleteRatingInput!): Rating!
   createUserEvent(createUserEventInput: CreateUserEventInput!): UserEvent!
   acceptUserEvent(acceptUserEventInput: AcceptUserEventInput!): UserEvent!
+}
+
+input CreateTutorProfileInput {
+  bio: String!
+}
+
+input UpdateTutorProfileInput {
+  bio: String
+}
+
+input CreateLearnerProfileInput {
+  bio: String!
+}
+
+input UpdateLearnerProfileInput {
+  bio: String
 }
 
 input LoginInput {
@@ -377,20 +409,12 @@ input ChangePasswordInput {
   password: String!
 }
 
-input CreateLearnerProfileInput {
-  bio: String!
-}
-
-input UpdateLearnerProfileInput {
-  bio: String
-}
-
 input CreateJobConnectInput {
   jobId: String!
   tutorUserId: String!
   tutorId: String!
   learnerUserId: String!
-  type: String!
+  type: JobConnectionType!
 }
 
 input AcceptJobConnectionInput {
@@ -398,7 +422,7 @@ input AcceptJobConnectionInput {
   tutorUserId: String
   tutorId: String
   learnerUserId: String
-  type: String
+  type: JobConnectionType
 }
 
 input DeclineJobConnectionInput {
@@ -406,7 +430,7 @@ input DeclineJobConnectionInput {
   tutorUserId: String
   tutorId: String
   learnerUserId: String
-  type: String
+  type: JobConnectionType
 }
 
 input CreateChatInput {
@@ -444,14 +468,6 @@ input CreateJobInput {
 input CreateSubjectInput {
   name: String!
   description: String
-}
-
-input CreateTutorProfileInput {
-  bio: String!
-}
-
-input UpdateTutorProfileInput {
-  bio: String
 }
 
 input CreateWorkExperienceInput {

@@ -5,10 +5,17 @@ import {
   Int,
   ObjectType,
 } from '@nestjs/graphql';
+
+import {
+  JobMethod as JobMethodPrisma,
+  JobStatus as JobStatusPrisma,
+  JobType as JobTypePrisma,
+} from '@prisma/client';
 import { GraphQLBigInt } from 'graphql-scalars';
 import { JobConnection } from 'src/connection/dto/entities';
 import { LearnerProfile } from 'src/learner-profile/dto/entities';
 import { Subject } from 'src/subject/dto/entities';
+import { JobMethod, JobStatus, JobType } from '.';
 
 @ObjectType()
 export class Job {
@@ -44,6 +51,15 @@ export class Job {
 
   @Field(() => GraphQLTimestamp)
   updatedAt: Date;
+
+  @Field(() => JobType)
+  jobType: JobTypePrisma;
+
+  @Field(() => JobMethod)
+  jobMethod: JobMethodPrisma;
+
+  @Field(() => JobStatus)
+  jobStatus: JobStatusPrisma;
 
   @Field(() => [JobConnection], { nullable: 'itemsAndList' })
   connections?: JobConnection[];

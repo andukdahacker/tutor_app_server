@@ -1,5 +1,6 @@
 import { Field, InputType } from '@nestjs/graphql';
-import { JobConnectionType } from '@prisma/client';
+import { JobConnectionType as JobConnectionTypePrisma } from '@prisma/client';
+import { JobConnectionType } from '../entities';
 
 @InputType()
 export class CreateJobConnectInput {
@@ -15,6 +16,6 @@ export class CreateJobConnectInput {
   @Field()
   learnerUserId: string;
 
-  @Field()
-  type: JobConnectionType;
+  @Field(() => JobConnectionType)
+  type: JobConnectionTypePrisma;
 }

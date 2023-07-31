@@ -1,16 +1,22 @@
-import { Resolver } from '@nestjs/graphql';
-import { FileUploadService } from 'src/file-upload/file-upload.service';
+import { Parent, ResolveField, Resolver } from '@nestjs/graphql';
+import { LearnerProfileService } from 'src/learner-profile/learner-profile.service';
+import { TutorProfileService } from 'src/tutor-profile/tutor-profile.service';
+import { User } from './dto/entities';
 
-@Resolver()
+@Resolver(() => User)
 export class UserResolver {
-  constructor(private readonly fileService: FileUploadService) {}
+  constructor(
+    private readonly tutorProfileService: TutorProfileService,
+    private readonly learnerProfileService: LearnerProfileService,
+  ) {}
 
-  // @Mutation(() => Boolean)
-  // async uploadAvatar(
-  //   @Args({ name: 'file', type: () => GraphQLUpload }) file: FileUpload,
-  // ) {
-  //   console.log('ran');
-  //   const buffer = file.createReadStream();
-  //   return await this.fileService.upload(file.filename, buffer);
-  // }
+  @ResolveField()
+  async tutorProfile(@Parent() user: User) {
+    return await this.tutorProfileService.findTutorProfileByUserId(user.id);
+  }
+
+  @ResolveField()
+  async learnerProfile(@Parent() user: User) {
+    return await this.learnerProfileService.findLearnerProfileByUserId(user.id);
+  }
 }

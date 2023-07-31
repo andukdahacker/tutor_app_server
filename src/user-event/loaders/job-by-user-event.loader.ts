@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
+import { Job } from '@prisma/client';
 import DataLoader from 'dataloader';
 import { NestDataLoader } from 'src/dataloader/dataloader';
-import { Job } from 'src/job/dto/entities';
 import { UserEventService } from '../user-event.service';
 
 @Injectable()

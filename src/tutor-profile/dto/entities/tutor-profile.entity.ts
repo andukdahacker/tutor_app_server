@@ -11,7 +11,7 @@ export class TutorProfile {
   @Field({ nullable: true })
   bio?: string;
 
-  @Field(() => User)
+  @Field(() => User, { nullable: true })
   user?: User;
 
   @HideField()

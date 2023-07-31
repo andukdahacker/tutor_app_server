@@ -68,6 +68,14 @@ export class TutorProfileService {
       .jobConnections();
   }
 
+  async findTutorProfileByUserId(userId: string) {
+    return await this.prisma.tutorProfile.findUnique({
+      where: {
+        userId,
+      },
+    });
+  }
+
   async findManyTutorProfiles(input: FindManyTutorProfilesInput) {
     const args: Prisma.TutorProfileFindManyArgs = {
       cursor: input.stringCursor

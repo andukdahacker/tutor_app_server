@@ -1,12 +1,12 @@
 import { Inject } from '@nestjs/common';
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
-import { JobConnectionType } from '@prisma/client';
 import { RedisPubSub } from 'graphql-redis-subscriptions';
 import { NotificationCreatedEvent } from 'src/notification/notification.constants';
 import { NotificationService } from 'src/notification/notification.service';
 import { PUB_SUB } from 'src/pub-sub/pub-sub.module';
 import { paginate } from 'src/shared/utils/pagination.utils';
 import { ConnectionService } from './connection.service';
+import { JobConnectionType } from './dto/entities';
 import { CreateJobConnectInput, JobConnectionWhereInput } from './dto/inputs';
 import { AcceptJobConnectionInput } from './dto/inputs/accept-job-connection.input';
 import { DeclineJobConnectionInput } from './dto/inputs/decline-job-connection.input';

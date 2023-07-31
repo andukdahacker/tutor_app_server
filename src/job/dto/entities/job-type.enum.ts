@@ -1,4 +1,8 @@
 import { registerEnumType } from '@nestjs/graphql';
-import { JobType } from '@prisma/client';
+
+export enum JobType {
+  QA = 'QA',
+  TUTOR = 'TUTOR',
+}
 
 registerEnumType(JobType, { name: 'JobType' });

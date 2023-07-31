@@ -1,5 +1,10 @@
 import { registerEnumType } from '@nestjs/graphql';
-import { ConnectionStatus } from '@prisma/client';
+
+export enum ConnectionStatus {
+  REQUESTED = 'REQUESTED',
+  ACCEPTED = 'ACCEPTED',
+  DECLINED = 'DECLINED',
+}
 
 registerEnumType(ConnectionStatus, {
   name: 'ConnectionStatus',
