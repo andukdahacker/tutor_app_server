@@ -263,7 +263,6 @@ type UserEvent {
   startTime: DateScalar!
   endTime: DateScalar!
   job: Job
-  userEventStatus: String!
 }
 
 type WorkExperience {
@@ -374,7 +373,6 @@ type Mutation {
   updateRating(updateRatingInput: UpdateRatingInput!): Rating!
   deleteRating(deleteRatingInput: DeleteRatingInput!): Rating!
   createUserEvent(createUserEventInput: CreateUserEventInput!): UserEvent!
-  acceptUserEvent(acceptUserEventInput: AcceptUserEventInput!): UserEvent!
 }
 
 input CreateTutorProfileInput {
@@ -532,13 +530,12 @@ input CreateUserEventInput {
   jobId: String!
   startTime: DateScalar!
   endTime: DateScalar!
+  type: UserEventType!
 }
 
-input AcceptUserEventInput {
-  jobId: String!
-  userEventId: String!
-  myScheduleId: String!
-  otherScheduleId: String!
+enum UserEventType {
+  FREE
+  JOB
 }
 
 type Subscription {

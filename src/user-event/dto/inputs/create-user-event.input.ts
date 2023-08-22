@@ -1,4 +1,5 @@
 import { Field, InputType } from '@nestjs/graphql';
+import { UserEventType } from '../entities/user-event-type.enum';
 
 @InputType()
 export class CreateUserEventInput {
@@ -10,4 +11,7 @@ export class CreateUserEventInput {
 
   @Field()
   endTime: Date;
+
+  @Field(() => UserEventType)
+  type: UserEventType;
 }

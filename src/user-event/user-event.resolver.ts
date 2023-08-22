@@ -9,7 +9,7 @@ import DataLoader from 'dataloader';
 import { Loader } from 'src/dataloader/dataloader';
 import { Job } from 'src/job/dto/entities';
 import { UserEvent } from './dto/entities';
-import { AcceptUserEventInput, CreateUserEventInput } from './dto/inputs';
+import { CreateUserEventInput } from './dto/inputs';
 import { JobByUserEventLoader } from './loaders';
 import { UserEventService } from './user-event.service';
 
@@ -22,13 +22,6 @@ export class UserEventResolver {
     @Args('createUserEventInput') input: CreateUserEventInput,
   ) {
     return await this.userEventService.createUserEvent(input);
-  }
-
-  @Mutation(() => UserEvent)
-  async acceptUserEvent(
-    @Args('acceptUserEventInput') input: AcceptUserEventInput,
-  ) {
-    return await this.userEventService.acceptUserEvent(input);
   }
 
   @ResolveField(() => Job)

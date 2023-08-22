@@ -1,10 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import {
-  AcceptUserEventInput,
-  CreateUserEventInput,
-  UpdateUserEventInput,
-} from './dto/inputs';
+import { CreateUserEventInput, UpdateUserEventInput } from './dto/inputs';
 
 @Injectable()
 export class UserEventService {
@@ -15,7 +11,7 @@ export class UserEventService {
       data: {
         startTime: input.startTime,
         endTime: input.endTime,
-        userEventStatus: 'REQUESTED',
+        userEventType: input.type,
         job: {
           connect: {
             id: input.jobId,
@@ -25,42 +21,6 @@ export class UserEventService {
     });
   }
 
-  async acceptUserEvent(input: AcceptUserEventInput) {
-    const deleteOtherEvents = this.prisma.userEvent.deleteMany({
-      where: {
-        jobId: input.jobId,
-      },
-    });
-
-    const updateUserEvent = this.prisma.userEvent.update({
-      where: {
-        id: input.userEventId,
-      },
-      data: {
-        userEventStatus: 'ACCEPTED',
-        userEventSchedule: {
-          createMany: {
-            data: [
-              {
-                scheduleId: input.myScheduleId,
-              },
-              {
-                scheduleId: input.otherScheduleId,
-              },
-            ],
-          },
-        },
-      },
-    });
-
-    const result = await this.prisma.$transaction([
-      deleteOtherEvents,
-      updateUserEvent,
-    ]);
-
-    return result[1];
-  }
-
   async updateUserEvent(input: UpdateUserEventInput) {
     return await this.prisma.userEvent.update({
       where: {
@@ -68,8 +28,8 @@ export class UserEventService {
       },
       data: {
         startTime: input.startTime ?? undefined,
+        userEventType: input.type ?? undefined,
         endTime: input.endTime ?? undefined,
-        userEventStatus: input.status ?? undefined,
       },
     });
   }

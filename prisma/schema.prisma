@@ -247,16 +247,14 @@ model UserEvent {
   startTime         DateTime
   endTime           DateTime
   userEventSchedule UserEventSchedule[]
-  userEventStatus   UserEventStatus
-  job               Job                 @relation(fields: [jobId], references: [id], onDelete: Cascade)
-  jobId             String
+  userEventType     UserEventType
+  job               Job?                @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  jobId             String?
 }
 
-enum UserEventStatus {
-  REQUESTED
-  ACCEPTED
-  PRESENT
-  DONE
+enum UserEventType {
+  FREE
+  JOB
 }
 
 model UserEventSchedule {

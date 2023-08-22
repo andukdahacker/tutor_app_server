@@ -1,5 +1,4 @@
 import { Field, HideField, ObjectType } from '@nestjs/graphql';
-import { UserEventStatus } from '@prisma/client';
 import { Job } from 'src/job/dto/entities';
 
 @ObjectType()
@@ -18,7 +17,4 @@ export class UserEvent {
 
   @Field({ nullable: true })
   job?: Job;
-
-  @Field()
-  userEventStatus: UserEventStatus;
 }

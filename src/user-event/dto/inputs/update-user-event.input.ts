@@ -1,5 +1,5 @@
 import { Field, InputType } from '@nestjs/graphql';
-import { UserEventStatus } from '@prisma/client';
+import { UserEventType } from '../entities/user-event-type.enum';
 
 @InputType()
 export class UpdateUserEventInput {
@@ -12,6 +12,6 @@ export class UpdateUserEventInput {
   @Field()
   endTime?: Date;
 
-  @Field()
-  status?: UserEventStatus;
+  @Field(() => UserEventType, { nullable: true })
+  type?: UserEventType;
 }
