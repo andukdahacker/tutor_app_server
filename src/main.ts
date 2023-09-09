@@ -22,7 +22,7 @@ async function bootstrap() {
     origin:
       configService.get('NODE_ENV') === Environment.Production
         ? ['https://tutor-app-client.vercel.app']
-        : ['http://localhost:3000'],
+        : ['*'],
   });
   app.use(cookieParser());
 
