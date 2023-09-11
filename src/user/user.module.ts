@@ -6,12 +6,10 @@ import { LearnerProfileService } from 'src/learner-profile/learner-profile.servi
 import { TutorProfileModule } from 'src/tutor-profile/tutor-profile.module';
 import { TutorProfileService } from 'src/tutor-profile/tutor-profile.service';
 import { UserController } from './user.controller';
-import { UserResolver } from './user.resolver';
 import { UserService } from './user.service';
 
 @Module({
   providers: [
-    UserResolver,
     UserService,
     FileUploadService,
     TutorProfileService,

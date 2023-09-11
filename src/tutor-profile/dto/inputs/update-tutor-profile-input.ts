@@ -1,7 +1,6 @@
-import { InputType, PartialType } from '@nestjs/graphql';
-import { CreateTutorProfileInput } from './create-tutor-profile.input';
+import { IsString } from 'class-validator';
 
-@InputType()
-export class UpdateTutorProfileInput extends PartialType(
-  CreateTutorProfileInput,
-) {}
+export class UpdateTutorProfileInput {
+  @IsString()
+  bio: string;
+}

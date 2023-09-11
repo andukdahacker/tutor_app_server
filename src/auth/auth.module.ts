@@ -4,11 +4,11 @@ import { MailerModule } from 'src/mailer/mailer.module';
 import { MailerService } from 'src/mailer/mailer.service';
 import { RedisModule } from 'src/redis/redis.module';
 import { UserModule } from 'src/user/user.module';
-import { AuthResolver } from './auth.resolver';
+import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 
 @Module({
-  providers: [AuthResolver, AuthService, MailerService],
+  providers: [AuthController, AuthService, MailerService],
   imports: [
     UserModule,
     JwtModule.register({

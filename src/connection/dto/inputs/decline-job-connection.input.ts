@@ -1,7 +1,13 @@
-import { InputType, PartialType } from '@nestjs/graphql';
-import { CreateJobConnectInput } from './create-job-connection.input';
+import { JobConnectionType } from '@prisma/client';
 
-@InputType()
-export class DeclineJobConnectionInput extends PartialType(
-  CreateJobConnectInput,
-) {}
+export class DeclineJobConnectionInput {
+  jobId: string;
+
+  tutorUserId: string;
+
+  tutorId: string;
+
+  learnerUserId: string;
+
+  type: JobConnectionType;
+}

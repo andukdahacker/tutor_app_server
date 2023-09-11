@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
+import { WorkExperienceController } from './work-experience.controller';
 import { WorkExperienceService } from './work-experience.service';
-import { WorkExperienceResolver } from './work-experience.resolver';
 
 @Module({
-  providers: [WorkExperienceResolver, WorkExperienceService]
+  providers: [WorkExperienceController, WorkExperienceService],
 })
 export class WorkExperienceModule {}

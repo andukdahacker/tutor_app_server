@@ -1,5 +1,13 @@
-import { InputType, PartialType } from '@nestjs/graphql';
-import { Education } from '../entities';
+export class UpdateEducationInput {
+  id: string;
 
-@InputType()
-export class UpdateEducationInput extends PartialType(Education, InputType) {}
+  educationEntity: string;
+
+  educationEntityUrl?: string;
+
+  fromDate: Date;
+
+  toDate: Date;
+
+  description?: string;
+}

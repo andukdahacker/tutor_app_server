@@ -1,7 +1,5 @@
-import { InputType, OmitType } from '@nestjs/graphql';
-import { PaginatedArgs } from 'src/shared/types/paginated-args.type';
+export class GetManyNotificationsInput {
+  take: number;
 
-@InputType()
-export class GetManyNotificationsInput extends OmitType(PaginatedArgs, [
-  'intCursor',
-] as const) {}
+  stringCursor?: string;
+}

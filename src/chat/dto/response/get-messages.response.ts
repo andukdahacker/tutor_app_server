@@ -1,6 +1,4 @@
-import { ObjectType } from '@nestjs/graphql';
+import { ChatMessage } from '@prisma/client';
 import { Paginated } from 'src/shared/types/pagination.type';
-import { ChatMessage } from '../entities';
 
-@ObjectType()
-export class GetMessagesResponse extends Paginated(ChatMessage) {}
+export class GetMessagesResponse extends Paginated<ChatMessage> {}

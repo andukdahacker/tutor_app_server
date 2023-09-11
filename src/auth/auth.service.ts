@@ -7,8 +7,8 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import * as argon2 from 'argon2';
-import { Response } from 'express';
-import { GraphQLError } from 'graphql';
+import { Request, Response } from 'express';
+
 import { Redis } from 'ioredis';
 import { Environment } from 'src/config/env.validation';
 import { MailerService } from 'src/mailer/mailer.service';
@@ -25,6 +25,7 @@ import {
   REFRESH_TOKEN_PREFIX,
 } from './auth.constants';
 import { ChangePasswordInput, LoginInput } from './dto/inputs';
+import { ITokenPayload } from './types';
 @Injectable()
 export class AuthService {
   constructor(
@@ -51,12 +52,7 @@ export class AuthService {
 
   async signUp(signUpInput: SignUpInput) {
     const user = await this.userService.findOneByEmail(signUpInput.email);
-    if (user)
-      throw new GraphQLError('User already exists', {
-        extensions: {
-          code: 203,
-        },
-      });
+    if (user) throw new UnauthorizedException('User already exist');
     const hashedPassword = await argon2.hash(signUpInput.password);
 
     const newUser = await this.userService.createOne({
@@ -196,7 +192,7 @@ export class AuthService {
   }
 
   verifyAccessToken(access_token: string) {
-    const result = this.jwtService.verify(access_token, {
+    const result = this.jwtService.verify<ITokenPayload>(access_token, {
       secret: this.configService.get('ACCESS_TOKEN_SECRET'),
     });
 
@@ -227,18 +223,18 @@ export class AuthService {
     });
   }
 
-  async logout(context: any) {
-    const refreshToken = context.req.cookies.Refresh;
+  async logout(req: Request) {
+    const refreshToken = req.cookies.Refresh;
 
     await this.redis.del([REFRESH_TOKEN_PREFIX + refreshToken]);
 
-    this.resetAuthCookies(context);
+    this.resetAuthCookies(req.res);
   }
 
-  setAuthCookies(refreshToken: string, context: any) {
+  setAuthCookies(refreshToken: string, res: Response) {
     const environment = this.configService.get('NODE_ENV') as Environment;
 
-    (context.req.res as Response).cookie('Refresh', refreshToken, {
+    res.cookie('Refresh', refreshToken, {
       httpOnly: true,
       maxAge: 1000 * 60 * 60 * 24 * 30,
       secure: environment === Environment.Production ? true : false,
@@ -246,8 +242,8 @@ export class AuthService {
     });
   }
 
-  resetAuthCookies(context: any) {
-    (context.req.res as Response).clearCookie(
+  resetAuthCookies(res: Response) {
+    res.clearCookie(
       this.configService.get<string>('REFRESH_TOKEN_COOKIE_NAME'),
     );
   }

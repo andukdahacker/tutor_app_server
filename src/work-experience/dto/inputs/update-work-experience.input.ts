@@ -1,10 +1,15 @@
-import { Field, InputType, PartialType } from '@nestjs/graphql';
-import { CreateWorkExperienceInput } from './create-work-experience.input';
-
-@InputType()
-export class UpdateWorkExperienceInput extends PartialType(
-  CreateWorkExperienceInput,
-) {
-  @Field()
+export class UpdateWorkExperienceInput {
   workExperienceId: string;
+
+  position: string;
+
+  workplace: string;
+
+  workplaceUrl?: string;
+
+  description?: string;
+
+  fromDate: Date;
+
+  toDate: Date;
 }

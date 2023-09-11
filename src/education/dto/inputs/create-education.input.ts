@@ -1,8 +1,17 @@
-import { InputType, OmitType, PartialType } from '@nestjs/graphql';
-import { Education } from '../entities';
+export class CreateEducationInput {
+  position: string;
 
-@InputType()
-export class CreateEducationInput extends PartialType(
-  OmitType(Education, ['id'] as const),
-  InputType,
-) {}
+  workplace: string;
+
+  workplaceUrl?: string;
+
+  description?: string;
+
+  educationEntity: string;
+
+  educationEntityUrl?: string;
+
+  fromDate: Date;
+
+  toDate: Date;
+}

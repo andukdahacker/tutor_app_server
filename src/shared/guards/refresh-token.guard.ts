@@ -4,7 +4,6 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { GqlExecutionContext } from '@nestjs/graphql';
 import { Request } from 'express';
 import { AuthService } from 'src/auth/auth.service';
 
@@ -13,9 +12,7 @@ export class RefreshTokenGuard implements CanActivate {
   constructor(private authService: AuthService) {}
 
   async canActivate(context: ExecutionContext) {
-    const ctx = GqlExecutionContext.create(context).getContext();
-
-    const req = ctx.req;
+    const req = context.switchToHttp().getRequest();
 
     const refreshToken = this.extractTokenFromCookie(req);
 

@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
+import { SubjectController } from './subject.controller';
 import { SubjectService } from './subject.service';
-import { SubjectResolver } from './subject.resolver';
 
 @Module({
-  providers: [SubjectResolver, SubjectService]
+  providers: [SubjectController, SubjectService],
 })
 export class SubjectModule {}

@@ -1,24 +1,16 @@
-import { Field, Int, ObjectType } from '@nestjs/graphql';
-import { Cursor, IntCursor, StringCursor } from './cursor.type';
-
 export interface IPageInfo {
   hasNextPage: boolean;
-  cursor?: StringCursor | IntCursor;
+  cursor?: string | number;
   lastTake: number;
   totalAmount: number;
 }
 
-@ObjectType('PageInfo')
 export abstract class PageInfoType implements IPageInfo {
-  @Field(() => Boolean)
-  public hasNextPage: boolean;
+  hasNextPage: boolean;
 
-  @Field(() => Cursor, { nullable: true })
-  cursor?: StringCursor | IntCursor;
+  cursor?: string | number;
 
-  @Field(() => Int)
   lastTake: number;
 
-  @Field(() => Int)
   totalAmount: number;
 }

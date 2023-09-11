@@ -20,9 +20,7 @@ export async function paginate<T, K extends keyof T>(
           hasNextPage: true,
           lastTake: resultsFromNextQuery.length,
           totalAmount: results.length,
-          cursor: {
-            value: cursor as any,
-          },
+          cursor: cursor as any,
         },
       };
     }

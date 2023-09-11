@@ -1,21 +1,11 @@
-import { Field, ObjectType } from '@nestjs/graphql';
-import {
-  ConnectionStatus as ConnectionStatusPrisma,
-  JobConnectionType as JobConnectionTypePrisma,
-} from '@prisma/client';
-import { ConnectionStatus, JobConnectionType } from '.';
+import { ConnectionStatus, JobConnectionType } from '@prisma/client';
 
-@ObjectType()
 export class JobConnection {
-  @Field()
   jobId: string;
 
-  @Field()
   tutorId: string;
 
-  @Field(() => ConnectionStatus)
-  status: ConnectionStatusPrisma;
+  status: ConnectionStatus;
 
-  @Field(() => JobConnectionType)
-  type: JobConnectionTypePrisma;
+  type: JobConnectionType;
 }

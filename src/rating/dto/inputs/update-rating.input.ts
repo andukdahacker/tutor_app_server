@@ -1,5 +1,14 @@
-import { InputType, PartialType } from '@nestjs/graphql';
-import { CreateRatingInput } from './create-rating.input';
+import { IsNumber } from 'class-validator';
 
-@InputType()
-export class UpdateRatingInput extends PartialType(CreateRatingInput) {}
+export class UpdateRatingInput {
+  @IsNumber()
+  score: number;
+
+  raterId: string;
+
+  ratedId: string;
+
+  jobId: string;
+
+  comment?: string;
+}

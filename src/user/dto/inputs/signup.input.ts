@@ -1,5 +1,16 @@
-import { InputType, PartialType } from '@nestjs/graphql';
-import { CreateUserInput } from './create-user.input';
+import { IsEmail, IsStrongPassword } from 'class-validator';
 
-@InputType()
-export class SignUpInput extends PartialType(CreateUserInput) {}
+export class SignUpInput {
+  username: string;
+
+  @IsEmail()
+  email: string;
+
+  @IsStrongPassword({
+    minLength: 8,
+    minNumbers: 1,
+    minSymbols: 1,
+    minUppercase: 1,
+  })
+  password: string;
+}

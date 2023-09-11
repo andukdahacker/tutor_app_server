@@ -30,17 +30,17 @@ export class PrismaService
     });
   }
   async onModuleInit() {
-    this.$on('error', (event) => {
+    process.on('error', (event) => {
       this.logger.error(event);
     });
-    this.$on('query', (event) => {
+    process.on('query', (event) => {
       this.logger.log(event.query);
     });
     await this.$connect();
   }
 
   async enableShutdownHooks(app: INestApplication) {
-    this.$on('beforeExit', async () => {
+    process.on('beforeExit', async () => {
       await app.close();
     });
   }

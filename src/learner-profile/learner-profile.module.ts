@@ -1,13 +1,8 @@
 import { Module } from '@nestjs/common';
-import { LearnerProfileResolver } from './learner-profile.resolver';
+import { LearnerProfileController } from './learner-profile.controller';
 import { LearnerProfileService } from './learner-profile.service';
-import { UserByLearnerLoader } from './loaders';
 
 @Module({
-  providers: [
-    LearnerProfileService,
-    LearnerProfileResolver,
-    UserByLearnerLoader,
-  ],
+  providers: [LearnerProfileService, LearnerProfileController],
 })
 export class LearnerProfileModule {}
