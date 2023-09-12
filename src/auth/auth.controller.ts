@@ -19,6 +19,7 @@ import { LoginInput } from './dto/inputs/login.input';
 
 import { LoginResponse, SignUpResponse } from './dto/response';
 
+import { UserEntity } from 'src/user/dto/entity/user.entity';
 import { ChangePasswordInput } from './dto/inputs';
 import { ITokenPayload } from './types/ITokenPayload';
 
@@ -42,7 +43,7 @@ export class AuthController {
     return {
       statusCode: 200,
       data: {
-        user: result.user,
+        user: new UserEntity(result.user),
         access_token: result.accessToken,
       },
     };
