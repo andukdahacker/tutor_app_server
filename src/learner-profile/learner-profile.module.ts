@@ -3,6 +3,7 @@ import { LearnerProfileController } from './learner-profile.controller';
 import { LearnerProfileService } from './learner-profile.service';
 
 @Module({
-  providers: [LearnerProfileService, LearnerProfileController],
+  providers: [LearnerProfileService],
+  controllers: [LearnerProfileController],
 })
 export class LearnerProfileModule {}

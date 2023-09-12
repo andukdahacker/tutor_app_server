@@ -5,7 +5,8 @@ import { JobConnectionController } from './connection.controller';
 import { ConnectionService } from './connection.service';
 
 @Module({
-  providers: [JobConnectionController, ConnectionService, NotificationService],
+  providers: [ConnectionService, NotificationService],
+  controllers: [JobConnectionController],
   imports: [NotificationModule],
 })
 export class ConnectionModule {}

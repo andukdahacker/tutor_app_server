@@ -3,6 +3,7 @@ import { RatingController } from './rating.controller';
 import { RatingService } from './rating.service';
 
 @Module({
-  providers: [RatingController, RatingService],
+  providers: [RatingService],
+  controllers: [RatingController],
 })
 export class RatingModule {}

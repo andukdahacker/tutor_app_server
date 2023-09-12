@@ -26,6 +26,8 @@ RUN npm ci
 # Bundle app source
 COPY . .
 
+EXPOSE 4000
+
 RUN npx prisma generate
 
 ###################

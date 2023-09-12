@@ -1,7 +1,11 @@
 import { User } from '@prisma/client';
 
-export class LoginResponse {
+import { BaseResponse } from 'src/shared/types/base_response';
+
+class LoginData {
   access_token: string;
 
   user: User;
 }
+
+export type LoginResponse = BaseResponse<LoginData>;

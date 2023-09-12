@@ -6,7 +6,6 @@ import {
   Post,
   Put,
   Req,
-  Res,
   UseGuards,
 } from '@nestjs/common';
 
@@ -34,15 +33,18 @@ export class AuthController {
   @Post('login')
   async login(
     @Body() loginInput: LoginInput,
-    @Res() response,
+    @Req() req,
   ): Promise<LoginResponse> {
     const result = await this.authService.login(loginInput);
 
-    this.authService.setAuthCookies(result.refreshToken, response);
+    this.authService.setAuthCookies(result.refreshToken, req);
 
     return {
-      user: result.user,
-      access_token: result.accessToken,
+      statusCode: 200,
+      data: {
+        user: result.user,
+        access_token: result.accessToken,
+      },
     };
   }
 

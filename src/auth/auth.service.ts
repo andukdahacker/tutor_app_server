@@ -76,15 +76,16 @@ export class AuthService {
       user.id,
     );
 
-    const sendMail = user.isVerified
-      ? Promise.resolve()
-      : this.sendAccountValidationEmail(user.id, user.email);
+    const environment = this.configService.get('NODE_ENV') as Environment;
+
+    if (!user.isVerified && environment == Environment.Production) {
+      await this.sendAccountValidationEmail(user.id, user.email);
+    }
 
     const result = await Promise.all([
       refreshToken,
       accessToken,
       saveRefreshToken,
-      sendMail,
     ]);
 
     return { accessToken: result[1], refreshToken: result[0], user };
@@ -94,22 +95,30 @@ export class AuthService {
     const token = uuidv4();
     const url = this.configService.get('CLIENT');
 
-    await this.redis.set(
-      EMAIL_VERIFICATION_PREFIX + token,
-      userId,
-      'EX',
-      1000 * 60 * 60,
-    );
+    try {
+      await this.redis.set(
+        EMAIL_VERIFICATION_PREFIX + token,
+        userId,
+        'EX',
+        1000 * 60 * 60,
+      );
 
-    const emailVerificationURL = `${url}/verify-email/${token}`;
+      const emailVerificationURL = `${url}/verify-email/${token}`;
 
-    await this.mailerService.sendMail({
-      from: 'me',
-      to: email,
-      subject: EMAIL_VERIFICATION_SUBJECT,
-      html: ` <p>Click the link below to confirm your email address</p>
-      <a href=${emailVerificationURL} clicktracking=off>${emailVerificationURL}</a>`,
-    });
+      const sendMailResult = await this.mailerService.sendMail({
+        from: 'me',
+        to: email,
+        subject: EMAIL_VERIFICATION_SUBJECT,
+        html: ` <p>Click the link below to confirm your email address</p>
+        <a href=${emailVerificationURL} clicktracking=off>${emailVerificationURL}</a>`,
+      });
+
+      if (sendMailResult.status != 200) {
+        throw new InternalServerErrorException();
+      }
+    } catch (error) {
+      throw new InternalServerErrorException();
+    }
   }
 
   async sendForgotPasswordEmail(email: string) {
@@ -231,10 +240,10 @@ export class AuthService {
     this.resetAuthCookies(req.res);
   }
 
-  setAuthCookies(refreshToken: string, res: Response) {
+  setAuthCookies(refreshToken: string, req: Request) {
     const environment = this.configService.get('NODE_ENV') as Environment;
 
-    res.cookie('Refresh', refreshToken, {
+    req.res.cookie('Refresh', refreshToken, {
       httpOnly: true,
       maxAge: 1000 * 60 * 60 * 24 * 30,
       secure: environment === Environment.Production ? true : false,

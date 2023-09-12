@@ -8,7 +8,8 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 
 @Module({
-  providers: [AuthController, AuthService, MailerService],
+  providers: [AuthService, MailerService],
+  controllers: [AuthController],
   imports: [
     UserModule,
     JwtModule.register({
