@@ -5,6 +5,13 @@ import cookieParser from 'cookie-parser';
 import { AppModule } from './app.module';
 import { PrismaService } from './prisma/prisma.service';
 
+Object.defineProperty(BigInt.prototype, 'toJSON', {
+  get() {
+    'use strict';
+    return () => String(this);
+  },
+});
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
@@ -17,6 +24,7 @@ async function bootstrap() {
   app.enableCors({
     origin: '*',
     methods: '*',
+    allowedHeaders: '*',
     preflightContinue: false,
     optionsSuccessStatus: 204,
     credentials: true,

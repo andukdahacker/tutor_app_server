@@ -3,9 +3,7 @@ import {
   JobStatus as JobStatusPrisma,
   JobType as JobTypePrisma,
 } from '@prisma/client';
-import { JobConnection } from 'src/connection/dto/entities';
 import { LearnerProfile } from 'src/learner-profile/dto/entities';
-import { Subject } from 'src/subject/dto/entities';
 
 export class Job {
   id: string;
@@ -13,8 +11,6 @@ export class Job {
   learner?: LearnerProfile;
 
   learnerId: string;
-
-  subject?: Subject;
 
   subjectId: string;
 
@@ -35,6 +31,4 @@ export class Job {
   jobMethod: JobMethodPrisma;
 
   jobStatus: JobStatusPrisma;
-
-  connections?: JobConnection[];
 }

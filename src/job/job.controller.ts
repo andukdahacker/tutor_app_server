@@ -1,8 +1,7 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { paginate } from 'src/shared/utils/pagination.utils';
 import { CreateJobInput } from './dto/inputs';
 import { FindManyJobsInput } from './dto/inputs/find-many-jobs.input';
-import { FindJobResponse } from './dto/response/find-job.response';
 import { JobService } from './job.service';
 
 @Controller('job')
@@ -18,10 +17,10 @@ export class JobController {
   }
 
   @Get()
-  async jobs(@Body() input: FindManyJobsInput): Promise<FindJobResponse> {
+  async jobs(@Query() input: FindManyJobsInput) {
     const requests = await this.jobService.findManyJobs(input);
 
-    return await paginate(
+    const results = await paginate(
       requests,
       'id',
       async (cursor: string) =>
@@ -30,5 +29,10 @@ export class JobController {
           ...input,
         }),
     );
+
+    return {
+      statusCode: 200,
+      data: results,
+    };
   }
 }

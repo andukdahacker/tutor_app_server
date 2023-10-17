@@ -78,6 +78,10 @@ export class JobService {
       orderBy: {
         createdAt: input.sortBy,
       },
+      include: {
+        subject: true,
+        learner: true,
+      },
     };
 
     return await this.prisma.job.findMany(args);

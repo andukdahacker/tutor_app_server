@@ -19,6 +19,7 @@ import { LoginInput } from './dto/inputs/login.input';
 
 import { LoginResponse, SignUpResponse } from './dto/response';
 
+import { BaseResponse } from 'src/shared/types/base_response';
 import { UserEntity } from 'src/user/dto/entity/user.entity';
 import { ChangePasswordInput } from './dto/inputs';
 import { ITokenPayload } from './types/ITokenPayload';
@@ -58,16 +59,21 @@ export class AuthController {
     };
   }
 
-  @Post('refresh-token')
+  @Post('refreshToken')
   @Public()
   @UseGuards(RefreshTokenGuard)
-  async refreshAccessToken(@TokenPayload() user) {
+  async refreshAccessToken(
+    @TokenPayload() user,
+  ): Promise<BaseResponse<string>> {
     const accessToken = await this.authService.createAccessToken(
       user.email,
       user.id,
     );
 
-    return accessToken;
+    return {
+      statusCode: 200,
+      data: accessToken,
+    };
   }
 
   @Post('log-out')
