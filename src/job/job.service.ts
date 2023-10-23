@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 
+import { JobEntity } from './dto/entities';
 import { CreateJobInput } from './dto/inputs';
 import { FindManyJobsInput } from './dto/inputs/find-many-jobs.input';
 
@@ -84,7 +85,9 @@ export class JobService {
       },
     };
 
-    return await this.prisma.job.findMany(args);
+    const jobs = await this.prisma.job.findMany(args);
+
+    return jobs.map((job) => new JobEntity(job));
   }
 
   async findLearnerByJobIds(ids: string[]) {

@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 
 import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { TutorProfileEntity } from './dto/entities/tutor-profile.entity';
 import {
   CreateTutorProfileInput,
   FindManyTutorProfilesInput,
@@ -76,7 +77,9 @@ export class TutorProfileService {
     });
   }
 
-  async findManyTutorProfiles(input: FindManyTutorProfilesInput) {
+  async findManyTutorProfiles(
+    input: FindManyTutorProfilesInput,
+  ): Promise<TutorProfileEntity[]> {
     const args: Prisma.TutorProfileFindManyArgs = {
       cursor: input.stringCursor
         ? {
@@ -109,9 +112,14 @@ export class TutorProfileService {
           },
         ],
       },
+      include: {
+        user: true,
+      },
     };
 
-    return await this.prisma.tutorProfile.findMany(args);
+    const profiles = await this.prisma.tutorProfile.findMany(args);
+
+    return profiles.map((profile) => new TutorProfileEntity(profile));
   }
 
   async findJobConnectionsByTutorIds(ids: string[]) {

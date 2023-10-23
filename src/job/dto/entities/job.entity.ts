@@ -1,34 +1,48 @@
-import {
-  JobMethod as JobMethodPrisma,
-  JobStatus as JobStatusPrisma,
-  JobType as JobTypePrisma,
-} from '@prisma/client';
-import { LearnerProfile } from 'src/learner-profile/dto/entities';
+import { Job, JobMethod, JobStatus, JobType } from '@prisma/client';
+import { Transform } from 'class-transformer';
 
-export class Job {
+import { LearnerProfileEntity } from 'src/learner-profile/dto/entities';
+import { ToTimestamp } from 'src/shared/utils/transform.utils';
+import { SubjectEntity } from 'src/subject/dto/entities';
+
+export class JobEntity implements Job {
   id: string;
 
-  learner?: LearnerProfile;
+  learner?: LearnerProfileEntity;
 
   learnerId: string;
 
   subjectId: string;
 
+  subject: SubjectEntity;
+
   title: string;
 
-  description?: string;
+  description: string;
 
   fee: bigint;
 
-  numberOfSessions?: number;
+  numberOfSessions: number;
 
+  @Transform(ToTimestamp)
   createdAt: Date;
 
+  @Transform(ToTimestamp)
   updatedAt: Date;
 
-  jobType: JobTypePrisma;
+  jobType: JobType;
 
-  jobMethod: JobMethodPrisma;
+  jobMethod: JobMethod;
 
-  jobStatus: JobStatusPrisma;
+  jobStatus: JobStatus;
+
+  constructor({ learner, subject, ...data }: Partial<JobEntity>) {
+    Object.assign(this, data);
+
+    if (learner) {
+      this.learner = learner;
+    }
+
+    this.subject = subject;
+  }
 }

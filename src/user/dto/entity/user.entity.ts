@@ -19,7 +19,7 @@ export class UserEntity implements User {
   @Transform(ToTimestamp)
   updatedAt: Date;
 
-  constructor(user: User) {
+  constructor(user: UserEntity) {
     Object.assign(this, user);
   }
 }

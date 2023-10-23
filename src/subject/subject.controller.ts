@@ -1,8 +1,10 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
-import { Public } from 'src/shared/decorators/public.decorator';
+import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { paginate } from 'src/shared/utils/pagination.utils';
 import { CreateSubjectInput, FindManySubjectsInput } from './dto/inputs';
-import { FindManySubjectsRespones } from './dto/response';
+
+import { BaseResponse } from 'src/shared/types/base_response';
+import { Paginated } from 'src/shared/types/pagination.type';
+import { SubjectEntity } from './dto/entities';
 import { SubjectService } from './subject.service';
 
 @Controller('subject')
@@ -17,12 +19,11 @@ export class SubjectController {
   }
 
   @Get()
-  @Public()
   async subjects(
-    @Body() body: FindManySubjectsInput,
-  ): Promise<FindManySubjectsRespones> {
+    @Query() body: FindManySubjectsInput,
+  ): Promise<BaseResponse<Paginated<SubjectEntity>>> {
     const subjects = await this.subjectService.findManySubject(body);
-    return paginate(
+    const result = await paginate(
       subjects,
       'id',
       async (cursor: string) =>
@@ -31,5 +32,10 @@ export class SubjectController {
           ...body,
         }),
     );
+
+    return {
+      statusCode: 200,
+      data: result,
+    };
   }
 }

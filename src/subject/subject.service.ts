@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { SubjectEntity } from './dto/entities';
 import { FindManySubjectsInput } from './dto/inputs';
 import { CreateSubjectInput } from './dto/inputs/create-subject.input';
 import { SubjectWhereUniqueInput } from './dto/inputs/subject-where-unique.input';
@@ -26,7 +27,7 @@ export class SubjectService {
   }
 
   async findManySubject(input: FindManySubjectsInput) {
-    return await this.prisma.subject.findMany({
+    const subjects = await this.prisma.subject.findMany({
       where: {
         name: {
           contains: input.searchString,
@@ -41,5 +42,7 @@ export class SubjectService {
         : undefined,
       skip: input.stringCursor ? 1 : undefined,
     });
+
+    return subjects.map((subject) => new SubjectEntity(subject));
   }
 }

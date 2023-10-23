@@ -1,13 +1,15 @@
-import { Body, Controller, Get, Post, Put } from '@nestjs/common';
+import { Body, Controller, Get, Post, Put, Query } from '@nestjs/common';
 import { ITokenPayload } from 'src/auth/types';
 import { TokenPayload } from 'src/shared/decorators/current-user.decorator';
+import { BaseResponse } from 'src/shared/types/base_response';
+import { Paginated } from 'src/shared/types/pagination.type';
 import { paginate } from 'src/shared/utils/pagination.utils';
+import { TutorProfileEntity } from './dto/entities/tutor-profile.entity';
 import {
   CreateTutorProfileInput,
   FindManyTutorProfilesInput,
   UpdateTutorProfileInput,
 } from './dto/inputs';
-import { FindManyTutorProfilesResponse } from './dto/response';
 import { TutorProfileService } from './tutor-profile.service';
 
 @Controller('tutor-profile')
@@ -42,11 +44,11 @@ export class TutorProfileController {
 
   @Get()
   async tutorProfiles(
-    @Body() body: FindManyTutorProfilesInput,
-  ): Promise<FindManyTutorProfilesResponse> {
+    @Query() body: FindManyTutorProfilesInput,
+  ): Promise<BaseResponse<Paginated<TutorProfileEntity>>> {
     const profiles = await this.tutorProfileService.findManyTutorProfiles(body);
 
-    return await paginate(
+    const result = await paginate(
       profiles,
       'id',
       async (cursor: string) =>
@@ -55,5 +57,10 @@ export class TutorProfileController {
           ...body,
         }),
     );
+
+    return {
+      statusCode: 200,
+      data: result,
+    };
   }
 }

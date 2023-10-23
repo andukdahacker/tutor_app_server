@@ -1,5 +1,5 @@
 import { User } from '@prisma/client';
-import { Job } from 'src/job/dto/entities';
+import { JobEntity } from 'src/job/dto/entities';
 export class Rating {
   score: number;
 
@@ -13,7 +13,7 @@ export class Rating {
 
   ratedId: string;
 
-  job: Job;
+  job: JobEntity;
 
   jobId: string;
 
