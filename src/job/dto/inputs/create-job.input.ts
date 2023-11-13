@@ -1,8 +1,6 @@
 import { JobMethod, JobType } from '@prisma/client';
 
 export class CreateJobInput {
-  learnerId: string;
-
   subjectId: string;
 
   description?: string;

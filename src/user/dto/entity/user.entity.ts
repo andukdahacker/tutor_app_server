@@ -1,25 +1,52 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { User } from '@prisma/client';
 import { Exclude, Transform } from 'class-transformer';
+import { LearnerProfileEntity } from 'src/learner-profile/dto/entities';
 import { ToTimestamp } from 'src/shared/utils/transform.utils';
+import { TutorProfileEntity } from 'src/tutor-profile/dto/entities/tutor-profile.entity';
 
 export class UserEntity implements User {
+  @ApiProperty()
   id: string;
+
+  @ApiProperty()
   username: string;
+
+  @ApiProperty()
   email: string;
 
   @Exclude()
   password: string;
 
+  @ApiProperty()
   isVerified: boolean;
+
+  @ApiProperty()
   avatar: string;
 
+  @ApiProperty({ type: () => LearnerProfileEntity })
+  learnerProfile?: LearnerProfileEntity;
+
+  @ApiProperty({ type: () => TutorProfileEntity })
+  tutorProfile?: TutorProfileEntity;
+
+  @ApiProperty({ type: 'number' })
   @Transform(ToTimestamp)
   createdAt: Date;
 
+  @ApiProperty({ type: 'number' })
   @Transform(ToTimestamp)
   updatedAt: Date;
 
-  constructor(user: UserEntity) {
+  constructor({ learnerProfile, tutorProfile, ...user }: UserEntity) {
     Object.assign(this, user);
+
+    this.learnerProfile = learnerProfile
+      ? new LearnerProfileEntity(learnerProfile)
+      : null;
+
+    this.tutorProfile = tutorProfile
+      ? new TutorProfileEntity(tutorProfile)
+      : null;
   }
 }

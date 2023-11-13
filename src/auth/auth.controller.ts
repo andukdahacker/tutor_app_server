@@ -17,13 +17,20 @@ import { UserService } from 'src/user/user.service';
 import { AuthService } from './auth.service';
 import { LoginInput } from './dto/inputs/login.input';
 
-import { LoginResponse, SignUpResponse } from './dto/response';
+import { LoginResponse } from './dto/response';
 
-import { BaseResponse } from 'src/shared/types/base_response';
+import {
+  ApiInternalServerErrorResponse,
+  ApiOkResponse,
+  ApiTags,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
+import { ErrorResponse } from 'src/shared/types/error_response';
 import { UserEntity } from 'src/user/dto/entity/user.entity';
 import { ChangePasswordInput } from './dto/inputs';
-import { ITokenPayload } from './types/ITokenPayload';
+import { RefreshTokenResponse } from './dto/response/refresh-token.response';
 
+@ApiTags('auth')
 @Controller('auth')
 export class AuthController {
   constructor(
@@ -33,6 +40,8 @@ export class AuthController {
 
   @Public()
   @Post('login')
+  @ApiOkResponse({ type: LoginResponse })
+  @ApiUnauthorizedResponse({ type: () => ErrorResponse })
   async login(
     @Body() loginInput: LoginInput,
     @Req() req,
@@ -42,69 +51,73 @@ export class AuthController {
     this.authService.setAuthCookies(result.refreshToken, req);
 
     return {
-      statusCode: 200,
-      data: {
-        user: new UserEntity(result.user),
-        access_token: result.accessToken,
-      },
+      user: new UserEntity(result.user),
+      access_token: result.accessToken,
     };
   }
 
   @Post('sign-up')
   @Public()
-  async signUp(@Body() signUpInput: SignUpInput): Promise<SignUpResponse> {
+  @ApiOkResponse({ type: UserEntity })
+  @ApiUnauthorizedResponse({ type: ErrorResponse })
+  @ApiInternalServerErrorResponse({ type: ErrorResponse })
+  async signUp(@Body() signUpInput: SignUpInput): Promise<UserEntity> {
     const user = await this.authService.signUp(signUpInput);
-    return {
-      user,
-    };
+    return user;
   }
 
   @Post('refreshToken')
   @Public()
   @UseGuards(RefreshTokenGuard)
+  @ApiOkResponse({ type: RefreshTokenResponse })
   async refreshAccessToken(
     @TokenPayload() user,
-  ): Promise<BaseResponse<string>> {
+  ): Promise<RefreshTokenResponse> {
     const accessToken = await this.authService.createAccessToken(
       user.email,
       user.id,
     );
 
     return {
-      statusCode: 200,
-      data: accessToken,
+      accessToken,
     };
   }
 
-  @Post('log-out')
+  @Post('logOut')
+  @ApiOkResponse()
   async logout(@Req() req) {
-    await this.authService.logout(req);
-
-    return 'Logged out successfully';
+    return await this.authService.logout(req);
   }
 
   @Get('me')
-  async me(@TokenPayload() payload: ITokenPayload) {
-    const userId = payload.userId;
+  @ApiOkResponse({ type: UserEntity })
+  @ApiUnauthorizedResponse({ type: () => ErrorResponse })
+  async me(@Req() req) {
+    const userId = req.user.userId;
 
     const user = await this.userService.findOneById(userId);
 
     if (!user) return null;
 
-    return user;
+    return new UserEntity(user);
   }
 
   @Put('verify-email/:id')
+  @ApiOkResponse({ type: UserEntity })
   async verifyEmail(@Param('id') token: string) {
-    return await this.authService.verifyEmail(token);
+    const user = await this.authService.verifyEmail(token);
+
+    return user;
   }
 
   @Put('forgot-password')
+  @ApiOkResponse({ type: Boolean })
   async forgotPassword(@Body() email: string) {
     return await this.authService.sendForgotPasswordEmail(email);
   }
 
   @Put('change-password')
+  @ApiOkResponse()
   async changePassword(@Body() input: ChangePasswordInput) {
     return await this.authService.changePassword(input);
   }

@@ -27,6 +27,10 @@ export class UserService {
       where: {
         email,
       },
+      include: {
+        learnerProfile: true,
+        tutorProfile: true,
+      },
     });
   }
 
@@ -34,6 +38,19 @@ export class UserService {
     return await this.prisma.user.findUniqueOrThrow({
       where: {
         id,
+      },
+      include: {
+        learnerProfile: {
+          include: {
+            jobs: {
+              take: 5,
+              include: {
+                subject: true,
+              },
+            },
+          },
+        },
+        tutorProfile: true,
       },
     });
   }

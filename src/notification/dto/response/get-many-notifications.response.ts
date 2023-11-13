@@ -1,4 +1,4 @@
 import { Paginated } from 'src/shared/types/pagination.type';
-import { Notification } from '../entities';
+import { NotificationEntity } from '../entities';
 
-export class GetManyNotificationsResponse extends Paginated<Notification> {}
+export class GetManyNotificationsResponse extends Paginated<NotificationEntity> {}

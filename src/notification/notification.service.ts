@@ -44,6 +44,9 @@ export class NotificationService {
       cursor: {
         id: input.stringCursor ?? undefined,
       },
+      include: {
+        notifier: true,
+      },
       skip: input.stringCursor ? 1 : undefined,
     });
   }

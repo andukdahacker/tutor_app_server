@@ -1,23 +1,30 @@
-import { Body, Controller, Get } from '@nestjs/common';
+import { Body, Controller, Get, Req } from '@nestjs/common';
 
-import { ITokenPayload } from 'src/auth/types';
-import { TokenPayload } from 'src/shared/decorators/current-user.decorator';
+import { ApiInternalServerErrorResponse, ApiTags } from '@nestjs/swagger';
+import { ErrorResponse } from 'src/shared/types/error_response';
+import {
+  ApiOkPaginatedResponse,
+  Paginated,
+} from 'src/shared/types/pagination.type';
 import { paginate } from 'src/shared/utils/pagination.utils';
+import { NotificationEntity } from './dto/entities';
 import { GetManyNotificationsInput } from './dto/inputs/get-many-notifications.input';
-import { GetManyNotificationsResponse } from './dto/response';
 import { NotificationService } from './notification.service';
 
+@ApiTags('Notification')
 @Controller('notification')
 export class NotificationController {
   constructor(private readonly notificationService: NotificationService) {}
 
   @Get()
+  @ApiOkPaginatedResponse(NotificationEntity)
+  @ApiInternalServerErrorResponse({ type: ErrorResponse })
   async getManyNotifications(
-    @TokenPayload() { userId }: ITokenPayload,
+    @Req() req,
     @Body() input: GetManyNotificationsInput,
-  ): Promise<GetManyNotificationsResponse> {
+  ): Promise<Paginated<NotificationEntity>> {
     const notifications = await this.notificationService.getNotifications(
-      userId,
+      req.user.userId,
       input,
     );
 
@@ -25,7 +32,7 @@ export class NotificationController {
       notifications,
       'id',
       async (cursor: string) =>
-        await this.notificationService.getNotifications(userId, {
+        await this.notificationService.getNotifications(req.user.userId, {
           stringCursor: cursor,
           ...input,
         }),

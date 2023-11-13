@@ -48,13 +48,11 @@ model Relationship {
 }
 
 model LearnerProfile {
-  id       String  @id @default(cuid())
-  bio      String? @db.VarChar(200)
-  user     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId   String  @unique
-  jobs     Job[]
-  jobTitle String?
-  avatar   String?
+  id     String  @id @default(cuid())
+  bio    String? @db.VarChar(200)
+  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String  @unique
+  jobs   Job[]
 }
 
 model Subject {

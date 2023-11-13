@@ -2,6 +2,7 @@ import {
   Controller,
   Get,
   Post,
+  Req,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
@@ -10,7 +11,7 @@ import { ITokenPayload } from 'src/auth/types';
 import { LearnerProfileService } from 'src/learner-profile/learner-profile.service';
 import { TokenPayload } from 'src/shared/decorators/current-user.decorator';
 import { TutorProfileService } from 'src/tutor-profile/tutor-profile.service';
-import { GetUserResponse } from './dto/response/get-user.response';
+import { UserEntity } from './dto/entity/user.entity';
 import { UserService } from './user.service';
 
 @Controller('user')
@@ -22,22 +23,12 @@ export class UserController {
   ) {}
 
   @Get()
-  async getUser(
-    @TokenPayload() { userId }: ITokenPayload,
-  ): Promise<GetUserResponse> {
+  async getUser(@Req() req): Promise<UserEntity> {
+    const userId = req.user.userId;
+
     const user = await this.userService.findOneById(userId);
 
-    const tutorProfile =
-      await this.tutorProfileService.findTutorProfileByUserId(userId);
-
-    const learnerProfile =
-      await this.learnerProfileService.findLearnerProfileByUserId(userId);
-
-    return {
-      user,
-      tutorProfile,
-      learnerProfile,
-    };
+    return new UserEntity(user);
   }
 
   @Post('upload/avatar')

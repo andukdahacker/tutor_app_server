@@ -9,7 +9,7 @@ ARG REFRESH_TOKEN_EXPIRATION_TIME
 ARG DATABASE_URL
 ARG REDIS_URL
 
-FROM node:18-alpine As development
+FROM node:21-alpine As development
 
 # Create app directory
 WORKDIR /usr/src/app
@@ -34,7 +34,7 @@ RUN npx prisma generate
 # BUILD FOR PRODUCTION
 ###################
 
-FROM node:18-alpine As build
+FROM node:21-alpine As build
 
 WORKDIR /usr/src/app
 
@@ -67,7 +67,7 @@ EXPOSE 4000
 # PRODUCTION
 ###################
 
-FROM node:18-alpine As production
+FROM node:21-alpine As production
 
 ARG ACCESS_TOKEN_SECRET
 ARG ACCESS_TOKEN_EXPIRATION_TIME

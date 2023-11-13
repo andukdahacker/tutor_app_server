@@ -1,3 +1,6 @@
+import { ApiPropertyOptional } from '@nestjs/swagger';
+
 export class UpdateLearnerProfileInput {
-  bio: string;
+  @ApiPropertyOptional()
+  bio?: string;
 }

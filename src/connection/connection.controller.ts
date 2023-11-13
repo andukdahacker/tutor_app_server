@@ -1,11 +1,20 @@
-import { Body, Controller, Get, Post, Put } from '@nestjs/common';
+import { Body, Controller, Get, Post, Put, Query } from '@nestjs/common';
+import {
+  ApiInternalServerErrorResponse,
+  ApiOkResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { NotificationService } from 'src/notification/notification.service';
+import { ErrorResponse } from 'src/shared/types/error_response';
+import { ApiOkPaginatedResponse } from 'src/shared/types/pagination.type';
 import { paginate } from 'src/shared/utils/pagination.utils';
 import { ConnectionService } from './connection.service';
+import { JobConnectionEntity } from './dto/entities';
 import { CreateJobConnectInput, JobConnectionWhereInput } from './dto/inputs';
 import { AcceptJobConnectionInput } from './dto/inputs/accept-job-connection.input';
 import { DeclineJobConnectionInput } from './dto/inputs/decline-job-connection.input';
 
+@ApiTags('Job Connections')
 @Controller('job-connection')
 export class JobConnectionController {
   constructor(
@@ -14,8 +23,10 @@ export class JobConnectionController {
   ) {}
 
   @Post()
+  @ApiOkResponse({ type: JobConnectionEntity })
+  @ApiInternalServerErrorResponse({ type: ErrorResponse })
   async createJobConnection(
-    @Body('createJobConnectInput')
+    @Body()
     input: CreateJobConnectInput,
   ) {
     const connection = this.connectionService.createJobConnection(input);
@@ -45,6 +56,8 @@ export class JobConnectionController {
   }
 
   @Put('accept')
+  @ApiOkResponse({ type: JobConnectionEntity })
+  @ApiInternalServerErrorResponse({ type: ErrorResponse })
   async acceptJobConnection(
     @Body()
     input: AcceptJobConnectionInput,
@@ -62,12 +75,12 @@ export class JobConnectionController {
 
     const result = await Promise.all([connection, notification]);
     // this.pubSub.publish(NotificationCreatedEvent, result[1]);
-    return {
-      jobConnection: result[0],
-    };
+    return result[0];
   }
 
   @Put('decline')
+  @ApiOkResponse({ type: JobConnectionEntity })
+  @ApiInternalServerErrorResponse({ type: ErrorResponse })
   async declineJobConnection(
     @Body()
     input: DeclineJobConnectionInput,
@@ -84,21 +97,20 @@ export class JobConnectionController {
     });
 
     const result = await Promise.all([connection, notification]);
-    // this.pubSub.publish(NotificationCreatedEvent, result[1]);
-    return {
-      jobConnection: result[0],
-    };
+    return result[0];
   }
 
   @Get()
-  async jobConnections(@Body() input: JobConnectionWhereInput) {
+  @ApiOkPaginatedResponse(JobConnectionEntity)
+  @ApiInternalServerErrorResponse({ type: ErrorResponse })
+  async jobConnections(@Query() query: JobConnectionWhereInput) {
     const jobConnections =
-      await this.connectionService.getJobConnections(input);
+      await this.connectionService.getJobConnections(query);
 
     return await paginate(jobConnections, 'jobId', async (cursor) => {
       return await this.connectionService.getJobConnections({
         stringCursor: cursor as string,
-        ...input,
+        ...query,
       });
     });
   }

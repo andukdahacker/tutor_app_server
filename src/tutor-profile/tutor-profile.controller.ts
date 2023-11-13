@@ -1,8 +1,15 @@
-import { Body, Controller, Get, Post, Put, Query } from '@nestjs/common';
-import { ITokenPayload } from 'src/auth/types';
-import { TokenPayload } from 'src/shared/decorators/current-user.decorator';
-import { BaseResponse } from 'src/shared/types/base_response';
-import { Paginated } from 'src/shared/types/pagination.type';
+import { Body, Controller, Get, Post, Put, Query, Req } from '@nestjs/common';
+import {
+  ApiInternalServerErrorResponse,
+  ApiOkResponse,
+  ApiTags,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
+import { ErrorResponse } from 'src/shared/types/error_response';
+import {
+  ApiOkPaginatedResponse,
+  Paginated,
+} from 'src/shared/types/pagination.type';
 import { paginate } from 'src/shared/utils/pagination.utils';
 import { TutorProfileEntity } from './dto/entities/tutor-profile.entity';
 import {
@@ -12,40 +19,44 @@ import {
 } from './dto/inputs';
 import { TutorProfileService } from './tutor-profile.service';
 
+@ApiTags('Tutor Profile')
 @Controller('tutor-profile')
 export class TutorProfileController {
   constructor(private readonly tutorProfileService: TutorProfileService) {}
 
   @Post()
-  async createTutorProfile(
-    @Body() body: CreateTutorProfileInput,
-    @TokenPayload() payload: ITokenPayload,
-  ) {
+  @ApiOkResponse({ type: TutorProfileEntity })
+  @ApiUnauthorizedResponse({ type: ErrorResponse })
+  @ApiInternalServerErrorResponse({ type: ErrorResponse })
+  async createTutorProfile(@Body() body: CreateTutorProfileInput, @Req() req) {
     const profile = await this.tutorProfileService.createTutorProfile(
       body,
-      payload.userId,
+      req.user.userId,
     );
 
-    return profile;
+    return new TutorProfileEntity(profile);
   }
 
   @Put()
-  async updateTutorProfile(
-    @Body() body: UpdateTutorProfileInput,
-    @TokenPayload() payload: ITokenPayload,
-  ) {
+  @ApiOkResponse({ type: TutorProfileEntity })
+  @ApiUnauthorizedResponse({ type: ErrorResponse })
+  @ApiInternalServerErrorResponse({ type: ErrorResponse })
+  async updateTutorProfile(@Body() body: UpdateTutorProfileInput, @Req() req) {
     const profile = await this.tutorProfileService.updateTutorProfile(
       body,
-      payload.userId,
+      req.user.userId,
     );
 
-    return profile;
+    return new TutorProfileEntity(profile);
   }
 
   @Get()
+  @ApiOkPaginatedResponse(TutorProfileEntity)
+  @ApiUnauthorizedResponse({ type: ErrorResponse })
+  @ApiInternalServerErrorResponse({ type: ErrorResponse })
   async tutorProfiles(
     @Query() body: FindManyTutorProfilesInput,
-  ): Promise<BaseResponse<Paginated<TutorProfileEntity>>> {
+  ): Promise<Paginated<TutorProfileEntity>> {
     const profiles = await this.tutorProfileService.findManyTutorProfiles(body);
 
     const result = await paginate(
@@ -58,9 +69,6 @@ export class TutorProfileController {
         }),
     );
 
-    return {
-      statusCode: 200,
-      data: result,
-    };
+    return result;
   }
 }

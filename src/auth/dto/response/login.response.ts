@@ -1,10 +1,10 @@
-import { BaseResponse } from 'src/shared/types/base_response';
+import { ApiProperty } from '@nestjs/swagger';
 import { UserEntity } from 'src/user/dto/entity/user.entity';
 
-class LoginData {
+export class LoginResponse {
+  @ApiProperty()
   access_token: string;
 
+  @ApiProperty({ type: () => UserEntity })
   user: UserEntity;
 }
-
-export type LoginResponse = BaseResponse<LoginData>;

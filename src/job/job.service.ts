@@ -10,12 +10,18 @@ import { FindManyJobsInput } from './dto/inputs/find-many-jobs.input';
 export class JobService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async createJob(input: CreateJobInput) {
+  async createJob(input: CreateJobInput, userId: string) {
+    const learner = await this.prisma.learnerProfile.findUnique({
+      where: {
+        userId,
+      },
+    });
+
     return await this.prisma.job.create({
       data: {
         learner: {
           connect: {
-            id: input.learnerId,
+            id: learner.id,
           },
         },
         subject: {
@@ -28,6 +34,14 @@ export class JobService {
         jobType: input.jobType,
         jobMethod: input.jobMethod,
         description: input.description,
+      },
+      include: {
+        learner: {
+          include: {
+            user: true,
+          },
+        },
+        subject: true,
       },
     });
   }
@@ -81,7 +95,11 @@ export class JobService {
       },
       include: {
         subject: true,
-        learner: true,
+        learner: {
+          include: {
+            user: true,
+          },
+        },
       },
     };
 

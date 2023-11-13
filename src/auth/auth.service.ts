@@ -61,6 +61,16 @@ export class AuthService {
       email: signUpInput.email,
     });
 
+    await this.prisma.learnerProfile.create({
+      data: {
+        user: {
+          connect: {
+            id: newUser.id,
+          },
+        },
+      },
+    });
+
     if (!newUser) throw new InternalServerErrorException();
 
     return newUser;
