@@ -3,6 +3,7 @@ import {
   ApiInternalServerErrorResponse,
   ApiOkResponse,
   ApiTags,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { NotificationService } from 'src/notification/notification.service';
 import { ErrorResponse } from 'src/shared/types/error_response';
@@ -24,6 +25,7 @@ export class JobConnectionController {
 
   @Post()
   @ApiOkResponse({ type: JobConnectionEntity })
+  @ApiUnauthorizedResponse({ type: ErrorResponse })
   @ApiInternalServerErrorResponse({ type: ErrorResponse })
   async createJobConnection(
     @Body()

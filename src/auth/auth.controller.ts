@@ -6,6 +6,7 @@ import {
   Post,
   Put,
   Req,
+  UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
 
@@ -92,12 +93,13 @@ export class AuthController {
   @Get('me')
   @ApiOkResponse({ type: UserEntity })
   @ApiUnauthorizedResponse({ type: () => ErrorResponse })
+  @ApiInternalServerErrorResponse({ type: () => ErrorResponse })
   async me(@Req() req) {
     const userId = req.user.userId;
 
     const user = await this.userService.findOneById(userId);
 
-    if (!user) return null;
+    if (!user) throw new UnauthorizedException('Cannot find user');
 
     return new UserEntity(user);
   }

@@ -24,7 +24,7 @@ export class SubjectController {
   @Post()
   @ApiOkResponse({ type: SubjectEntity })
   @ApiInternalServerErrorResponse({ type: ErrorResponse })
-  @ApiUnauthorizedResponse({ type: SubjectEntity })
+  @ApiUnauthorizedResponse({ type: ErrorResponse })
   async createSubject(
     @Body() body: CreateSubjectInput,
   ): Promise<SubjectEntity> {
@@ -36,7 +36,7 @@ export class SubjectController {
   @Get()
   @ApiOkPaginatedResponse(SubjectEntity)
   @ApiInternalServerErrorResponse({ type: ErrorResponse })
-  @ApiUnauthorizedResponse({ type: SubjectEntity })
+  @ApiUnauthorizedResponse({ type: ErrorResponse })
   async subjects(
     @Query() body: FindManySubjectsInput,
   ): Promise<Paginated<SubjectEntity>> {

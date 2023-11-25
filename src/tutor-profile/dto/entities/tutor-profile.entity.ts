@@ -1,5 +1,6 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { TutorProfile } from '@prisma/client';
+import { UserEntity } from 'src/user/dto/entity/user.entity';
 
 export class TutorProfileEntity implements TutorProfile {
   @ApiProperty()
@@ -11,7 +12,12 @@ export class TutorProfileEntity implements TutorProfile {
   @ApiProperty()
   bio: string;
 
-  constructor({ ...data }: TutorProfileEntity) {
+  @ApiPropertyOptional({ type: () => UserEntity })
+  user?: UserEntity;
+
+  constructor({ user, ...data }: TutorProfileEntity) {
     Object.assign(this, data);
+
+    this.user = user != null ? new UserEntity(user) : null;
   }
 }

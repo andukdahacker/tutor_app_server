@@ -23,4 +23,8 @@ export class JobConnectionEntity implements JobConnection {
   @ApiProperty({ type: Number })
   @Transform(ToTimestamp)
   createdAt: Date;
+
+  constructor(jobConnection: JobConnectionEntity) {
+    Object.assign(this, jobConnection);
+  }
 }

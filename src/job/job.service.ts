@@ -11,7 +11,7 @@ export class JobService {
   constructor(private readonly prisma: PrismaService) {}
 
   async createJob(input: CreateJobInput, userId: string) {
-    const learner = await this.prisma.learnerProfile.findUnique({
+    const learner = await this.prisma.learnerProfile.findUniqueOrThrow({
       where: {
         userId,
       },
@@ -34,6 +34,7 @@ export class JobService {
         jobType: input.jobType,
         jobMethod: input.jobMethod,
         description: input.description,
+        numberOfSessions: input.numberOfSessions,
       },
       include: {
         learner: {
@@ -98,6 +99,11 @@ export class JobService {
         learner: {
           include: {
             user: true,
+          },
+        },
+        jobConnections: {
+          where: {
+            tutorId: input.tutorId,
           },
         },
       },

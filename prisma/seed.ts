@@ -26,22 +26,19 @@ async function seed() {
   const args = getArgs();
 
   const learnerProfile = args['l'] ?? 20;
-  const tutorProfile = args['t'] ?? 20;
-
   const learnerAmount: number = +learnerProfile;
-  const tutorAmount: number = +tutorProfile;
 
   const prisma = new PrismaClient();
   const hashedPassword = await argon2.hash('Ducdeptraino1@');
   for (let i = 0; i < learnerAmount; i++) {
     await prisma.user.create({
       data: {
-        email: `learner${i}@gmail.com`,
+        email: `user${i}@gmail.com`,
         password: hashedPassword,
-        username: `learner${i}`,
+        username: `user${i}`,
         learnerProfile: {
           create: {
-            bio: `Hi I'm Learner${i}. I am here to learn`,
+            bio: `Hi I'm User${i}. I am here to learn`,
             jobs: {
               create: [
                 {
@@ -50,21 +47,12 @@ async function seed() {
                   title: 'title',
                   jobType: JobType.TUTOR,
                   jobMethod: JobMethod.BOTH,
+                  numberOfSessions: 1,
                 },
               ],
             },
           },
         },
-      },
-    });
-  }
-
-  for (let i = 0; i < tutorAmount; i++) {
-    await prisma.user.create({
-      data: {
-        email: `tutor${i}@gmail.com`,
-        password: hashedPassword,
-        username: `tutor${i}`,
         tutorProfile: {
           create: {
             bio: `Hi I'm Tutor${i}. I am here to teach`,

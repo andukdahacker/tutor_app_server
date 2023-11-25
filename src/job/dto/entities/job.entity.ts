@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Job, JobMethod, JobStatus, JobType } from '@prisma/client';
 import { Transform } from 'class-transformer';
+import { JobConnectionEntity } from 'src/connection/dto/entities';
 
 import { LearnerProfileEntity } from 'src/learner-profile/dto/entities';
 import { ToTimestamp } from 'src/shared/utils/transform.utils';
@@ -51,7 +52,15 @@ export class JobEntity implements Job {
   @ApiProperty({ enum: JobStatus, enumName: 'JobStatus' })
   jobStatus: JobStatus;
 
-  constructor({ learner, subject, ...data }: Partial<JobEntity>) {
+  @ApiProperty({ type: () => JobConnectionEntity })
+  jobConnections?: JobConnectionEntity[];
+
+  constructor({
+    learner,
+    subject,
+    jobConnections,
+    ...data
+  }: Partial<JobEntity>) {
     Object.assign(this, data);
 
     if (learner) {
@@ -60,6 +69,12 @@ export class JobEntity implements Job {
 
     if (subject) {
       this.subject = new SubjectEntity(subject);
+    }
+
+    if (jobConnections) {
+      this.jobConnections = jobConnections?.map(
+        (connection) => new JobConnectionEntity(connection),
+      );
     }
   }
 }

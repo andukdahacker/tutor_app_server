@@ -86,7 +86,7 @@ export class TutorProfileService {
             id: input.stringCursor,
           }
         : undefined,
-      take: input.take ?? undefined,
+      take: input.take,
       skip: input.stringCursor ? 1 : undefined,
       where: {
         OR: [

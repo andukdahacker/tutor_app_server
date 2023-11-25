@@ -17,10 +17,8 @@ export const REDIS = 'IORedis';
         if (enviroment === Environment.Production) {
           return new Redis(process.env.REDIS_URL as string);
         }
-        return new Redis({
-          host: configService.get('REDIS_HOST'),
-          port: configService.get('REDIS_PORT'),
-        });
+
+        return new Redis();
       },
     },
   ],

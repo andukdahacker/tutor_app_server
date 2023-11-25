@@ -15,8 +15,15 @@ export class UserService {
         username,
         email,
         password,
-        schedule: {
-          create: {},
+        learnerProfile: {
+          create: {
+            bio: '',
+          },
+        },
+        tutorProfile: {
+          create: {
+            bio: '',
+          },
         },
       },
     });
@@ -35,7 +42,7 @@ export class UserService {
   }
 
   async findOneById(id: string) {
-    return await this.prisma.user.findUniqueOrThrow({
+    return await this.prisma.user.findUnique({
       where: {
         id,
       },

@@ -12,18 +12,21 @@ Object.defineProperty(BigInt.prototype, 'toJSON', {
 });
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    cors: {
+      credentials: true,
+      origin: 'http://localhost:5173',
+      allowedHeaders: ['content-type', 'authorization'],
+    },
+  });
+
+  app.enableShutdownHooks();
 
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
     }),
   );
-
-  app.enableCors({
-    origin: '*',
-    credentials: true,
-  });
 
   app.use(cookieParser());
 
