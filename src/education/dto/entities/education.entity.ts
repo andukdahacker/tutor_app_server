@@ -26,4 +26,8 @@ export class EducationEntity implements Education {
 
   @ApiProperty()
   description: string;
+
+  constructor(data: EducationEntity) {
+    Object.assign(this, data);
+  }
 }

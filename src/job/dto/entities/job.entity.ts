@@ -52,7 +52,7 @@ export class JobEntity implements Job {
   @ApiProperty({ enum: JobStatus, enumName: 'JobStatus' })
   jobStatus: JobStatus;
 
-  @ApiProperty({ type: () => JobConnectionEntity })
+  @ApiProperty({ type: () => [JobConnectionEntity] })
   jobConnections?: JobConnectionEntity[];
 
   constructor({

@@ -87,7 +87,10 @@ export class JobService {
             },
           },
         ],
-        fee: input.fee,
+        fee: {
+          lte: input.maxFee,
+          gte: input.minFee,
+        },
         jobType: input.jobType,
         jobMethod: input.jobMethod,
       },

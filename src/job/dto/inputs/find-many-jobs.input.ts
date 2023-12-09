@@ -16,11 +16,17 @@ export class FindManyJobsInput {
   @ApiProperty()
   searchString: string;
 
-  @ApiPropertyOptional()
+  @ApiProperty()
   @Transform(function (param) {
     return BigInt(param.value);
   })
-  fee?: bigint;
+  minFee?: bigint;
+
+  @ApiProperty()
+  @Transform(function (param) {
+    return BigInt(param.value);
+  })
+  maxFee?: bigint;
 
   @ApiPropertyOptional({ enum: JobType, enumName: 'JobType' })
   jobType?: JobType;

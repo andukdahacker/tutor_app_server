@@ -71,6 +71,7 @@ export class AuthController {
   @Public()
   @UseGuards(RefreshTokenGuard)
   @ApiOkResponse({ type: RefreshTokenResponse })
+  @ApiInternalServerErrorResponse({ type: ErrorResponse })
   async refreshAccessToken(
     @TokenPayload() user,
   ): Promise<RefreshTokenResponse> {

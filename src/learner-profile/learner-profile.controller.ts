@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Put } from '@nestjs/common';
+import { Body, Controller, Post, Put, Req } from '@nestjs/common';
 import {
   ApiInternalServerErrorResponse,
   ApiOkResponse,
@@ -35,11 +35,11 @@ export class LearnerProfileController {
   @ApiInternalServerErrorResponse({ type: ErrorResponse })
   async updateLearnerProfile(
     @Body() input: UpdateLearnerProfileInput,
-    @TokenPayload() payload: ITokenPayload,
+    @Req() req,
   ) {
     return await this.profileService.updateLearnerProfile(
       input,
-      payload.userId,
+      req.user.userId,
     );
   }
 }

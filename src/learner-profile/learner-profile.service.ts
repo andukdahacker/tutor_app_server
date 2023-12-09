@@ -21,7 +21,7 @@ export class LearnerProfileService {
   }
 
   async updateLearnerProfile(input: UpdateLearnerProfileInput, userId: string) {
-    return await this.prisma.tutorProfile.update({
+    return await this.prisma.learnerProfile.update({
       where: {
         userId,
       },

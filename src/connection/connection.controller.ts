@@ -14,6 +14,7 @@ import { JobConnectionEntity } from './dto/entities';
 import { CreateJobConnectInput, JobConnectionWhereInput } from './dto/inputs';
 import { AcceptJobConnectionInput } from './dto/inputs/accept-job-connection.input';
 import { DeclineJobConnectionInput } from './dto/inputs/decline-job-connection.input';
+import { DeleteJobConnectionInput } from './dto/inputs/delete_job_connection';
 
 @ApiTags('Job Connections')
 @Controller('job-connection')
@@ -115,5 +116,19 @@ export class JobConnectionController {
         ...query,
       });
     });
+  }
+
+  @Post('delete')
+  @ApiOkResponse({ type: () => JobConnectionEntity })
+  @ApiUnauthorizedResponse({ type: () => ErrorResponse })
+  @ApiInternalServerErrorResponse({ type: () => ErrorResponse })
+  async deleteConnection(
+    @Body() deleteConnectionInput: DeleteJobConnectionInput,
+  ) {
+    const connection = await this.connectionService.deleteJobConnection(
+      deleteConnectionInput,
+    );
+
+    return new JobConnectionEntity(connection);
   }
 }

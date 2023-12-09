@@ -39,14 +39,13 @@ export class JobController {
   @ApiInternalServerErrorResponse({ type: ErrorResponse })
   async jobs(@Query() input: FindManyJobsInput): Promise<Paginated<JobEntity>> {
     const requests = await this.jobService.findManyJobs(input);
-
     const results = await paginate(
       requests,
       'id',
       async (cursor: string) =>
         await this.jobService.findManyJobs({
-          stringCursor: cursor,
           ...input,
+          stringCursor: cursor,
         }),
     );
 

@@ -7,6 +7,7 @@ import {
   DeclineJobConnectionInput,
   JobConnectionWhereInput,
 } from './dto/inputs';
+import { DeleteJobConnectionInput } from './dto/inputs/delete_job_connection';
 
 @Injectable()
 export class ConnectionService {
@@ -74,5 +75,18 @@ export class ConnectionService {
         },
       },
     });
+  }
+
+  async deleteJobConnection(input: DeleteJobConnectionInput) {
+    const connection = await this.prisma.jobConnection.delete({
+      where: {
+        jobId_tutorId: {
+          jobId: input.jobId,
+          tutorId: input.tutorId,
+        },
+      },
+    });
+
+    return connection;
   }
 }
