@@ -6,17 +6,20 @@ export class UpdateEducationInput {
   id: string;
 
   @ApiProperty()
+  title: string;
+
+  @ApiProperty()
   educationEntity: string;
 
   @ApiPropertyOptional()
   educationEntityUrl?: string;
 
-  @ApiProperty({ type: Number })
+  @ApiProperty({ type: String })
   @Transform((params) => new Date(params.value))
   fromDate: Date;
 
-  @ApiProperty({ type: Number })
-  @Transform((params) => new Date(params.value))
+  @ApiPropertyOptional({ type: String, nullable: true })
+  @Transform((params) => (params.value == '' ? null : new Date(params.value)))
   toDate: Date;
 
   @ApiPropertyOptional()

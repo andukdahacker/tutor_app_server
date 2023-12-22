@@ -1,16 +1,9 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
-import { ToTimestamp } from 'src/shared/utils/transform.utils';
 
 export class CreateEducationInput {
   @ApiProperty()
-  position: string;
-
-  @ApiProperty()
-  workplace: string;
-
-  @ApiPropertyOptional()
-  workplaceUrl?: string;
+  title: string;
 
   @ApiPropertyOptional()
   description?: string;
@@ -21,11 +14,14 @@ export class CreateEducationInput {
   @ApiPropertyOptional()
   educationEntityUrl?: string;
 
-  @ApiProperty({ type: Number })
-  @Transform(ToTimestamp)
+  @ApiProperty({ type: String })
+  @Transform((params) => new Date(params.value))
   fromDate: Date;
 
-  @ApiProperty({ type: Number })
-  @Transform(ToTimestamp)
-  toDate: Date;
+  @ApiPropertyOptional({ type: String, nullable: true })
+  @Transform((params) => (params.value == '' ? null : new Date(params.value)))
+  toDate?: Date;
+
+  @ApiProperty({ type: Boolean })
+  isCurrent: boolean;
 }

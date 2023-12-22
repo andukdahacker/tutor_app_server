@@ -15,19 +15,21 @@ export class EducationService {
             id: userId,
           },
         },
+        title: input.title,
         educationEntity: input.educationEntity,
         fromDate: input.fromDate,
         toDate: input.toDate,
         description: input.description,
         educationEntityUrl: input.educationEntityUrl,
+        isCurrent: input.isCurrent,
       },
     });
   }
 
-  async updateEducation(input: UpdateEducationInput) {
+  async updateEducation({ id, ...input }: UpdateEducationInput) {
     return await this.prisma.education.update({
       where: {
-        id: input.id,
+        id,
       },
       data: {
         ...input,

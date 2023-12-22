@@ -65,10 +65,10 @@ export class UserEntity implements User {
 
     this.education = education
       ? education.map((e) => new EducationEntity(e))
-      : null;
+      : [];
 
     this.workExperience = workExperience
       ? workExperience.map((e) => new WorkExperienceEntity(e))
-      : null;
+      : [];
   }
 }

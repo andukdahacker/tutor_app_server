@@ -30,6 +30,9 @@ export class WorkExperienceEntity implements WorkExperience {
   @Transform(ToTimestamp)
   toDate: Date;
 
+  @ApiProperty({ type: Boolean })
+  isCurrent: boolean;
+
   constructor(workExperience: WorkExperienceEntity) {
     Object.assign(this, workExperience);
   }

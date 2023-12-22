@@ -11,6 +11,9 @@ export class EducationEntity implements Education {
   id: string;
 
   @ApiProperty()
+  title: string;
+
+  @ApiProperty()
   educationEntity: string;
 
   @ApiProperty()
@@ -23,6 +26,9 @@ export class EducationEntity implements Education {
   @ApiProperty({ type: Number })
   @Transform(ToTimestamp)
   toDate: Date;
+
+  @ApiProperty({ type: Boolean })
+  isCurrent: boolean;
 
   @ApiProperty()
   description: string;

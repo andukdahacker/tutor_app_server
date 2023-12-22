@@ -11,6 +11,7 @@ import {
   ApiInternalServerErrorResponse,
   ApiOkResponse,
   ApiTags,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { ErrorResponse } from 'src/shared/types/error_response';
 import { EducationEntity } from './dto/entities';
@@ -24,20 +25,29 @@ export class EducationController {
 
   @Post()
   @ApiOkResponse({ type: EducationEntity })
+  @ApiUnauthorizedResponse({ type: ErrorResponse })
   @ApiInternalServerErrorResponse({ type: ErrorResponse })
   async createEducation(
     @Body()
     input: CreateEducationInput,
     @Req() req,
   ) {
-    return await this.educationService.createEducation(req.user.userId, input);
+    const education = await this.educationService.createEducation(
+      req.user.userId,
+      input,
+    );
+
+    return new EducationEntity(education);
   }
 
   @Put()
   @ApiOkResponse({ type: EducationEntity })
+  @ApiUnauthorizedResponse({ type: ErrorResponse })
   @ApiInternalServerErrorResponse({ type: ErrorResponse })
   async updateEducation(@Body() input: UpdateEducationInput) {
-    return await this.educationService.updateEducation(input);
+    const education = await this.educationService.updateEducation(input);
+
+    return new EducationEntity(education);
   }
 
   @Delete(':id')

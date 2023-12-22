@@ -58,6 +58,8 @@ export class UserService {
           },
         },
         tutorProfile: true,
+        workExperience: true,
+        education: true,
       },
     });
   }

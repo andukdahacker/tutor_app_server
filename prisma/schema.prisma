@@ -122,25 +122,28 @@ model TutorProfile {
 }
 
 model WorkExperience {
-  id           String   @id @default(cuid())
+  id           String    @id @default(cuid())
   position     String
   workplace    String
   workplaceUrl String?
   description  String?
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId       String
   fromDate     DateTime
-  toDate       DateTime
+  toDate       DateTime?
+  isCurrent    Boolean
 }
 
 model Education {
-  id                 String   @id @default(cuid())
+  id                 String    @id @default(cuid())
+  title              String
   educationEntity    String
   educationEntityUrl String?
   fromDate           DateTime
-  toDate             DateTime
+  toDate             DateTime?
+  isCurrent          Boolean
   description        String?
-  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user               User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId             String
 }
 

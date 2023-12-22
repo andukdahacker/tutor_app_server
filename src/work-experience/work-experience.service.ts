@@ -20,10 +20,13 @@ export class WorkExperienceService {
     });
   }
 
-  async updateWorkExperience(input: UpdateWorkExperienceInput) {
+  async updateWorkExperience({
+    workExperienceId,
+    ...input
+  }: UpdateWorkExperienceInput) {
     return await this.prisma.workExperience.update({
       where: {
-        id: input.workExperienceId,
+        id: workExperienceId,
       },
       data: {
         ...input,
