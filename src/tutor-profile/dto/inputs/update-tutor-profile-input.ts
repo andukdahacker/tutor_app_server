@@ -1,6 +1,9 @@
-import { IsString } from 'class-validator';
+import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export class UpdateTutorProfileInput {
-  @IsString()
-  bio: string;
+  @ApiPropertyOptional()
+  bio?: string;
+
+  @ApiPropertyOptional({ type: [String] })
+  subjectIds?: string[];
 }

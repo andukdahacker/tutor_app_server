@@ -36,7 +36,16 @@ export class UserService {
       },
       include: {
         learnerProfile: true,
-        tutorProfile: true,
+        tutorProfile: {
+          include: {
+            tutorProfileSubject: {
+              include: {
+                tutor: true,
+                subject: true,
+              },
+            },
+          },
+        },
       },
     });
   }
@@ -57,7 +66,16 @@ export class UserService {
             },
           },
         },
-        tutorProfile: true,
+        tutorProfile: {
+          include: {
+            tutorProfileSubject: {
+              include: {
+                subject: true,
+                tutor: true,
+              },
+            },
+          },
+        },
         workExperience: true,
         education: true,
       },

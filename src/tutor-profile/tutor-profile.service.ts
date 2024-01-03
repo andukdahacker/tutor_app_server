@@ -33,6 +33,28 @@ export class TutorProfileService {
       },
       data: {
         bio: input.bio,
+        tutorProfileSubject: {
+          deleteMany: {
+            subjectId: {
+              in: input.subjectIds ?? [],
+            },
+          },
+          createMany: {
+            data: input.subjectIds?.map((e) => {
+              return {
+                subjectId: e,
+              };
+            }),
+          },
+        },
+      },
+      include: {
+        tutorProfileSubject: {
+          include: {
+            subject: true,
+            tutor: true,
+          },
+        },
       },
     });
   }
