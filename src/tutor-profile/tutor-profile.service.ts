@@ -8,6 +8,7 @@ import {
   FindManyTutorProfilesInput,
   UpdateTutorProfileInput,
 } from './dto/inputs';
+import { DeleteTutorProfileSubjectInput } from './dto/inputs/delete_tutor_profile_subject.input';
 
 @Injectable()
 export class TutorProfileService {
@@ -99,6 +100,17 @@ export class TutorProfileService {
     });
   }
 
+  async deleteTutotProfileSubject(input: DeleteTutorProfileSubjectInput) {
+    return await this.prisma.tutorProfileSubject.delete({
+      where: {
+        tutorId_subjectId: {
+          subjectId: input.subjectId,
+          tutorId: input.tutorProfileId,
+        },
+      },
+    });
+  }
+
   async findManyTutorProfiles(
     input: FindManyTutorProfilesInput,
   ): Promise<TutorProfileEntity[]> {
@@ -142,64 +154,5 @@ export class TutorProfileService {
     const profiles = await this.prisma.tutorProfile.findMany(args);
 
     return profiles.map((profile) => new TutorProfileEntity(profile));
-  }
-
-  async findJobConnectionsByTutorIds(ids: string[]) {
-    const profiles = await this.prisma.tutorProfile.findMany({
-      where: {
-        id: {
-          in: ids,
-        },
-      },
-      include: {
-        jobConnections: true,
-      },
-    });
-
-    const mappedResult = ids.map(
-      (id) => profiles.find((profile) => profile.id == id).jobConnections,
-    );
-
-    return mappedResult;
-  }
-
-  async findUsersByTutorIds(ids: string[]) {
-    const users = await this.prisma.user.findMany({
-      where: {
-        tutorProfile: {
-          id: {
-            in: ids,
-          },
-        },
-      },
-      include: {
-        tutorProfile: true,
-      },
-    });
-
-    const mappedResult = ids.map((id) =>
-      users.find((user) => user.tutorProfile.id == id),
-    );
-
-    return mappedResult;
-  }
-
-  async findSubjectsByTutorIds(ids: string[]) {
-    const profiles = await this.prisma.tutorProfile.findMany({
-      where: {
-        id: {
-          in: ids,
-        },
-      },
-      include: {
-        tutorProfileSubject: true,
-      },
-    });
-
-    const mappedResult = ids.map(
-      (id) => profiles.find((profile) => profile.id == id).tutorProfileSubject,
-    );
-
-    return mappedResult;
   }
 }

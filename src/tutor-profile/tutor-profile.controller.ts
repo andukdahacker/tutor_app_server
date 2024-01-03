@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Post, Put, Query, Req } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Post,
+  Put,
+  Query,
+  Req,
+} from '@nestjs/common';
 import {
   ApiInternalServerErrorResponse,
   ApiOkResponse,
@@ -17,6 +26,7 @@ import {
   FindManyTutorProfilesInput,
   UpdateTutorProfileInput,
 } from './dto/inputs';
+import { DeleteTutorProfileSubjectInput } from './dto/inputs/delete_tutor_profile_subject.input';
 import { TutorProfileService } from './tutor-profile.service';
 
 @ApiTags('Tutor Profile')
@@ -48,6 +58,19 @@ export class TutorProfileController {
     );
 
     return new TutorProfileEntity(profile);
+  }
+
+  @Delete()
+  @ApiOkResponse()
+  @ApiUnauthorizedResponse({ type: ErrorResponse })
+  @ApiInternalServerErrorResponse({ type: ErrorResponse })
+  async deleteTutorProfileSubject(
+    @Body() body: DeleteTutorProfileSubjectInput,
+  ) {
+    const result =
+      await this.tutorProfileService.deleteTutotProfileSubject(body);
+
+    return result;
   }
 
   @Get()

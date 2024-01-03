@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { TutorProfile } from '@prisma/client';
+import { $Enums, JobMethod, TutorProfile } from '@prisma/client';
 import { UserEntity } from 'src/user/dto/entity/user.entity';
 import { TutorProfileSubjectEntity } from './tutor-profile-subject-entity';
 
@@ -21,6 +21,12 @@ export class TutorProfileEntity implements TutorProfile {
     nullable: true,
   })
   tutorProfileSubject?: TutorProfileSubjectEntity[];
+
+  @ApiPropertyOptional()
+  tutorFee: bigint | null;
+
+  @ApiPropertyOptional({ enum: JobMethod, enumName: 'JobMethod' })
+  jobMethod: $Enums.JobMethod | null;
 
   constructor({
     user,

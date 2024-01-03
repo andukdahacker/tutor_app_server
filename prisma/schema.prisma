@@ -117,6 +117,8 @@ model TutorProfile {
   bio                 String?               @db.VarChar(200)
   user                User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId              String                @unique
+  tutorFee            BigInt?
+  jobMethod           JobMethod?
   jobConnections      JobConnection[]
   tutorProfileSubject TutorProfileSubject[]
 }
