@@ -34,20 +34,24 @@ export class TutorProfileService {
       },
       data: {
         bio: input.bio,
-        tutorProfileSubject: {
-          deleteMany: {
-            subjectId: {
-              in: input.subjectIds ?? [],
+        tutorProfileSubject: !input.subjectIds
+          ? undefined
+          : {
+              deleteMany: {
+                subjectId: {
+                  in: input.subjectIds ?? [],
+                },
+              },
+              createMany: {
+                data: input.subjectIds?.map((e) => {
+                  return {
+                    subjectId: e,
+                  };
+                }),
+              },
             },
-          },
-          createMany: {
-            data: input.subjectIds?.map((e) => {
-              return {
-                subjectId: e,
-              };
-            }),
-          },
-        },
+        tutorFee: input.tutorFee,
+        jobMethod: input.jobMethod,
       },
       include: {
         tutorProfileSubject: {
