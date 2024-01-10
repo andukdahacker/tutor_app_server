@@ -1,11 +1,9 @@
-import { Body, Controller, Post, Put, Req } from '@nestjs/common';
+import { Body, Controller, Get, Post, Put, Req } from '@nestjs/common';
 import {
   ApiInternalServerErrorResponse,
   ApiOkResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { ITokenPayload } from 'src/auth/types/ITokenPayload';
-import { TokenPayload } from 'src/shared/decorators/current-user.decorator';
 import { ErrorResponse } from 'src/shared/types/error_response';
 import { LearnerProfileEntity } from './dto/entities';
 import {
@@ -19,15 +17,29 @@ import { LearnerProfileService } from './learner-profile.service';
 export class LearnerProfileController {
   constructor(private readonly profileService: LearnerProfileService) {}
 
+  @Get()
+  @ApiOkResponse({ type: LearnerProfileEntity })
+  @ApiInternalServerErrorResponse({ type: ErrorResponse })
+  async getLearnerProfile(@Req() req) {
+    const learnerProfile = await this.profileService.findLearnerProfileByUserId(
+      req.user.userId,
+    );
+
+    return new LearnerProfileEntity(learnerProfile);
+  }
+
   @Post()
   @ApiOkResponse({ type: LearnerProfileEntity })
   @ApiInternalServerErrorResponse({ type: ErrorResponse })
   async createLearnerProfile(
     @Body()
     body: CreateLearnerProfileInput,
-    @TokenPayload() payload: ITokenPayload,
+    @Req() req,
   ) {
-    return await this.profileService.createLearnerProfile(body, payload.userId);
+    return await this.profileService.createLearnerProfile(
+      body,
+      req.user.userId,
+    );
   }
 
   @Put()

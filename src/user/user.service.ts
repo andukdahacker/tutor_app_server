@@ -35,7 +35,15 @@ export class UserService {
         email,
       },
       include: {
-        learnerProfile: true,
+        learnerProfile: {
+          include: {
+            jobs: {
+              include: {
+                subject: true,
+              },
+            },
+          },
+        },
         tutorProfile: {
           include: {
             tutorProfileSubject: {
@@ -54,30 +62,6 @@ export class UserService {
     return await this.prisma.user.findUnique({
       where: {
         id,
-      },
-      include: {
-        learnerProfile: {
-          include: {
-            jobs: {
-              take: 5,
-              include: {
-                subject: true,
-              },
-            },
-          },
-        },
-        tutorProfile: {
-          include: {
-            tutorProfileSubject: {
-              include: {
-                subject: true,
-                tutor: true,
-              },
-            },
-          },
-        },
-        workExperience: true,
-        education: true,
       },
     });
   }

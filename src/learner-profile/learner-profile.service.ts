@@ -36,35 +36,14 @@ export class LearnerProfileService {
       where: {
         userId,
       },
-    });
-  }
-
-  async findLearnerProfile(jobId: string) {
-    return await this.prisma.job
-      .findUnique({
-        where: {
-          id: jobId,
-        },
-      })
-      .learner();
-  }
-
-  async getUserByLearnerIds(ids: string[]) {
-    const profiles = await this.prisma.learnerProfile.findMany({
-      where: {
-        id: {
-          in: ids,
-        },
-      },
       include: {
-        user: true,
+        jobs: {
+          take: 10,
+          include: {
+            subject: true,
+          },
+        },
       },
     });
-
-    const mappedResult = ids.map(
-      (id) => profiles.find((profile) => profile.id == id).user,
-    );
-
-    return mappedResult;
   }
 }

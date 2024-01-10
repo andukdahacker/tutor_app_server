@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { LearnerProfile } from '@prisma/client';
+import { JobEntity } from 'src/job/dto/entities';
 import { UserEntity } from 'src/user/dto/entity/user.entity';
 
 export class LearnerProfileEntity implements LearnerProfile {
@@ -15,14 +16,16 @@ export class LearnerProfileEntity implements LearnerProfile {
   @ApiProperty({ type: () => UserEntity })
   user?: UserEntity;
 
-  // @ApiProperty({ type: () => [JobEntity] })
-  // jobs?: JobEntity[];
+  @ApiProperty({ type: () => [JobEntity] })
+  jobs?: JobEntity[];
 
-  constructor({ user, ...data }: Partial<LearnerProfileEntity>) {
+  constructor({ user, jobs, ...data }: Partial<LearnerProfileEntity>) {
     Object.assign(this, data);
 
     if (user) {
       this.user = new UserEntity(user);
     }
+
+    this.jobs = jobs != null ? jobs.map((e) => new JobEntity(e)) : null;
   }
 }

@@ -34,6 +34,17 @@ import { TutorProfileService } from './tutor-profile.service';
 export class TutorProfileController {
   constructor(private readonly tutorProfileService: TutorProfileService) {}
 
+  @Get()
+  @ApiOkResponse({ type: TutorProfileEntity })
+  @ApiUnauthorizedResponse({ type: ErrorResponse })
+  @ApiInternalServerErrorResponse({ type: ErrorResponse })
+  async getTutorProfile(@Req() req) {
+    const tutorProfile =
+      await this.tutorProfileService.findTutorProfileByUserId(req.user.userId);
+
+    return new TutorProfileEntity(tutorProfile);
+  }
+
   @Post()
   @ApiOkResponse({ type: TutorProfileEntity })
   @ApiUnauthorizedResponse({ type: ErrorResponse })
@@ -73,7 +84,7 @@ export class TutorProfileController {
     return result;
   }
 
-  @Get()
+  @Get('/list')
   @ApiOkPaginatedResponse(TutorProfileEntity)
   @ApiUnauthorizedResponse({ type: ErrorResponse })
   @ApiInternalServerErrorResponse({ type: ErrorResponse })

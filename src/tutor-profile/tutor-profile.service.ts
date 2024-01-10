@@ -64,42 +64,18 @@ export class TutorProfileService {
     });
   }
 
-  async findUser(tutorProfileId: string) {
-    return await this.prisma.tutorProfile
-      .findUnique({
-        where: {
-          id: tutorProfileId,
-        },
-      })
-      .user();
-  }
-
-  async findSubject(tutorProfileId: string) {
-    return await this.prisma.subject.findMany({
-      where: {
-        tutorProfileSubject: {
-          some: {
-            tutorId: tutorProfileId,
-          },
-        },
-      },
-    });
-  }
-
-  async findJobConnections(tutorProfileId: string) {
-    return await this.prisma.tutorProfile
-      .findUnique({
-        where: {
-          id: tutorProfileId,
-        },
-      })
-      .jobConnections();
-  }
-
   async findTutorProfileByUserId(userId: string) {
     return await this.prisma.tutorProfile.findUnique({
       where: {
         userId,
+      },
+      include: {
+        tutorProfileSubject: {
+          include: {
+            subject: true,
+            tutor: true,
+          },
+        },
       },
     });
   }
