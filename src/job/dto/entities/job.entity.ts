@@ -21,7 +21,7 @@ export class JobEntity implements Job {
   subjectId: string;
 
   @ApiProperty({ type: () => SubjectEntity })
-  subject: SubjectEntity;
+  subject?: SubjectEntity;
 
   @ApiProperty()
   title: string;

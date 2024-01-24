@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  Param,
   Post,
   Put,
   Query,
@@ -34,13 +35,13 @@ import { TutorProfileService } from './tutor-profile.service';
 export class TutorProfileController {
   constructor(private readonly tutorProfileService: TutorProfileService) {}
 
-  @Get()
+  @Get(':userId')
   @ApiOkResponse({ type: TutorProfileEntity })
   @ApiUnauthorizedResponse({ type: ErrorResponse })
   @ApiInternalServerErrorResponse({ type: ErrorResponse })
-  async getTutorProfile(@Req() req) {
+  async getTutorProfile(@Param('userId') userId: string) {
     const tutorProfile =
-      await this.tutorProfileService.findTutorProfileByUserId(req.user.userId);
+      await this.tutorProfileService.findTutorProfileByUserId(userId);
 
     return new TutorProfileEntity(tutorProfile);
   }

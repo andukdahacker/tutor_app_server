@@ -63,6 +63,10 @@ export class UserService {
       where: {
         id,
       },
+      include: {
+        tutorProfile: true,
+        learnerProfile: true,
+      },
     });
   }
 

@@ -2,7 +2,6 @@ import {
   Body,
   Controller,
   Delete,
-  Get,
   Param,
   Post,
   Put,
@@ -27,7 +26,6 @@ import { WorkExperienceService } from './work-experience.service';
 export class WorkExperienceController {
   constructor(private readonly workExperienceService: WorkExperienceService) {}
 
-  @Get('/list')
   @Post()
   @ApiOkResponse({ type: WorkExperienceEntity })
   @ApiInternalServerErrorResponse({ type: ErrorResponse })

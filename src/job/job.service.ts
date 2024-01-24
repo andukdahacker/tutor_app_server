@@ -4,11 +4,26 @@ import { PrismaService } from 'src/prisma/prisma.service';
 
 import { JobEntity } from './dto/entities';
 import { CreateJobInput } from './dto/inputs';
+import FindJobByLearnerInput from './dto/inputs/find-jobs-by-learner.input';
 import { FindManyJobsInput } from './dto/inputs/find-many-jobs.input';
+import { UpdateJobInput } from './dto/inputs/update-job-input';
 
 @Injectable()
 export class JobService {
   constructor(private readonly prisma: PrismaService) {}
+
+  async findJobById(jobId: string) {
+    const job = await this.prisma.job.findUniqueOrThrow({
+      where: {
+        id: jobId,
+      },
+      include: {
+        subject: true,
+      },
+    });
+
+    return job;
+  }
 
   async createJob(input: CreateJobInput, userId: string) {
     const learner = await this.prisma.learnerProfile.findUniqueOrThrow({
@@ -57,7 +72,7 @@ export class JobService {
       .jobConnections();
   }
 
-  async findManyJobs(input: FindManyJobsInput) {
+  async findManyJobs(input: FindManyJobsInput, userId: string) {
     const args: Prisma.JobFindManyArgs = {
       take: input.take,
       cursor: input.stringCursor
@@ -106,7 +121,9 @@ export class JobService {
         },
         jobConnections: {
           where: {
-            tutorId: input.tutorId,
+            tutor: {
+              userId,
+            },
           },
         },
       },
@@ -117,60 +134,52 @@ export class JobService {
     return jobs.map((job) => new JobEntity(job));
   }
 
-  async findLearnerByJobIds(ids: string[]) {
+  async findJobsByLearnerId(input: FindJobByLearnerInput, userId: string) {
     const jobs = await this.prisma.job.findMany({
       where: {
-        id: {
-          in: ids,
+        learner: {
+          userId,
         },
       },
-      include: {
-        learner: true,
-      },
-    });
-
-    const mappedResult = ids.map(
-      (id) => jobs.find((job) => job.id == id).learner,
-    );
-
-    return mappedResult;
-  }
-
-  async findSubjectByJobIds(ids: string[]) {
-    const jobs = await this.prisma.job.findMany({
-      where: {
-        id: {
-          in: ids,
-        },
-      },
+      skip: input.stringCursor ? 1 : undefined,
+      take: input.take,
+      cursor: input.stringCursor
+        ? {
+            id: input.stringCursor,
+          }
+        : undefined,
       include: {
         subject: true,
-      },
-    });
-
-    const mappedResult = ids.map(
-      (id) => jobs.find((job) => job.id == id).subject,
-    );
-
-    return mappedResult;
-  }
-
-  async findConnectionsByJobIds(ids: string[]) {
-    const jobs = await this.prisma.job.findMany({
-      where: {
-        id: {
-          in: ids,
-        },
-      },
-      include: {
         jobConnections: true,
       },
     });
 
-    const mappedResult = ids.map(
-      (id) => jobs.find((job) => job.id == id).jobConnections,
-    );
+    return jobs.map((e) => new JobEntity(e));
+  }
 
-    return mappedResult;
+  async updateJob(input: UpdateJobInput) {
+    const job = await this.prisma.job.update({
+      where: {
+        id: input.id,
+      },
+      data: {
+        description: input.description,
+        fee: input.fee,
+        jobMethod: input.jobMethod,
+        jobStatus: input.jobStatus,
+        jobType: input.jobType,
+        title: input.title,
+        numberOfSessions: input.numberOfSessions,
+        subject: input.subjectId
+          ? {
+              connect: {
+                id: input.subjectId,
+              },
+            }
+          : undefined,
+      },
+    });
+
+    return job;
   }
 }

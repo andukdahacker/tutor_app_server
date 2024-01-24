@@ -22,7 +22,7 @@ function getArgs() {
   return args;
 }
 
-async function seed() {
+async function seed(): Promise<void> {
   const args = getArgs();
 
   const learnerProfile = args['l'] ?? 20;
@@ -50,7 +50,7 @@ async function seed() {
                   numberOfSessions: 1,
                 },
               ],
-            },
+              },
           },
         },
         tutorProfile: {

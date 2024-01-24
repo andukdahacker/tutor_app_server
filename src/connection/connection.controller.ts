@@ -1,10 +1,11 @@
-import { Body, Controller, Get, Post, Put, Query } from '@nestjs/common';
+import { Body, Controller, Get, Post, Put, Query, Req } from '@nestjs/common';
 import {
   ApiInternalServerErrorResponse,
   ApiOkResponse,
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+import { JobService } from 'src/job/job.service';
 import { NotificationService } from 'src/notification/notification.service';
 import { ErrorResponse } from 'src/shared/types/error_response';
 import { ApiOkPaginatedResponse } from 'src/shared/types/pagination.type';
@@ -22,6 +23,7 @@ export class JobConnectionController {
   constructor(
     private readonly connectionService: ConnectionService,
     private readonly notificationService: NotificationService,
+    private readonly jobService: JobService,
   ) {}
 
   @Post()
@@ -66,6 +68,10 @@ export class JobConnectionController {
     input: AcceptJobConnectionInput,
   ) {
     const connection = this.connectionService.acceptJobConnection(input);
+    const updatedJob = this.jobService.updateJob({
+      id: input.jobId,
+      jobStatus: 'EMPLOYED',
+    });
     const type = input.type;
     const notification = this.notificationService.createNotification({
       type: type === 'JOB_TO_TUTOR' ? 'TUTOR_ACCEPT' : 'LEARNER_ACCEPT',
@@ -76,7 +82,7 @@ export class JobConnectionController {
         type === 'JOB_TO_TUTOR' ? input.tutorUserId : input.learnerUserId,
     });
 
-    const result = await Promise.all([connection, notification]);
+    const result = await Promise.all([connection, updatedJob, notification]);
     // this.pubSub.publish(NotificationCreatedEvent, result[1]);
     return result[0];
   }
@@ -106,16 +112,49 @@ export class JobConnectionController {
   @Get()
   @ApiOkPaginatedResponse(JobConnectionEntity)
   @ApiInternalServerErrorResponse({ type: ErrorResponse })
-  async jobConnections(@Query() query: JobConnectionWhereInput) {
+  async jobConnections(@Query() query: JobConnectionWhereInput, @Req() req) {
     const jobConnections =
       await this.connectionService.getJobConnections(query);
 
     return await paginate(jobConnections, 'jobId', async (cursor) => {
       return await this.connectionService.getJobConnections({
-        stringCursor: cursor as string,
         ...query,
+        stringCursor: cursor as string,
       });
     });
+  }
+
+  @Get('tutor')
+  @ApiOkPaginatedResponse(JobConnectionEntity)
+  @ApiInternalServerErrorResponse({ type: ErrorResponse })
+  async tutorJobConnections(@Query() query: JobConnectionWhereInput) {
+    const jobConnections =
+      await this.connectionService.getTutorJobConnections(query);
+
+    return await paginate(jobConnections, 'jobId', async (cursor) => {
+      return await this.connectionService.getTutorJobConnections({
+        ...query,
+        stringCursor: cursor as string,
+      });
+    });
+  }
+
+  @Get('job')
+  @ApiOkPaginatedResponse(JobConnectionEntity)
+  @ApiInternalServerErrorResponse({ type: ErrorResponse })
+  async jobJobConnections(@Query() query: JobConnectionWhereInput) {
+    const jobConnections =
+      await this.connectionService.getJobJobConnections(query);
+
+    return await paginate(
+      jobConnections,
+      'tutorId',
+      async (cursor: string) =>
+        await this.connectionService.getJobJobConnections({
+          ...query,
+          stringCursor: cursor,
+        }),
+    );
   }
 
   @Post('delete')

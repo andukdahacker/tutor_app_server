@@ -5,7 +5,7 @@ import { TutorProfileService } from './tutor-profile.service';
 describe('TutorProfileController', () => {
   let resolver: TutorProfileController;
 
-  beforeEach(async () => {
+  beforeEach(async   () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [TutorProfileController, TutorProfileService],
     }).compile();

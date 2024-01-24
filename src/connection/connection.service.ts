@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConnectionStatus } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { JobConnectionEntity } from './dto/entities';
 import {
   AcceptJobConnectionInput,
   CreateJobConnectInput,
@@ -14,8 +15,17 @@ export class ConnectionService {
   constructor(private readonly prisma: PrismaService) {}
 
   async createJobConnection(input: CreateJobConnectInput) {
-    return await this.prisma.jobConnection.create({
-      data: {
+    return await this.prisma.jobConnection.upsert({
+      where: {
+        jobId_tutorId: {
+          jobId: input.jobId,
+          tutorId: input.tutorId,
+        },
+      },
+      update: {
+        status: 'REQUESTED',
+      },
+      create: {
         job: {
           connect: {
             id: input.jobId,
@@ -77,6 +87,43 @@ export class ConnectionService {
     });
   }
 
+  async getTutorJobConnections(input: JobConnectionWhereInput) {
+    const connections = await this.prisma.jobConnection.findMany({
+      where: {
+        tutorId: input.tutorId,
+        type: 'TUTOR_TO_JOB',
+        status: input.status,
+        job: {
+          jobStatus: input.jobStatus ?? undefined,
+        },
+      },
+      take: input.take,
+      skip: input.stringCursor ? 1 : undefined,
+      cursor: input.stringCursor
+        ? {
+            jobId_tutorId: {
+              jobId: input.stringCursor,
+              tutorId: input.tutorId,
+            },
+          }
+        : undefined,
+      include: {
+        job: {
+          include: {
+            learner: {
+              include: {
+                user: true,
+              },
+            },
+            subject: true,
+          },
+        },
+      },
+    });
+
+    return connections.map((e) => new JobConnectionEntity(e));
+  }
+
   async deleteJobConnection(input: DeleteJobConnectionInput) {
     const connection = await this.prisma.jobConnection.delete({
       where: {
@@ -88,5 +135,34 @@ export class ConnectionService {
     });
 
     return connection;
+  }
+
+  async getJobJobConnections(input: JobConnectionWhereInput) {
+    const connections = await this.prisma.jobConnection.findMany({
+      where: {
+        jobId: input.jobId,
+        type: 'TUTOR_TO_JOB',
+        status: input.status,
+      },
+      take: input.take,
+      skip: input.stringCursor ? 1 : undefined,
+      cursor: input.stringCursor
+        ? {
+            jobId_tutorId: {
+              jobId: input.jobId,
+              tutorId: input.stringCursor,
+            },
+          }
+        : undefined,
+      include: {
+        tutor: {
+          include: {
+            user: true,
+          },
+        },
+      },
+    });
+
+    return connections.map((e) => new JobConnectionEntity(e));
   }
 }

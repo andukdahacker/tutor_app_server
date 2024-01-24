@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Put, Req } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put, Req } from '@nestjs/common';
 import {
   ApiInternalServerErrorResponse,
   ApiOkResponse,
@@ -17,13 +17,12 @@ import { LearnerProfileService } from './learner-profile.service';
 export class LearnerProfileController {
   constructor(private readonly profileService: LearnerProfileService) {}
 
-  @Get()
+  @Get(':userId')
   @ApiOkResponse({ type: LearnerProfileEntity })
   @ApiInternalServerErrorResponse({ type: ErrorResponse })
-  async getLearnerProfile(@Req() req) {
-    const learnerProfile = await this.profileService.findLearnerProfileByUserId(
-      req.user.userId,
-    );
+  async getLearnerProfile(@Param('userId') userId: string) {
+    const learnerProfile =
+      await this.profileService.findLearnerProfileByUserId(userId);
 
     return new LearnerProfileEntity(learnerProfile);
   }

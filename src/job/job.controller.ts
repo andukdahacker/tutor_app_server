@@ -1,7 +1,8 @@
-import { Body, Controller, Get, Post, Query, Req } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query, Req } from '@nestjs/common';
 import {
   ApiInternalServerErrorResponse,
   ApiOkResponse,
+  ApiQuery,
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
@@ -13,6 +14,7 @@ import {
 import { paginate } from 'src/shared/utils/pagination.utils';
 import { JobEntity } from './dto/entities';
 import { CreateJobInput } from './dto/inputs';
+import FindJobByLearnerInput from './dto/inputs/find-jobs-by-learner.input';
 import { FindManyJobsInput } from './dto/inputs/find-many-jobs.input';
 import { JobService } from './job.service';
 
@@ -33,22 +35,63 @@ export class JobController {
     return new JobEntity(job);
   }
 
-  @Get()
+  @Get('/list')
   @ApiOkPaginatedResponse(JobEntity)
   @ApiUnauthorizedResponse({ type: ErrorResponse })
   @ApiInternalServerErrorResponse({ type: ErrorResponse })
-  async jobs(@Query() input: FindManyJobsInput): Promise<Paginated<JobEntity>> {
-    const requests = await this.jobService.findManyJobs(input);
+  async jobs(
+    @Query() input: FindManyJobsInput,
+    @Req() req,
+  ): Promise<Paginated<JobEntity>> {
+    const requests = await this.jobService.findManyJobs(input, req.user.userId);
     const results = await paginate(
       requests,
       'id',
       async (cursor: string) =>
-        await this.jobService.findManyJobs({
-          ...input,
-          stringCursor: cursor,
-        }),
+        await this.jobService.findManyJobs(
+          {
+            ...input,
+            stringCursor: cursor,
+          },
+          req.user.userId,
+        ),
     );
 
     return results;
+  }
+
+  @Get('/learner')
+  @ApiOkPaginatedResponse(JobEntity)
+  @ApiUnauthorizedResponse({ type: ErrorResponse })
+  @ApiInternalServerErrorResponse({ type: ErrorResponse })
+  @ApiQuery({ type: () => FindJobByLearnerInput })
+  async getJobsByLearnerId(@Query() input: FindJobByLearnerInput, @Req() req) {
+    const requests = await this.jobService.findJobsByLearnerId(
+      input,
+      req.user.userId,
+    );
+    const results = await paginate(
+      requests,
+      'id',
+      async (cursor: string) =>
+        await this.jobService.findJobsByLearnerId(
+          {
+            ...input,
+            stringCursor: cursor,
+          },
+          req.user.userId,
+        ),
+    );
+
+    return results;
+  }
+
+  @Get(':jobId')
+  @ApiOkResponse({ type: () => JobEntity })
+  @ApiInternalServerErrorResponse({ type: ErrorResponse })
+  async findJobById(@Param('jobId') jobId: string) {
+    const job = await this.jobService.findJobById(jobId);
+
+    return new JobEntity(job);
   }
 }

@@ -4,9 +4,6 @@ import { Transform } from 'class-transformer';
 
 export class FindManyJobsInput {
   @ApiProperty()
-  tutorId: string;
-
-  @ApiProperty()
   @Transform((params) => Number.parseInt(params.value))
   take: number;
 
