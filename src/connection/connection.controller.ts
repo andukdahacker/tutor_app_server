@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Post, Put, Query, Req } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Put,
+  Query,
+  Req,
+} from '@nestjs/common';
 import {
   ApiInternalServerErrorResponse,
   ApiOkResponse,
@@ -16,6 +25,8 @@ import { CreateJobConnectInput, JobConnectionWhereInput } from './dto/inputs';
 import { AcceptJobConnectionInput } from './dto/inputs/accept-job-connection.input';
 import { DeclineJobConnectionInput } from './dto/inputs/decline-job-connection.input';
 import { DeleteJobConnectionInput } from './dto/inputs/delete_job_connection';
+import AcceptJobConnectionResponse from './dto/response/accept_job_connection_response';
+import DisconnectJobConnectionInput from './dto/inputs/disconnect-job-connection.input';
 
 @ApiTags('Job Connections')
 @Controller('job-connection')
@@ -61,7 +72,7 @@ export class JobConnectionController {
   }
 
   @Put('accept')
-  @ApiOkResponse({ type: JobConnectionEntity })
+  @ApiOkResponse({ type: AcceptJobConnectionResponse })
   @ApiInternalServerErrorResponse({ type: ErrorResponse })
   async acceptJobConnection(
     @Body()
@@ -84,7 +95,7 @@ export class JobConnectionController {
 
     const result = await Promise.all([connection, updatedJob, notification]);
     // this.pubSub.publish(NotificationCreatedEvent, result[1]);
-    return result[0];
+    return new AcceptJobConnectionResponse(result[1], result[0]);
   }
 
   @Put('decline')
@@ -107,6 +118,16 @@ export class JobConnectionController {
 
     const result = await Promise.all([connection, notification]);
     return result[0];
+  }
+
+  @Put('disconnect')
+  @ApiOkResponse({ type: JobConnectionEntity })
+  @ApiInternalServerErrorResponse({ type: ErrorResponse })
+  async disconnectJobConnection(@Body() input: DisconnectJobConnectionInput) {
+    const connection =
+      await this.connectionService.disconnectJobConnection(input);
+
+    return new JobConnectionEntity(connection);
   }
 
   @Get()
@@ -167,6 +188,17 @@ export class JobConnectionController {
     const connection = await this.connectionService.deleteJobConnection(
       deleteConnectionInput,
     );
+
+    return new JobConnectionEntity(connection);
+  }
+
+  @Get('accepted/:jobId')
+  @ApiOkResponse({ type: () => JobConnectionEntity })
+  @ApiUnauthorizedResponse({ type: () => ErrorResponse })
+  async getAcceptedConnection(@Param('jobId') jobId: string) {
+    const connection = await this.connectionService.getAcceptedConnection({
+      jobId,
+    });
 
     return new JobConnectionEntity(connection);
   }
