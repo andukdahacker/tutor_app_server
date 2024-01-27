@@ -121,13 +121,12 @@ export class JobConnectionController {
   }
 
   @Put('disconnect')
-  @ApiOkResponse({ type: JobConnectionEntity })
+  @ApiOkResponse()
   @ApiInternalServerErrorResponse({ type: ErrorResponse })
   async disconnectJobConnection(@Body() input: DisconnectJobConnectionInput) {
-    const connection =
-      await this.connectionService.disconnectJobConnection(input);
+    await this.connectionService.disconnectJobConnection(input);
 
-    return new JobConnectionEntity(connection);
+    return;
   }
 
   @Get()

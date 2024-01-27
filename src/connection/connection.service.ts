@@ -203,11 +203,11 @@ export class ConnectionService {
   }
 
   async disconnectJobConnection(input: DisconnectJobConnectionInput) {
-    const connection = await this.prisma.jobConnection.update({
+    const connection = this.prisma.jobConnection.update({
       where: {
         jobId_tutorId: {
-          jobId: '',
-          tutorId: '',
+          jobId: input.jobId,
+          tutorId: input.tutorId,
         },
       },
       data: {
@@ -215,6 +215,17 @@ export class ConnectionService {
       },
     });
 
-    return connection;
+    const job = this.prisma.job.update({
+      where: {
+        id: input.jobId,
+      },
+      data: {
+        jobStatus: 'OPEN',
+      },
+    });
+
+    const result = await this.prisma.$transaction([connection, job]);
+
+    return result;
   }
 }
